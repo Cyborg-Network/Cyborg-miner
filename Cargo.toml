@@ -12,6 +12,12 @@ publish = false
 # [[bin]]
 # name = "cyborg-node"
 
+[workspace]
+members = [
+	"runtimes/neuro_zk_runtime",
+	"runtimes/open_inference_runtime",
+]
+
 [dependencies]
 async-trait = { git = "https://github.com/dtolnay/async-trait.git" }
 chrono = "0.4.38"
@@ -45,16 +51,24 @@ zbus = "5.1.1"
 zbus_names = "4.1.0"
 zip = "2.2.0"
 
+neuro_zk_runtime = { path = "runtimes/neuro_zk_runtime", optional = true }
+open_inference_runtime = { path = "runtimes/open_inference_runtime", optional = true }
+
 [build-dependencies]
 
 [dev-dependencies]
 mockall = "0.13.1"
 
+[patch.'https://github.com/zkonduit/halo2']
+halo2_proofs = { git = "https://github.com/zkonduit/halo2#f441c920be45f8f05d2c06a173d82e8885a5ed4d", package = "halo2_proofs" }
+
+[patch.'https://github.com/zkonduit/halo2#0654e92bdf725fd44d849bfef3643870a8c7d50b']
+halo2_proofs = { git = "https://github.com/zkonduit/halo2#f441c920be45f8f05d2c06a173d82e8885a5ed4d", package = "halo2_proofs" }
+
 [features]
 default = []
-runtime-benchmarks = [
-	"sp-runtime/runtime-benchmarks",
-]
-try-runtime = [
-	"sp-runtime/try-runtime",
-]
+runtime-benchmarks = ["sp-runtime/runtime-benchmarks"]
+try-runtime = ["sp-runtime/try-runtime"]
+neuro_zk = ["neuro_zk_runtime"]
+open_inference = ["open_inference_runtime"]
+
