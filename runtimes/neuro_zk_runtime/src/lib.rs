@@ -4,9 +4,8 @@ use subxt_signer::sr25519::Keypair;
 use tokio::sync::mpsc::{Receiver, Sender};
 use ezkl::{
     commands::Commands::{
-        CompileCircuit, GenSettings, GenWitness, Prove
-    }, 
-    execute::run, RunArgs
+        CompileCircuit, GenSettings, GetSrs, GenWitness, Prove, Setup
+    }, execute::run, Commitments, RunArgs
 };
 use serde_json::Value;
 
@@ -50,7 +49,7 @@ impl NeuroZKEngine {
         if restart_files.iter().all(|file| File::open(file).is_ok()) {
             let _ = self.run(input, output).await;
         } else if fresh_start_files.iter().all(|file| File::open(file).is_ok()) {
-            let _ = self.compile_model().await; 
+            let _ = self.setup().await; 
             let _ = self.run(input, output).await;
         } else {
             return Err("Could not find necessary files for neuro zk to run".into())
@@ -62,8 +61,9 @@ impl NeuroZKEngine {
     /// Takes a stream of inference data and starts performing inference, proving inference on request by submitting a ZK SNARK to the blockchain.
     /// 
     /// # Arguments
-    /// * `&self` - A reference to the `NeuroZKEngine` struct
-    /// * `request_input_stream` - An iterable stream of data to perform inference on
+    /// * `&self`
+    /// * `request_stream` - An iterable receiver of data to perform inference on
+    /// * `response_stream` - An iterable sender of inference responses
     /// 
     /// # Returns
     /// A result containing either the inference output stream, or an Error `Result<(), Box<dyn std::error::Error>>`
@@ -87,11 +87,11 @@ impl NeuroZKEngine {
     /// Generates the required files to prove inference and compiles the model from `.ONNX` format into an `.ezkl` circuit.
     /// 
     /// # Arguments
-    /// * `model_location` - The location of the model currently loaded into the miner
+    /// * `&self`
     /// 
     /// # Returns
     /// `Result<(), Box<dyn std::error::Error>>`
-    async fn compile_model(&self) -> Result<(), Box<dyn std::error::Error>> {
+    async fn setup(&self) -> Result<(), Box<dyn std::error::Error>> {
         let _ = run(GenSettings { 
             model: self.model_path.clone(), 
             settings_path: self.settings_path.clone(), 
@@ -102,6 +102,22 @@ impl NeuroZKEngine {
             model: self.model_path.clone(), 
             compiled_circuit: self.compiled_model_path.clone(), 
             settings_path: self.settings_path.clone(), 
+        }).await?;
+
+        let _ = run(GetSrs { 
+            srs_path: self.srs_path.clone(), 
+            settings_path: self.settings_path.clone(), 
+            logrows: None, 
+            commitment: Some(Commitments::KZG),
+        }).await?;
+
+        let _ = run(Setup { 
+            compiled_circuit: self.compiled_model_path.clone(), 
+            srs_path: self.srs_path.clone(), 
+            vk_path: self.vk_path.clone(), 
+            pk_path: self.pk_path.clone(), 
+            witness: None, 
+            disable_selector_compression: None 
         }).await?;
 
         Ok(())
@@ -162,11 +178,8 @@ impl NeuroZKEngine {
     /// Takes input and performs inference on the model currently loaded into the miner. Fails if `init_model` has not been called. Should be called for the vast majority of inference requests.
     /// 
     /// # Arguments
-    /// * `inference_data` - The input used to run inference on the model in circuit form
-    /// * `cicuit_location` - The location of the model in circuit form currently loaded into the miner
-    /// * `output_location` - The location of the inference output
-    /// * `vk_path` - The location of the verification key
-    /// * `srs_path` - The location of the SRS
+    /// * `&self`
+    /// * `data` - The input used to run inference on the model in circuit form
     /// 
     /// # Returns
     /// `Result<(), Box<dyn std::error::Error>>`
