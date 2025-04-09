@@ -15,17 +15,17 @@
 /// Run the executable with appropriate subcommands to register or start mining a worker.
 mod builder;
 mod cli;
-mod worker;
 mod specs;
 mod substrate_interface;
+mod worker;
 
 use crate::worker::BlockchainClient;
 use builder::CyborgClientBuilder;
 use clap::Parser;
 use cli::{Cli, Commands};
 use std::fs;
-mod utils;
 mod error;
+mod utils;
 
 pub use self::error::{Error, Result};
 //use subxt::ext::jsonrpsee::core::client::error;
@@ -47,7 +47,7 @@ async fn main() -> Result<()> {
             account_seed,
             ipfs_url,
             ipfs_api_key,
-            ipfs_api_secret,    
+            ipfs_api_secret,
         }) => {
             println!("Registering worker with API URL: {}", parachain_url);
 
@@ -55,8 +55,18 @@ async fn main() -> Result<()> {
             let client = CyborgClientBuilder::default()
                 .parachain_url(parachain_url.to_string())
                 .keypair(account_seed)?
-                .ipfs_api(Some(ipfs_url.to_string()), Some(ipfs_api_key.to_string()), Some(ipfs_api_secret.to_string())).await
-                .paths(LOG_PATH.to_string(), CONFIG_PATH.to_string(), TASK_PATH.to_string(), TASK_OWNER_PATH.to_string())
+                .ipfs_api(
+                    Some(ipfs_url.to_string()),
+                    Some(ipfs_api_key.to_string()),
+                    Some(ipfs_api_secret.to_string()),
+                )
+                .await
+                .paths(
+                    LOG_PATH.to_string(),
+                    CONFIG_PATH.to_string(),
+                    TASK_PATH.to_string(),
+                    TASK_OWNER_PATH.to_string(),
+                )
                 .build()
                 .await?;
 
@@ -72,7 +82,8 @@ async fn main() -> Result<()> {
         }) => {
             println!("Starting mining session. Parachain URL: {}", parachain_url);
 
-            let config_string = fs::read_to_string("/var/lib/cyborg/worker-node/config/worker_config.json")?;
+            let config_string =
+                fs::read_to_string("/var/lib/cyborg/worker-node/config/worker_config.json")?;
 
             let config: worker::WorkerData = serde_json::from_str(&config_string)?;
 
@@ -82,9 +93,15 @@ async fn main() -> Result<()> {
             let mut client = CyborgClientBuilder::default()
                 .parachain_url(parachain_url.to_string())
                 .keypair(account_seed)?
-                .ipfs_api(None, None, None).await
+                .ipfs_api(None, None, None)
+                .await
                 .config(config)
-                .paths(LOG_PATH.to_string(), CONFIG_PATH.to_string(), TASK_PATH.to_string(), TASK_OWNER_PATH.to_string())
+                .paths(
+                    LOG_PATH.to_string(),
+                    CONFIG_PATH.to_string(),
+                    TASK_PATH.to_string(),
+                    TASK_OWNER_PATH.to_string(),
+                )
                 .build()
                 .await?;
 
