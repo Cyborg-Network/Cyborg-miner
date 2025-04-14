@@ -279,7 +279,6 @@ impl BlockchainClient for CyborgClient {
     /// # Returns
     /// A `Result` indicating success or an error if starting the session fails.
     async fn start_mining_session(&mut self) -> Result<()> {
-        crate::utils::substrate_transactions::init_transaction_processor();
         println!("Starting mining session...");
 
         self.write_log("Waiting for tasks...");
@@ -288,15 +287,30 @@ impl BlockchainClient for CyborgClient {
 
         let mut blocks = self.client.blocks().subscribe_finalized().await?;
 
-        while let Some(Ok(block)) = blocks.next().await {
-            //info!("New block imported: {:?}", block.hash());
+        loop {
+            if let Err(e) = crate::utils::substrate_transactions::process_transactions(
+                &self.client,
+                &self.keypair,
+            )
+            .await
+            {
+                println!("Error processing transactions: {:?}", e);
+            }
+
+            let block = match blocks.next().await {
+                Some(Ok(block)) => block,
+                Some(Err(e)) => {
+                    println!("Error receiving block: {:?}", e);
+                    continue;
+                }
+                None => break,
+            };
 
             let events = block.events().await?;
 
             for event in events.iter() {
                 match event {
                     Ok(ev) => {
-                        //println!("Processing Event: {:?}", ev);
                         if let Err(e) = self.process_event(&ev).await {
                             println!("Error processing event: {:?}", e);
                         }
