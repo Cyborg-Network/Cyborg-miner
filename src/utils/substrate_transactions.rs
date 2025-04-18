@@ -13,16 +13,22 @@ enum Transaction {
         completed_hash: H256,
         result_cid: BoundedVec<u8>,
         task_id: u64,
+        retry_count: u8,
     },
     SubmitResultVerification {
         completed_hash: H256,
         task_id: u64,
+        retry_count: u8,
     },
     SubmitResultResolution {
         completed_hash: H256,
         task_id: u64,
+        retry_count: u8,
     },
 }
+
+const MAX_RETRIES: u8 = 3;
+const RETRY_DELAY_MS: u64 = 1000;
 
 #[derive(Clone)]
 pub struct TransactionQueue {
@@ -47,6 +53,7 @@ impl TransactionQueue {
             completed_hash,
             result_cid,
             task_id,
+            retry_count: 0,
         });
     }
 
@@ -55,6 +62,7 @@ impl TransactionQueue {
         queue.push_back(Transaction::SubmitResultVerification {
             completed_hash,
             task_id,
+            retry_count: 0,
         });
     }
 
@@ -63,6 +71,7 @@ impl TransactionQueue {
         queue.push_back(Transaction::SubmitResultResolution {
             completed_hash,
             task_id,
+            retry_count: 0,
         });
     }
 
@@ -77,34 +86,84 @@ impl TransactionQueue {
         };
 
         if let Some(transaction) = transaction {
-            match transaction {
+            let result = match transaction {
                 Transaction::SubmitResult {
                     completed_hash,
-                    result_cid,
+                    ref result_cid,
                     task_id,
+                    retry_count,
                 } => {
-                    submit_result_internal(api, signer_keypair, completed_hash, result_cid, task_id)
-                        .await?;
+                    let result = submit_result_internal(api, signer_keypair, completed_hash, result_cid.clone(), task_id).await;
+                    (result, completed_hash, task_id, retry_count)
                 }
                 Transaction::SubmitResultVerification {
                     completed_hash,
                     task_id,
+                    retry_count,
                 } => {
-                    submit_result_verification_internal(api, signer_keypair, completed_hash, task_id)
-                        .await?;
+                    let result = submit_result_verification_internal(api, signer_keypair, completed_hash, task_id).await;
+                    (result, completed_hash, task_id, retry_count)
                 }
                 Transaction::SubmitResultResolution {
                     completed_hash,
                     task_id,
+                    retry_count,
                 } => {
-                    submit_result_resolution_internal(api, signer_keypair, completed_hash, task_id)
-                        .await?;
+                    let result = submit_result_resolution_internal(api, signer_keypair, completed_hash, task_id).await;
+                    (result, completed_hash, task_id, retry_count)
+                }
+            };
+
+            match result {
+                (Ok(_), _, _, _) => Ok(()),
+                (Err(e), _completed_hash, _task_id, retry_count) => {
+                    if Self::is_nonce_error(&e) && retry_count < MAX_RETRIES {
+                        println!("Nonce error detected, retrying transaction (attempt {}/{}). Sleeping for {}ms...", 
+                            retry_count + 1, MAX_RETRIES, RETRY_DELAY_MS);
+                        
+                        tokio::time::sleep(std::time::Duration::from_millis(RETRY_DELAY_MS)).await;
+                        
+                        let mut queue = self.inner.lock().unwrap();
+                        let new_transaction = match transaction {
+                            Transaction::SubmitResult { completed_hash, result_cid, task_id, .. } => {
+                                Transaction::SubmitResult {
+                                    completed_hash,
+                                    result_cid,
+                                    task_id,
+                                    retry_count: retry_count + 1,
+                                }
+                            }
+                            Transaction::SubmitResultVerification { completed_hash, task_id, .. } => {
+                                Transaction::SubmitResultVerification {
+                                    completed_hash,
+                                    task_id,
+                                    retry_count: retry_count + 1,
+                                }
+                            }
+                            Transaction::SubmitResultResolution { completed_hash, task_id, .. } => {
+                                Transaction::SubmitResultResolution {
+                                    completed_hash,
+                                    task_id,
+                                    retry_count: retry_count + 1,
+                                }
+                            }
+                        };
+                        queue.push_front(new_transaction);
+                        Ok(())
+                    } else {
+                        Err(e)
+                    }
                 }
             }
+        } else {
+            Ok(())
         }
-
-        Ok(())
     }
+
+fn is_nonce_error(error: &crate::error::Error) -> bool {
+    error.to_string().contains("InvalidTransaction") && 
+        (error.to_string().contains("Stale") || error.to_string().contains("nonce"))
+}
 }
 
 lazy_static::lazy_static! {
@@ -123,7 +182,7 @@ async fn submit_result_internal(
         .submit_completed_task(
             task_id, 
             completed_hash, 
-            result_cid, 
+            result_cid.clone(), 
         );
 
     println!("Transaction Details:");
