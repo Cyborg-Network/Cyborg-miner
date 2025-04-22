@@ -13,21 +13,20 @@ enum Transaction {
         completed_hash: H256,
         result_cid: BoundedVec<u8>,
         task_id: u64,
-        retry_count: u8,
+        retry_count: u32,
     },
     SubmitResultVerification {
         completed_hash: H256,
         task_id: u64,
-        retry_count: u8,
+        retry_count: u32,
     },
     SubmitResultResolution {
         completed_hash: H256,
         task_id: u64,
-        retry_count: u8,
+        retry_count: u32,
     },
 }
 
-const MAX_RETRIES: u8 = 3;
 const RETRY_DELAY_MS: u64 = 1000;
 
 #[derive(Clone)]
@@ -116,12 +115,17 @@ impl TransactionQueue {
 
             match result {
                 (Ok(_), _, _, _) => Ok(()),
-                (Err(e), _completed_hash, _task_id, retry_count) => {
-                    if Self::is_nonce_error(&e) && retry_count < MAX_RETRIES {
-                        println!("Nonce error detected, retrying transaction (attempt {}/{}). Sleeping for {}ms...", 
-                            retry_count + 1, MAX_RETRIES, RETRY_DELAY_MS);
+                (Err(e), _completed_hash,_task_idd, retry_count) => {
+                    if Self::is_nonce_error(&e) {
+                        let delay_ms = std::cmp::min(
+                            10_000,
+                            RETRY_DELAY_MS * 2u64.pow(std::cmp::min(retry_count as u32, 10)), 
+                        );
                         
-                        tokio::time::sleep(std::time::Duration::from_millis(RETRY_DELAY_MS)).await;
+                        println!("Nonce error detected, retrying transaction (attempt {}). Sleeping for {}ms...", 
+                            retry_count + 1, delay_ms);
+                        
+                        tokio::time::sleep(std::time::Duration::from_millis(delay_ms)).await;
                         
                         let mut queue = self.inner.lock().unwrap();
                         let new_transaction = match transaction {
@@ -151,7 +155,10 @@ impl TransactionQueue {
                         queue.push_front(new_transaction);
                         Ok(())
                     } else {
-                        Err(e)
+                        println!("Non-nonce error detected ({}), retrying transaction...", e);
+                        let mut queue = self.inner.lock().unwrap();
+                        queue.push_front(transaction);
+                        Ok(())
                     }
                 }
             }
