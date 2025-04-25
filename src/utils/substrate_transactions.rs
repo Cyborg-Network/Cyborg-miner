@@ -8,6 +8,23 @@ use substrate_interface::api::runtime_types::bounded_collections::bounded_vec::B
 use crate::{substrate_interface, error::Result};
 
 #[derive(Debug)]
+pub enum TransactionType {
+    SubmitResult {
+        completed_hash: H256,
+        result_cid: BoundedVec<u8>,
+        task_id: u64,
+    },
+    SubmitResultVerification {
+        completed_hash: H256,
+        task_id: u64,
+    },
+    SubmitResultResolution {
+        completed_hash: H256,
+        task_id: u64,
+    },
+}
+
+#[derive(Debug)]
 enum Transaction {
     SubmitResult {
         completed_hash: H256,
@@ -167,10 +184,10 @@ impl TransactionQueue {
         }
     }
 
-fn is_nonce_error(error: &crate::error::Error) -> bool {
-    error.to_string().contains("InvalidTransaction") && 
-        (error.to_string().contains("Stale") || error.to_string().contains("nonce"))
-}
+    fn is_nonce_error(error: &crate::error::Error) -> bool {
+        error.to_string().contains("InvalidTransaction") && 
+            (error.to_string().contains("Stale") || error.to_string().contains("nonce"))
+    }
 }
 
 lazy_static::lazy_static! {
@@ -219,17 +236,6 @@ async fn submit_result_internal(
     Ok(())
 }
 
-pub async fn submit_result(
-    _api: &OnlineClient<PolkadotConfig>, 
-    _signer_keypair: &Keypair, 
-    completed_hash: H256,
-    result_cid: BoundedVec<u8>,
-    task_id: u64, 
-) -> Result<()> {
-    TRANSACTION_QUEUE.add_submit_result(completed_hash, result_cid, task_id);
-    Ok(())
-}
-
 async fn submit_result_verification_internal(
     api: &OnlineClient<PolkadotConfig>, 
     signer_keypair: &Keypair, 
@@ -267,16 +273,6 @@ async fn submit_result_verification_internal(
         println!("Task submission failed");
     }
 
-    Ok(())
-}
-
-pub async fn submit_result_verification(
-    _api: &OnlineClient<PolkadotConfig>, 
-    _signer_keypair: &Keypair, 
-    completed_hash: H256,
-    task_id: u64, 
-) -> Result<()> {
-    TRANSACTION_QUEUE.add_submit_verification(completed_hash, task_id);
     Ok(())
 }
 
@@ -320,14 +316,35 @@ async fn submit_result_resolution_internal(
     Ok(())
 }
 
-pub async fn submit_result_resolution(
-    _api: &OnlineClient<PolkadotConfig>, 
-    _signer_keypair: &Keypair, 
-    completed_hash: H256,
-    task_id: u64, 
+pub async fn submit_tx(
+    _api: &OnlineClient<PolkadotConfig>,
+    _signer_keypair: &Keypair,
+    tx_type: TransactionType,
 ) -> Result<()> {
-    TRANSACTION_QUEUE.add_submit_resolution(completed_hash, task_id);
-    Ok(())
+    match tx_type {
+        TransactionType::SubmitResult {
+            completed_hash,
+            result_cid,
+            task_id,
+        } => {
+            TRANSACTION_QUEUE.add_submit_result(completed_hash, result_cid, task_id);
+            Ok(())
+        }
+        TransactionType::SubmitResultVerification {
+            completed_hash,
+            task_id,
+        } => {
+            TRANSACTION_QUEUE.add_submit_verification(completed_hash, task_id);
+            Ok(())
+        }
+        TransactionType::SubmitResultResolution {
+            completed_hash,
+            task_id,
+        } => {
+            TRANSACTION_QUEUE.add_submit_resolution(completed_hash, task_id);
+            Ok(())
+        }
+    }
 }
 
 pub async fn process_transactions(

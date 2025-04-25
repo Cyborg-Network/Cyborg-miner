@@ -5,10 +5,9 @@ use sp_core::blake2_256;
 //use zip::unstable::write;
 //use std::path;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
-use crate::utils::{
-    substrate_queries::{get_task, CyborgTask},
-    substrate_transactions::{submit_result, submit_result_resolution, submit_result_verification},
-};
+use crate::utils::substrate_queries::{get_task, CyborgTask};
+use crate::utils::substrate_transactions::submit_tx;
+use crate::utils::substrate_transactions::TransactionType;
 use chrono::Local;
 use fs2::FileExt;
 use std::path::PathBuf;
@@ -541,8 +540,17 @@ impl BlockchainClient for CyborgClient {
 
             let completed_hash = H256::from(blake2_256(result_raw_data.as_bytes()));
 
-            submit_result_verification(&self.client, &self.keypair, completed_hash, task.id)
-                .await?;
+            let task_id = task.id;
+
+            submit_tx(
+                &self.client,
+                &self.keypair,
+                TransactionType::SubmitResultVerification {
+                    completed_hash,
+                    task_id,
+                },
+            )
+            .await?;
 
             Ok(())
         } else {
@@ -560,7 +568,17 @@ impl BlockchainClient for CyborgClient {
 
             let completed_hash = H256::from(blake2_256(result_raw_data.as_bytes()));
 
-            submit_result_resolution(&self.client, &self.keypair, completed_hash, task.id).await?;
+            let task_id = task.id;
+
+            submit_tx(
+                &self.client,
+                &self.keypair,
+                TransactionType::SubmitResultResolution {
+                    completed_hash,
+                    task_id,
+                },
+            )
+            .await?;
 
             Ok(())
         } else {
@@ -645,12 +663,14 @@ impl BlockchainClient for CyborgClient {
 
         let completed_hash = H256::from(blake2_256(task_output.as_bytes()));
 
-        submit_result(
+        submit_tx(
             &self.client,
             &self.keypair,
-            completed_hash,
-            result_cid,
-            task_id,
+            TransactionType::SubmitResult {
+                completed_hash,
+                result_cid,
+                task_id,
+            },
         )
         .await?;
 
