@@ -4,17 +4,16 @@ use pinata_sdk::PinataApi;
 use sp_core::blake2_256;
 //use zip::unstable::write;
 //use std::path;
+use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
+use crate::utils::substrate_queries::{get_task, CyborgTask};
+use crate::utils::substrate_transactions::submit_tx;
+use crate::utils::substrate_transactions::TransactionType;
+use chrono::Local;
+use fs2::FileExt;
 use std::path::PathBuf;
 use std::process::Output;
 use subxt::events::EventDetails;
 use subxt::utils::H256;
-use chrono::Local;
-use fs2::FileExt;
-use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
-use crate::utils::{
-    substrate_queries::{get_task, CyborgTask},
-    substrate_transactions::{submit_result, submit_result_verification, submit_result_resolution},
-};
 //use subxt::ext::jsonrpsee::async_client::ClientBuilder;
 
 use codec::{Decode, Encode};
@@ -24,19 +23,22 @@ use serde::{Deserialize, Serialize};
 //use sp_api::ProvideRuntimeApi;
 //use sp_blockchain::HeaderBackend;
 //use sp_runtime::traits::Block;
-use subxt::utils::AccountId32;
-use std::fs;
-use subxt::{OnlineClient, PolkadotConfig};
-use subxt_signer::sr25519::Keypair;
-use substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
 use reqwest::get;
+use std::fs;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::process::{Command, Stdio};
+use substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
+use subxt::utils::AccountId32;
+use subxt::{OnlineClient, PolkadotConfig};
+use subxt_signer::sr25519::Keypair;
 
-use crate::{substrate_interface, specs, error::{Error, Result}};
+use crate::{
+    error::{Error, Result},
+    specs, substrate_interface,
+};
 
 // Datastructure for worker registration persistence
 #[derive(Debug, Clone, PartialEq, Eq, Decode, Encode, Serialize, Deserialize)]
@@ -50,10 +52,11 @@ pub struct TaskOwner {
     pub task_owner: String,
 }
 
+#[allow(dead_code)]
 enum ExecutionType {
     Execution,
     Verfication,
-    Resolution
+    Resolution,
 }
 
 pub struct WorkerConfig {
@@ -143,17 +146,26 @@ pub trait BlockchainClient {
     /// * `task_id` - A `u64` representing the ID of the task being processed.
     /// * `task_ipfs_cid_bytes` - A `Vec<u8>` representing the IPFS CID of the task.
     /// * `task_owner` - A `AccountId32` representing the owner of the task.
-    fn prepare_for_task_execution(&mut self, task_id: u64, task_cid: String, task_owner: AccountId32) -> Result<()>;
+    fn prepare_for_task_execution(
+        &mut self,
+        task_id: u64,
+        task_cid: String,
+        task_owner: AccountId32,
+    ) -> Result<()>;
 
     /// Executes a task in different ways, depending on what role (execution, verification, resolution) was assigned to the worker.
-    /// 
+    ///
     /// # Arguments
     /// * `task` - A `Task` object representing the task to be processed.
     /// * `execution_type` - An `ExecutionType` indicating the role assigned to the worker.
     ///
     /// # Returns
     /// A `Result` indicating `Ok(())` if the task is processed successfully, or an `Error` if it fails.
-    async fn process_task(&self, task_owner: &AccountId32, task_ipfs_cid_bytes: &String) -> Result<std::process::Output>;
+    async fn process_task(
+        &self,
+        task_owner: &AccountId32,
+        task_ipfs_cid_bytes: &String,
+    ) -> Result<std::process::Output>;
 
     /// Calls `process_task` with `ExecutionType::Execution`. Calls `submit_result_onchain` with the result.
 
@@ -173,7 +185,7 @@ pub trait BlockchainClient {
     fn reset_log(&self);
 
     /// Attempts to update the worker config file.
-    /// 
+    ///
     /// # Arguments
     /// * `file_path` - A `&str` representing the path to the config file.
     /// * `content` - A `&str` representing the content to be written to the config file.
@@ -188,8 +200,10 @@ pub struct CyborgClient {
     pub(crate) client: OnlineClient<PolkadotConfig>,
     pub(crate) keypair: Keypair,
     pub ipfs_client: PinataApi,
+    #[allow(dead_code)]
     pub node_uri: String,
     pub identity: (AccountId32, u64),
+    #[allow(dead_code)]
     pub creator: AccountId32,
     pub log_path: PathBuf,
     pub task_path: PathBuf,
@@ -206,18 +220,17 @@ impl BlockchainClient for CyborgClient {
     /// # Returns
     /// A `Result` indicating success or an error if registration fails.
     async fn register_worker(&self) -> Result<()> {
-
         let worker_specs = specs::gather_worker_spec().await?;
 
         let worker_registration = substrate_interface::api::tx()
             .edge_connect()
             .register_worker(
                 WorkerType::Executable,
-                worker_specs.domain, 
-                worker_specs.latitude, 
-                worker_specs.longitude, 
+                worker_specs.domain,
+                worker_specs.latitude,
+                worker_specs.longitude,
                 worker_specs.ram,
-                worker_specs.storage, 
+                worker_specs.storage,
                 worker_specs.cpu,
             );
 
@@ -226,28 +239,29 @@ impl BlockchainClient for CyborgClient {
         println!("Call: {:?}", worker_registration.call_name());
         println!("Parameters: {:?}", worker_registration.call_data());
 
-        let worker_registration_events= self.client
+        let worker_registration_events = self
+            .client
             .tx()
             .sign_and_submit_then_watch_default(&worker_registration, &self.keypair)
             .await
             .map(|e| {
-                println!("Worker registration submitted, waiting for transaction to be finalized...");
+                println!(
+                    "Worker registration submitted, waiting for transaction to be finalized..."
+                );
                 e
             })?
             .wait_for_finalized_success()
             .await?;
 
-        let registration_event = 
-            worker_registration_events.find_first::<substrate_interface::api::edge_connect::events::WorkerRegistered>()?;
+        let registration_event = worker_registration_events
+            .find_first::<substrate_interface::api::edge_connect::events::WorkerRegistered>(
+        )?;
 
         if let Some(event) = registration_event {
-
-            let worker_file_json = serde_json::to_string(
-                &WorkerData {
-                    worker_owner: event.creator.clone().to_string(),
-                    worker_identity: event.worker.clone(),
-                }
-            )?;
+            let worker_file_json = serde_json::to_string(&WorkerData {
+                worker_owner: event.creator.clone().to_string(),
+                worker_identity: event.worker.clone(),
+            })?;
 
             self.update_config_file(&self.config_path, &worker_file_json)?;
 
@@ -272,19 +286,34 @@ impl BlockchainClient for CyborgClient {
 
         let mut blocks = self.client.blocks().subscribe_finalized().await?;
 
-        while let Some(Ok(block)) = blocks.next().await {
-            //info!("New block imported: {:?}", block.hash());
+        loop {
+            if let Err(e) = crate::utils::substrate_transactions::process_transactions(
+                &self.client,
+                &self.keypair,
+            )
+            .await
+            {
+                println!("Error processing transactions: {:?}", e);
+            }
+
+            let block = match blocks.next().await {
+                Some(Ok(block)) => block,
+                Some(Err(e)) => {
+                    println!("Error receiving block: {:?}", e);
+                    continue;
+                }
+                None => break,
+            };
 
             let events = block.events().await?;
-            
+
             for event in events.iter() {
                 match event {
                     Ok(ev) => {
-                        //println!("Processing Event: {:?}", ev);
                         if let Err(e) = self.process_event(&ev).await {
                             println!("Error processing event: {:?}", e);
-                        }    
-                    },
+                        }
+                    }
                     Err(e) => eprintln!("Error decoding event: {:?}", e),
                 }
             }
@@ -300,10 +329,7 @@ impl BlockchainClient for CyborgClient {
     ///
     /// # Returns
     /// An `Option<String>` that may contain information derived from the event.
-    async fn process_event(
-        &mut self, 
-        event: &EventDetails<PolkadotConfig>
-    ) -> Result<()> {
+    async fn process_event(&mut self, event: &EventDetails<PolkadotConfig>) -> Result<()> {
         // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::TaskScheduled>();
         // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::SubmittedCompletedTask>();
         // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::VerifierResolverAssigned>();
@@ -349,7 +375,9 @@ impl BlockchainClient for CyborgClient {
         }
 
         // Check for WorkerStatusUpdated event
-        match event.as_event::<substrate_interface::api::edge_connect::events::WorkerStatusUpdated>() {
+        match event
+            .as_event::<substrate_interface::api::edge_connect::events::WorkerStatusUpdated>()
+        {
             Ok(Some(status_updated)) => {
                 let creator = &status_updated.creator;
                 let worker_id = &status_updated.worker_id;
@@ -373,12 +401,17 @@ impl BlockchainClient for CyborgClient {
                 let assigned_worker = &task_scheduled.assigned_worker;
 
                 if *assigned_worker == self.identity {
-
                     let task_cid_string = String::from_utf8(task_scheduled.task.0)?;
 
-                    self.write_log(format!("New task scheduled for worker: {}", task_cid_string).as_str());
+                    self.write_log(
+                        format!("New task scheduled for worker: {}", task_cid_string).as_str(),
+                    );
 
-                    self.prepare_for_task_execution(task_scheduled.task_id, task_cid_string, task_scheduled.task_owner)?;
+                    self.prepare_for_task_execution(
+                        task_scheduled.task_id,
+                        task_cid_string,
+                        task_scheduled.task_owner,
+                    )?;
 
                     match self.execute_task().await {
                         Ok(output) => {
@@ -398,7 +431,9 @@ impl BlockchainClient for CyborgClient {
         }
 
         // Check for SubmittedCompletedTask event to check if worker was assigned to verify task
-        match event.as_event::<substrate_interface::api::task_management::events::SubmittedCompletedTask>() {
+        match event
+            .as_event::<substrate_interface::api::task_management::events::SubmittedCompletedTask>()
+        {
             Ok(Some(submitted_task)) => {
                 let assigned_verifier = &submitted_task.assigned_verifier;
 
@@ -454,8 +489,12 @@ impl BlockchainClient for CyborgClient {
         Ok(())
     }
 
-    fn prepare_for_task_execution(&mut self, task_id: u64, task_cid: String, task_owner: AccountId32) -> Result<()> {
-
+    fn prepare_for_task_execution(
+        &mut self,
+        task_id: u64,
+        task_cid: String,
+        task_owner: AccountId32,
+    ) -> Result<()> {
         let owner_file_json = serde_json::to_string(&TaskOwner {
             task_owner: task_owner.clone().to_string(),
         })?;
@@ -464,13 +503,11 @@ impl BlockchainClient for CyborgClient {
 
         self.reset_log();
 
-        self.current_task = Some(
-            CyborgTask{
-                id: task_id,
-                cid: task_cid,
-                owner: task_owner
-            }
-        );
+        self.current_task = Some(CyborgTask {
+            id: task_id,
+            cid: task_cid,
+            owner: task_owner,
+        });
 
         Ok(())
     }
@@ -503,7 +540,17 @@ impl BlockchainClient for CyborgClient {
 
             let completed_hash = H256::from(blake2_256(result_raw_data.as_bytes()));
 
-            submit_result_verification(&self.client, &self.keypair, completed_hash, task.id).await?;
+            let task_id = task.id;
+
+            submit_tx(
+                &self.client,
+                &self.keypair,
+                TransactionType::SubmitResultVerification {
+                    completed_hash,
+                    task_id,
+                },
+            )
+            .await?;
 
             Ok(())
         } else {
@@ -521,7 +568,17 @@ impl BlockchainClient for CyborgClient {
 
             let completed_hash = H256::from(blake2_256(result_raw_data.as_bytes()));
 
-            submit_result_resolution(&self.client, &self.keypair, completed_hash, task.id).await?;
+            let task_id = task.id;
+
+            submit_tx(
+                &self.client,
+                &self.keypair,
+                TransactionType::SubmitResultResolution {
+                    completed_hash,
+                    task_id,
+                },
+            )
+            .await?;
 
             Ok(())
         } else {
@@ -530,9 +587,9 @@ impl BlockchainClient for CyborgClient {
     }
 
     async fn process_task(
-        &self, 
-        task_owner: &AccountId32, 
-        task_ipfs_cid_bytes: &String, 
+        &self,
+        task_owner: &AccountId32,
+        task_ipfs_cid_bytes: &String,
     ) -> Result<std::process::Output> {
         self.reset_log();
 
@@ -557,17 +614,15 @@ impl BlockchainClient for CyborgClient {
         //let task_ipfs_cid = String::from_utf8_lossy(task_ipfs_cid_bytes);
 
         //println!("Ipfs hash: {:?}", task_ipfs_cid);
-        
-        let result = self.download_and_execute_work_package(&task_ipfs_cid_bytes).await;
+
+        let result = self
+            .download_and_execute_work_package(&task_ipfs_cid_bytes)
+            .await;
 
         result
     }
 
-    async fn process_execution_result(
-        &self,
-        result: Output,
-        task_id: u64,
-    ) -> Result<()> {
+    async fn process_execution_result(&self, result: Output, task_id: u64) -> Result<()> {
         dbg!(&result);
         let result_raw_data = String::from_utf8(result.stdout)?;
         dbg!(&result_raw_data);
@@ -576,7 +631,9 @@ impl BlockchainClient for CyborgClient {
 
         self.write_log("Submitting result onchain...");
 
-        let cid = self.publish_on_ipfs(result_raw_data.clone(), &self.ipfs_client).await?;
+        let cid = self
+            .publish_on_ipfs(result_raw_data.clone(), &self.ipfs_client)
+            .await?;
 
         let _ = self.submit_to_chain(cid, task_id, result_raw_data).await?;
 
@@ -596,18 +653,32 @@ impl BlockchainClient for CyborgClient {
         Ok(ipfs_res.ipfs_hash)
     }
 
-    async fn submit_to_chain(&self, result: String, task_id: u64, task_output: String)
-        -> Result<()> 
-    {
+    async fn submit_to_chain(
+        &self,
+        result: String,
+        task_id: u64,
+        task_output: String,
+    ) -> Result<()> {
         let result_cid: BoundedVec<u8> = BoundedVec::from(BoundedVec(result.as_bytes().to_vec()));
 
         let completed_hash = H256::from(blake2_256(task_output.as_bytes()));
 
-        submit_result(&self.client, &self.keypair, completed_hash, result_cid, task_id).await?;
+        submit_tx(
+            &self.client,
+            &self.keypair,
+            TransactionType::SubmitResult {
+                completed_hash,
+                result_cid,
+                task_id,
+            },
+        )
+        .await?;
 
         Ok(())
     }
 
+    #[allow(unused_attributes)]
+    #[allow(future_incompatible)]
     async fn download_and_execute_work_package(
         &self,
         ipfs_cid: &str,
@@ -620,10 +691,13 @@ impl BlockchainClient for CyborgClient {
         let url = format!("https://ipfs.io/ipfs/{}", ipfs_cid);
 
         let response = get(&url).await?;
-        
+
         if !response.status().is_success() {
             eprintln!("Error: {}", response.status());
-            return Err(Error::Custom(format!("Failed to download work package, server responded with {}", response.status()))); 
+            return Err(Error::Custom(format!(
+                "Failed to download work package, server responded with {}",
+                response.status()
+            )));
         }
 
         if let Some(parent) = &self.task_path.parent() {
@@ -640,15 +714,17 @@ impl BlockchainClient for CyborgClient {
 
         let response_bytes = response.bytes().await?;
 
-        println!("Downloaded {} bytes from IPFS gateway.", response_bytes.len());
+        println!(
+            "Downloaded {} bytes from IPFS gateway.",
+            response_bytes.len()
+        );
 
         file.write_all(&response_bytes)?;
 
         // File needs to be dropped, else there will be a race condition and the file will not be executable
         drop(file);
 
-        let mut perms = fs::metadata(&self.task_path)?
-            .permissions();
+        let mut perms = fs::metadata(&self.task_path)?.permissions();
 
         perms.set_mode(perms.mode() | 0o111);
 
@@ -658,34 +734,41 @@ impl BlockchainClient for CyborgClient {
 
         self.write_log("Executing work package...");
 
-        let execution = Command::new(&self.task_path).stdout(Stdio::piped()).spawn()?;
+        let execution = Command::new(&self.task_path)
+            .stdout(Stdio::piped())
+            .spawn()?;
 
         // TODO: This only permits the execution of tasks with one ouput - need to establish a standard for measuring intermittent results
-        if let Some (output) = execution.wait_with_output().ok() {
+        if let Some(output) = execution.wait_with_output().ok() {
             self.write_log("Work package executed!");
             return Ok(output);
-        } else{
+        } else {
             return Err(Error::Custom("Failed to execute work package".to_string()));
         }
     }
 
+    #[allow(unused_attributes)]
+    #[allow(future_incompatible)]
     fn write_log(&self, message: &str) {
         println!("Log: {}", message);
-        if let Ok(mut file) = OpenOptions::new().append(true).create(true).open(&self.log_path) {
-        
+        if let Ok(mut file) = OpenOptions::new()
+            .append(true)
+            .create(true)
+            .open(&self.log_path)
+        {
             if let Err(e) = file.lock_exclusive() {
                 println!("Failed to lock file: {}", e);
                 return;
             }
-        
+
             let now = Local::now();
             let formatted_message = format!("{} - {}\n", now.format("%Y-%m-%d %H:%M:%S"), message);
-        
+
             if let Err(e) = file.write_all(formatted_message.as_bytes()) {
                 println!("Failed to write to file: {}", e);
                 return;
             }
-        
+
             if let Err(e) = file.unlock() {
                 println!("Failed to unlock file: {}", e);
                 return;
@@ -696,18 +779,20 @@ impl BlockchainClient for CyborgClient {
         }
     }
 
+    #[allow(unused_attributes)]
+    #[allow(future_incompatible)]
     fn reset_log(&self) {
-        if let Ok(file) = File::create(&self.log_path){
+        if let Ok(file) = File::create(&self.log_path) {
             if let Err(e) = file.lock_exclusive() {
                 println!("Failed reset log file: {}", e);
                 return;
             }
-        
+
             if let Err(e) = file.set_len(0) {
                 println!("Failed to reset log file: {}", e);
                 return;
             }
-        
+
             if let Err(e) = file.unlock() {
                 println!("Failed to reset log file: {}", e);
                 return;
@@ -732,7 +817,7 @@ impl BlockchainClient for CyborgClient {
 TODO: Implement function for verifying worker registration once edge-connect pallet is updated, might look something like this
 
 pub async fn verify_worker_registration(
-    api: &OnlineClient<PolkadotConfig>, 
+    api: &OnlineClient<PolkadotConfig>,
     worker_data: WorkerData,
     signer: AccountId32
 ) -> Result<bool, Box<dyn std::error::Error>> {
@@ -806,7 +891,7 @@ pub async fn publish_on_ipfs(result: String, ipfs_client: &PinataApi) -> String 
 }
 
 pub async fn submit_to_chain(api: &OnlineClient<PolkadotConfig>, signer_keypair: &Keypair, result: String, task_id: u64, task_output: String)
-    -> Result<(), Box<dyn std::error::Error>> 
+    -> Result<(), Box<dyn std::error::Error>>
 {
     let result_cid: BoundedVec<u8> = BoundedVec::from(BoundedVec(result.as_bytes().to_vec()));
 
@@ -815,9 +900,9 @@ pub async fn submit_to_chain(api: &OnlineClient<PolkadotConfig>, signer_keypair:
     let result_submission_tx = substrate_interface::api::tx()
         .task_management()
         .submit_completed_task(
-            task_id, 
-            completed_hash, 
-            result_cid, 
+            task_id,
+            completed_hash,
+            result_cid,
         );
 
     println!("Transaction Details:");
@@ -836,7 +921,7 @@ pub async fn submit_to_chain(api: &OnlineClient<PolkadotConfig>, signer_keypair:
         .wait_for_finalized_success()
         .await?;
 
-    let submission_event = 
+    let submission_event =
         result_submission_events.find_first::<substrate_interface::api::task_management::events::SubmittedCompletedTask>()?;
     if let Some(event) = submission_event {
         println!("Task submitted successfully: {event:?}");
@@ -860,12 +945,12 @@ pub async fn download_and_execute_work_package(
     let url = format!("https://ipfs.io/ipfs/{}", ipfs_cid);
 
     let response = get(&url).await;
-    
+
     match response {
         Ok(response) => {
             if !response.status().is_success() {
                 eprintln!("Error: {}", response.status());
-                return None; 
+                return None;
             }
 
             let response_bytes = match response.bytes().await {
@@ -929,7 +1014,7 @@ pub async fn download_and_execute_work_package(
                 }
                 Err(e) => {
                     eprintln!("Failed to execute command: {}", e);
-                    None 
+                    None
             }
         }
         }
@@ -986,7 +1071,7 @@ async fn download_and_extract_zk_files(ipfs_cid: &str) -> Option<ZkFiles> {
 
 /// Can send stages 1-4 of the zk-verification process to the cyborg-agent, which will send it to the frontend
 async fn emit_zk_update(stage: u8, connection: &Connection) -> Result<(), Box<dyn Error>> {
-    
+
 
     let cxt = SignalEmitter::new(
         connection,
@@ -1003,7 +1088,7 @@ async fn wait_and_send_update() -> zbus::Result<()> {
 
     let well_known_name = BusName::try_from("com.cyborg.CyborgAgent")?;
     connection.request_name(well_known_name).await?;
-    
+
     let loopvec = [1,2,3,4];
 
     loop {
@@ -1018,7 +1103,6 @@ async fn wait_and_send_update() -> zbus::Result<()> {
 }
 
 */
-
 
 /*
 
