@@ -299,8 +299,6 @@ impl BlockchainClient for CyborgClient {
         Ok(())
     }
 
-
-
     /// Starts a mining session by subscribing to finalized blocks and listening for events.
     ///
     /// # Returns

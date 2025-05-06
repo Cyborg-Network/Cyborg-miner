@@ -3,7 +3,7 @@ use derive_more::From;
 /// A type alias for a `Result` with the custom error enum `Error`.
 pub type Result<T> = core::result::Result<T, Error>;
 
-/// The custom error enum for the cyborg worker. This error enum covers all of the error variants that can occur, 
+/// The custom error enum for the cyborg worker. This error enum covers all of the error variants that can occur,
 /// enabling all errors to be handled with the `?` operator, but not preventing handling the errors more precisely.
 #[derive(Debug, From)]
 pub enum Error {

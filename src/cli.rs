@@ -54,7 +54,6 @@ pub enum Commands {
         /// Account ID for the worker registration.
         #[clap(long, value_name = "ACCOUNT_SEED")]
         account_seed: String,
-
         //// IPFS URL for the worker.
         //#[clap(long, value_name = "IPFS_URL")]
         //ipfs_url: String,
