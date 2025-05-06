@@ -234,7 +234,6 @@ impl CyborgClient {
 
     #[allow(dead_code)]
     async fn handle_ip_change(&self) -> Result<()> {
-        // Stop mining by returning an error that will break the mining loop
         Err(Error::Custom("IP address changed - stopping worker".into()))
     }
 }
@@ -300,16 +299,7 @@ impl BlockchainClient for CyborgClient {
         Ok(())
     }
 
-    // for event in events.iter() {
-    //     match event {
-    //         Ok(ev) => {
-    //             if let Err(e) = self.process_event(&ev).await {
-    //                 println!("Error processing event: {:?}", e);
-    //             }
-    //         }
-    //         Err(e) => eprintln!("Error decoding event: {:?}", e),
-    //     }
-    // }
+
 
     /// Starts a mining session by subscribing to finalized blocks and listening for events.
     ///
@@ -330,7 +320,6 @@ impl BlockchainClient for CyborgClient {
 
         loop {
             tokio::select! {
-                // IP check branch
                 _ = ip_check_interval.tick() => {
                     match self.check_ip_change().await {
                         Ok(true) => {
@@ -339,16 +328,13 @@ impl BlockchainClient for CyborgClient {
                             return Err(Error::Custom("IP address changed - stopping worker".into()));
                         }
                         Ok(false) => {
-                            // IP unchanged, continue mining
                         }
                         Err(e) => {
                             self.write_log(&format!("Error checking IP address: {}", e));
-                            // Continue mining despite IP check failure
                         }
                     }
                 }
 
-                // Transaction processing branch
                 _ = async {
                     if let Err(e) = crate::utils::substrate_transactions::process_transactions(
                         &self.client,
@@ -361,7 +347,6 @@ impl BlockchainClient for CyborgClient {
                     }
                 } => {}
 
-                // Block processing branch
                 block = blocks.next() => {
                     match block {
                         Some(Ok(block)) => {
