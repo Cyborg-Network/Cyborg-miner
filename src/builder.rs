@@ -1,4 +1,4 @@
-use crate::{worker::{CyborgClient, WorkerData}, error::Result};
+use crate::{error::Result, worker::{CyborgClient, IpResponse, WorkerData}};
 use std::path::PathBuf;
 use subxt::utils::AccountId32;
 use subxt::{OnlineClient, PolkadotConfig};
@@ -186,6 +186,12 @@ impl CyborgClientBuilder<AccountKeypair> {
                 // Create an online client that connects to the specified Substrate node URL.
                 let client = OnlineClient::<PolkadotConfig>::from_url(url).await?;
 
+                let current_ip = reqwest::get("https://api.ipify.org?format=json")
+                .await?
+                .json::<IpResponse>()
+                .await?
+                .ip;
+
                 Ok(CyborgClient {
                     client,
                     keypair: self.keypair.0,
@@ -198,6 +204,7 @@ impl CyborgClientBuilder<AccountKeypair> {
                     task_path: self.task_path,
                     task_owner_path: self.task_owner_path,
                     current_task: None,
+                    current_ip,
                 })
             }
             None => Err("No node URI provided. Please specify a node URI to connect.".into()),
