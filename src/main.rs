@@ -15,19 +15,22 @@
 /// Run the executable with appropriate subcommands to register or start mining a worker.
 mod builder;
 mod cli;
-mod worker;
 mod specs;
 mod substrate_interface;
-
-use crate::worker::BlockchainClient;
-use builder::CyborgClientBuilder;
-use clap::Parser;
-use cli::{Cli, Commands};
-use std::fs;
 mod utils;
 mod error;
+mod parachain_interactor;
+mod parent_runtime;
+mod traits;
+mod types;
 
-pub use self::error::{Error, Result};
+use builder::MinerBuilder;
+use clap::Parser;
+use cli::{Cli, Commands};
+use types::MinerData;
+use std::fs;
+use error::Result;
+use traits::ParachainInteractor;
 //use subxt::ext::jsonrpsee::core::client::error;
 
 const CONFIG_PATH: &str = "/var/lib/cyborg/worker-node/config/worker_config.json";
@@ -41,55 +44,31 @@ async fn main() -> Result<()> {
 
     // Match on the provided subcommand and execute the corresponding action.
     match &cli.command {
-        // Handle the "registration" subcommand.
-        Some(Commands::Registration {
+        // Handle the "start_miner" subcommand.
+        Some(Commands::StartMiner {
             parachain_url,
             account_seed,
-            ipfs_url,
-            ipfs_api_key,
-            ipfs_api_secret,    
         }) => {
-            println!("Registering worker with API URL: {}", parachain_url);
-
-            // Build the Cyborg client using the provided API URL and account seed.
-            let client = CyborgClientBuilder::default()
-                .parachain_url(parachain_url.to_string())
-                .keypair(account_seed)?
-                .ipfs_api(Some(ipfs_url.to_string()), Some(ipfs_api_key.to_string()), Some(ipfs_api_secret.to_string())).await
-                .paths(LOG_PATH.to_string(), CONFIG_PATH.to_string(), TASK_PATH.to_string(), TASK_OWNER_PATH.to_string())
-                .build()
-                .await?;
-
-            // Register the worker using the built client.
-            client.register_worker().await?;
-        }
-
-        // Handle the "startmining" subcommand.
-        Some(Commands::Startmining {
-            parachain_url,
-            account_seed,
-            //ipfs_url,
-        }) => {
-            println!("Starting mining session. Parachain URL: {}", parachain_url);
+            println!("Starting miner. Parachain URL: {}", parachain_url);
 
             let config_string = fs::read_to_string("/var/lib/cyborg/worker-node/config/worker_config.json")?;
 
-            let config: worker::WorkerData = serde_json::from_str(&config_string)?;
+            let config: MinerData = serde_json::from_str(&config_string)?;
 
             println!("Config: {config:?}");
 
-            // Build the Cyborg client using the provided API URL, account seed, and IPFS URL.
-            let mut client = CyborgClientBuilder::default()
+            // Build the Miner using the provided parachain URL, account seed, and CESS gateway.
+            let mut miner = MinerBuilder::default()
                 .parachain_url(parachain_url.to_string())
                 .keypair(account_seed)?
-                .ipfs_api(None, None, None).await
+                .cess_gateway(None).await
                 .config(config)
                 .paths(LOG_PATH.to_string(), CONFIG_PATH.to_string(), TASK_PATH.to_string(), TASK_OWNER_PATH.to_string())
                 .build()
                 .await?;
 
             // Start the mining session using the built client.
-            client.start_mining_session().await?;
+            miner.start_miner().await?;
         }
 
         _ => {

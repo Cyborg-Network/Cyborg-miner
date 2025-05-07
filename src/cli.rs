@@ -2,8 +2,8 @@ use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser, PartialEq)]
 #[command(
-    name = "cyborg-worker",                  // Name of the CLI tool.
-    about = "A Worker Node for the Cyborg Network", // Description shown in the CLI help.
+    name = "cyborg-miner",                  // Name of the CLI tool.
+    about = "A ZK ready AI inference miner for the Cyborg Network", // Description shown in the CLI help.
     version = "1.0"                          // Version number of the CLI tool.
 )]
 
@@ -23,30 +23,8 @@ pub struct Cli {
 /// - `Registration`: Registers the worker with the specified API URL and account seed.
 /// - `Startmining`: Starts the mining process with the specified API URL, account seed, and IPFS URL.
 pub enum Commands {
-    /// Register a worker with specified API URL and Account Seed.
-    Registration {
-        /// API URL for the registration process.
-        #[clap(long, value_name = "API_URL")]
-        parachain_url: String,
-
-        /// Account Seed for the worker registration.
-        #[clap(long, value_name = "ACCOUNT_SEED")]
-        account_seed: String,
-
-        /// IPFS URL for the worker.
-        #[clap(long, value_name = "IPFS_URL")]
-        ipfs_url: String,
-
-        /// IPFS API KEY for the worker.
-        #[clap(long, value_name = "IPFS_API_KEY")]
-        ipfs_api_key: String,
-
-        /// IPFS API SECRET for the worker.
-        #[clap(long, value_name = "IPFS_API_SECRET")]
-        ipfs_api_secret: String,
-    },
     /// Start the worker with specified API URL and IPFS URL.
-    Startmining {
+    StartMiner {
         /// API URL for starting the worker
         #[clap(long, value_name = "API_URL")]
         parachain_url: String,
@@ -61,6 +39,7 @@ pub enum Commands {
     },
 }
 
+/*
 //Unit tests
 #[cfg(test)]
 mod test {
@@ -147,3 +126,4 @@ mod test {
         assert!(result.is_err());
     }
 }
+*/

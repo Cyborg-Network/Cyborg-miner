@@ -6,7 +6,10 @@ use std::process::{Command, Stdio};
 
 use crate::{
     substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec, 
-    worker,
+    types::{
+        MinerConfig,
+        IpResponse
+    },
     error::Result
 };
 
@@ -22,10 +25,10 @@ pub struct Location {
     coordinates: Coordinates,
 }
 
-pub async fn gather_worker_spec() -> Result<worker::WorkerConfig> {
+pub async fn gather_worker_spec() -> Result<MinerConfig> {
 
     let response = env::var("CYBORG_WORKER_NODE_TEST_IP").unwrap_or(
-     reqwest::get("https://api.ipify.org?format=json").await?.json::<worker::IpResponse>().await?.ip
+     reqwest::get("https://api.ipify.org?format=json").await?.json::<IpResponse>().await?.ip
     );
 
     //let response = worker::IpResponse { ip: String::from("127.0.0.1") };
@@ -38,7 +41,7 @@ pub async fn gather_worker_spec() -> Result<worker::WorkerConfig> {
 
     let storage = return_total_storage();
 
-    Ok(worker::WorkerConfig {
+    Ok(MinerConfig {
         domain: BoundedVec::from(BoundedVec(response.as_bytes().to_vec())),
         latitude: location.coordinates.0,
         longitude: location.coordinates.1,

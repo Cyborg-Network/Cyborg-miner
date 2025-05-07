@@ -1,5 +1,5 @@
 [package]
-name = "cyborg-worker-node"
+name = "cyborg-miner"
 description = "An edge-computing worker, designed to connect to the cyborg-network, built, among others with Polkadot Sdk. (polkadot v1.13.0)"
 version = "0.1.0"
 license = "Unlicense"
@@ -10,12 +10,12 @@ repository = "https://github.com/Cyborg-Network/cyborg-node/"
 publish = false
 
 # [[bin]]
-# name = "cyborg-node"
+# name = "cyborg-miner"
 
 [workspace]
 members = [
-	"runtimes/neuro_zk_runtime",
-	"runtimes/open_inference_runtime",
+	"child_runtimes/neuro_zk_runtime",
+	"child_runtimes/open_inference_runtime",
 ]
 
 [dependencies]
@@ -51,8 +51,9 @@ zbus = "5.1.1"
 zbus_names = "4.1.0"
 zip = "2.2.0"
 
-neuro_zk_runtime = { path = "runtimes/neuro_zk_runtime", optional = true }
-open_inference_runtime = { path = "runtimes/open_inference_runtime", optional = true }
+neuro_zk_runtime = { path = "child_runtimes/neuro_zk_runtime", optional = true }
+open_inference_runtime = { path = "child_runtimes/open_inference_runtime", optional = true }
+axum = "0.8.4"
 
 [build-dependencies]
 

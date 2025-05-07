@@ -98,26 +98,13 @@ impl NeuroZKEngine {
             args: (RunArgs::default()) 
         }).await?;
 
-        let _ = run(CompileCircuit { 
-            model: self.model_path.clone(), 
-            compiled_circuit: self.compiled_model_path.clone(), 
-            settings_path: self.settings_path.clone(), 
-        }).await?;
+
 
         let _ = run(GetSrs { 
             srs_path: self.srs_path.clone(), 
             settings_path: self.settings_path.clone(), 
             logrows: None, 
             commitment: Some(Commitments::KZG),
-        }).await?;
-
-        let _ = run(Setup { 
-            compiled_circuit: self.compiled_model_path.clone(), 
-            srs_path: self.srs_path.clone(), 
-            vk_path: self.vk_path.clone(), 
-            pk_path: self.pk_path.clone(), 
-            witness: None, 
-            disable_selector_compression: None 
         }).await?;
 
         Ok(())
