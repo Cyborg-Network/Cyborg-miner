@@ -142,7 +142,7 @@ impl ParachainInteractor for Miner {
     }
 
     async fn download_model_archive(&mut self, cess_fid: &str, task_type: TaskType) -> Result<()> {
-        cess_interactor::download_model_archive(self, cess_fid, task_type).await
+        cess_interactor::download_model_archive(self, cess_fid).await
     }
 
     fn write_log(&self, message: &str) {

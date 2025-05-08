@@ -20,6 +20,7 @@ members = [
 
 [dependencies]
 async-trait = { git = "https://github.com/dtolnay/async-trait.git" }
+axum = { version = "0.8.4", features = ["ws"] }
 chrono = "0.4.38"
 clap = { version = "4.5.3", features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "3.6.12", default-features = false }
@@ -53,7 +54,6 @@ zip = "2.2.0"
 
 neuro-zk-runtime = { path = "child-runtimes/neuro-zk-runtime" }
 open-inference-runtime = { path = "child-runtimes/open-inference-runtime" }
-axum = "0.8.4"
 
 [build-dependencies]
 

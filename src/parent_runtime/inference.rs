@@ -1,8 +1,8 @@
 use crate::{error::Result, types::TaskType};
-use axum::{routing::get, serve, Router};
-use std::net::SocketAddr;
+use axum::{extract::{ws::WebSocketUpgrade, ConnectInfo, State}, routing::get, serve, Router};
+use std::{net::SocketAddr, path::PathBuf};
 use tokio::net::TcpListener;
-use neuro_zk_runtime;
+use neuro_zk_runtime::NeuroZKEngine;
 use open_inference_runtime;
 
 #[derive(Clone)]
@@ -36,15 +36,18 @@ pub async fn spawn_inference_server(task: &Option<(u64, TaskType)>, port: Option
     }
 }
 
-async fn ws_handler(state: AppState) -> Result<impl axum::response::IntoResponse> {
-   match state.task.1 {
-       TaskType::NeuroZk => {
-            let engine = neuro_zk_runtime::NeuroZKEngine {
-                model_archive_path: String::from(""),
-                current_witness_path: String::from(""),
-            };
+async fn ws_handler(
+    State(state): State<AppState>,
+    ws: WebSocketUpgrade,
+    ConnectInfo(_addr): ConnectInfo<SocketAddr>,
+) -> Result<impl axum::response::IntoResponse> {
+    match state.task.1 {
+        TaskType::NeuroZk => {
+            let engine = NeuroZKEngine::new(PathBuf::from(""));
 
-            engine.start_engie(model_path, compiled_model_path, settings_path, srs_path, current_witness_path, proving_key_path, subxt_api, signer_keypair, input, output)
+            //let _ = engine.run(request_stream, response_stream)?;
+
+            Ok("".into())
        },
        //TODO add OI entry point
        _ => return Err("Unknown task type".into())
