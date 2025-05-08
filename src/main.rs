@@ -15,22 +15,22 @@
 /// Run the executable with appropriate subcommands to register or start mining a worker.
 mod builder;
 mod cli;
-mod specs;
-mod substrate_interface;
-mod utils;
 mod error;
 mod parachain_interactor;
 mod parent_runtime;
+mod specs;
+mod substrate_interface;
 mod traits;
 mod types;
+mod utils;
 
 use builder::MinerBuilder;
 use clap::Parser;
 use cli::{Cli, Commands};
-use types::MinerData;
-use std::fs;
 use error::Result;
+use std::fs;
 use traits::ParachainInteractor;
+use types::MinerData;
 //use subxt::ext::jsonrpsee::core::client::error;
 
 const CONFIG_PATH: &str = "/var/lib/cyborg/worker-node/config/worker_config.json";
@@ -51,7 +51,8 @@ async fn main() -> Result<()> {
         }) => {
             println!("Starting miner. Parachain URL: {}", parachain_url);
 
-            let config_string = fs::read_to_string("/var/lib/cyborg/worker-node/config/worker_config.json")?;
+            let config_string =
+                fs::read_to_string("/var/lib/cyborg/worker-node/config/worker_config.json")?;
 
             let config: MinerData = serde_json::from_str(&config_string)?;
 
@@ -61,13 +62,19 @@ async fn main() -> Result<()> {
             let mut miner = MinerBuilder::default()
                 .parachain_url(parachain_url.to_string())
                 .keypair(account_seed)?
-                .cess_gateway(None).await
+                .cess_gateway(None)
+                .await
                 .config(config)
-                .paths(LOG_PATH.to_string(), CONFIG_PATH.to_string(), TASK_PATH.to_string(), TASK_OWNER_PATH.to_string())
+                .paths(
+                    LOG_PATH.to_string(),
+                    CONFIG_PATH.to_string(),
+                    TASK_PATH.to_string(),
+                    TASK_OWNER_PATH.to_string(),
+                )
                 .build()
                 .await?;
 
-            // Start the mining session using the built client.
+            // Start the mining session using the built miner.
             miner.start_miner().await?;
         }
 

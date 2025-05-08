@@ -1,16 +1,13 @@
-use std::{env, str};
-use sysinfo::{System, MemoryRefreshKind, RefreshKind};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::process::{Command, Stdio};
+use std::{env, str};
+use sysinfo::{MemoryRefreshKind, RefreshKind, System};
 
 use crate::{
-    substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec, 
-    types::{
-        MinerConfig,
-        IpResponse
-    },
-    error::Result
+    error::Result,
+    substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec,
+    types::{IpResponse, MinerConfig},
 };
 
 #[derive(Deserialize, Debug)]
@@ -26,9 +23,12 @@ pub struct Location {
 }
 
 pub async fn gather_worker_spec() -> Result<MinerConfig> {
-
     let response = env::var("CYBORG_WORKER_NODE_TEST_IP").unwrap_or(
-     reqwest::get("https://api.ipify.org?format=json").await?.json::<IpResponse>().await?.ip
+        reqwest::get("https://api.ipify.org?format=json")
+            .await?
+            .json::<IpResponse>()
+            .await?
+            .ip,
     );
 
     //let response = worker::IpResponse { ip: String::from("127.0.0.1") };
@@ -52,27 +52,26 @@ pub async fn gather_worker_spec() -> Result<MinerConfig> {
 }
 
 fn get_cpu_cores() -> u16 {
-
     let mut sys = System::new_all();
     sys.refresh_all();
 
-    sys.cpus().len() as u16 
+    sys.cpus().len() as u16
 }
 
 impl Location {
     pub async fn get_location() -> Location {
         // Try getting GPS location first
         if let Ok((lat, lon)) = get_gps_location() {
-            return Location{
-                coordinates: f64_to_i32_coordinates(lat, lon)
+            return Location {
+                coordinates: f64_to_i32_coordinates(lat, lon),
             };
         }
-        
+
         if let Ok((lat, lon)) = get_ip_location().await {
             // Fallback to IP-based geolocation
             println!("Failed to get GPS location. Falling back to IP-based geolocation.");
-            return Location{
-                coordinates: f64_to_i32_coordinates(lat, lon)
+            return Location {
+                coordinates: f64_to_i32_coordinates(lat, lon),
             };
         } else {
             panic!("Failed to get the location: Both GPS and IP-based geolocation failed, cannot register worker.");
@@ -90,8 +89,9 @@ fn f64_to_i32_coordinates(lat: f64, lon: f64) -> Coordinates {
 fn get_gps_location() -> Result<(f64, f64)> {
     // Use gpspipe to get single GPS datum
     let output = Command::new("gpspipe")
-        .arg("-w") 
-        .arg("-n").arg("1")
+        .arg("-w")
+        .arg("-n")
+        .arg("1")
         .output()?;
 
     if !output.status.success() {
@@ -121,13 +121,19 @@ async fn get_ip_location() -> Result<(f64, f64)> {
     if response.status().is_success() {
         let ip_info: IpLocation = response.json().await?;
 
-        let loc = ip_info.loc.ok_or_else(|| "Failed to get location via IP.")?;
+        let loc = ip_info
+            .loc
+            .ok_or_else(|| "Failed to get location via IP.")?;
 
         let loc_parts: Vec<&str> = loc.split(',').collect();
-        
+
         if loc_parts.len() == 2 {
-            let lat = loc_parts[0].parse::<f64>().map_err(|_| "Failed to parse latitude")?;
-            let lon = loc_parts[1].parse::<f64>().map_err(|_| "Failed to parse longitude")?;
+            let lat = loc_parts[0]
+                .parse::<f64>()
+                .map_err(|_| "Failed to parse latitude")?;
+            let lon = loc_parts[1]
+                .parse::<f64>()
+                .map_err(|_| "Failed to parse longitude")?;
 
             return Ok((lat, lon));
         }
@@ -160,13 +166,9 @@ pub async fn get_memory() -> Result<String> {
 }
 
 pub fn return_total_memory() -> u64 {
-    let mut system = System::new_with_specifics(
-        RefreshKind::new()
-            .with_memory(MemoryRefreshKind::new())
-    );
+    let mut system =
+        System::new_with_specifics(RefreshKind::new().with_memory(MemoryRefreshKind::new()));
     system.refresh_memory();
-
-
 
     system.total_memory()
 }
@@ -183,15 +185,19 @@ pub fn return_total_storage() -> u64 {
         .expect("Failed to execute command");
 
     // Print the raw command output for debugging
-    println!("Command output: {}", String::from_utf8_lossy(&output.stdout));
+    println!(
+        "Command output: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
 
     let stdout = str::from_utf8(&output.stdout).expect("Invalid UTF-8");
 
     let mut total_space: u64 = 0;
 
-    for line in stdout.lines().skip(1) {  // Skip the header line
+    for line in stdout.lines().skip(1) {
+        // Skip the header line
         let parts: Vec<&str> = line.split_whitespace().collect();
-        
+
         // Check if the first column (filesystem) starts with "/dev/"
         if let Some(filesystem) = parts.get(0) {
             if filesystem.starts_with("/dev/") {

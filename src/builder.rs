@@ -1,14 +1,13 @@
 use crate::{
-    error::Result, types::{
-        AccountKeypair, Miner, MinerData, ParentRuntime
-    }
+    error::Result,
+    types::{AccountKeypair, Miner, MinerData, ParentRuntime},
 };
+use std::env;
 use std::path::PathBuf;
+use std::str::FromStr;
 use subxt::utils::AccountId32;
 use subxt::{OnlineClient, PolkadotConfig};
-use subxt_signer::{SecretUri, sr25519::Keypair as SR25519Keypair};
-use std::str::FromStr;
-use std::env;
+use subxt_signer::{sr25519::Keypair as SR25519Keypair, SecretUri};
 
 /// A builder pattern for constructing a `Miner` instance.
 ///
@@ -53,7 +52,7 @@ impl<Keypair> MinerBuilder<Keypair> {
     ///
     /// # Arguments
     /// * `url` - A string representing the WebSocket URL of the node.
-    /// 
+    ///
     /// # Returns
     /// A `MinerBuilder` instance with the parachain_url set.
     pub fn parachain_url(mut self, url: String) -> Self {
@@ -68,15 +67,10 @@ impl<Keypair> MinerBuilder<Keypair> {
     ///
     /// # Returns
     /// A `Result` that, if successful, contains a new `MinerBuilder` instance with an `AccountKeypair`.
-    pub fn keypair(
-        self,
-        seed: &str,
-    ) -> Result<MinerBuilder<AccountKeypair>> {
+    pub fn keypair(self, seed: &str) -> Result<MinerBuilder<AccountKeypair>> {
         println!("Keypair: {}", seed);
-        let uri = SecretUri::from_str(seed)
-            .expect("Keypair was not set correctly");
-        let keypair = SR25519Keypair::from_uri(&uri)
-            .expect("Keypair from URI failed");
+        let uri = SecretUri::from_str(seed).expect("Keypair was not set correctly");
+        let keypair = SR25519Keypair::from_uri(&uri).expect("Keypair from URI failed");
 
         Ok(MinerBuilder {
             parachain_url: self.parachain_url,
@@ -118,7 +112,7 @@ impl<Keypair> MinerBuilder<Keypair> {
     ///
     /// # Arguments
     /// * `config` - A `MinerData` struct containing the identity and the creator of the worker.
-    /// 
+    ///
     /// # Returns
     /// A `MinerBuilder` instance with the identity and the creator set.
     pub fn config(mut self, config: MinerData) -> Self {
@@ -134,10 +128,16 @@ impl<Keypair> MinerBuilder<Keypair> {
     /// * `config_path` - A string representing the path to the config file.
     /// * `task_path` - A string representing the path to the task file.
     /// * `task_owner_path` - A string representing the path to the task owner file.
-    /// 
+    ///
     /// # Returns
     /// A `MinerBuilder` instance with the required paths set.
-    pub fn paths(mut self, log_path: String, config_path: String, task_path: String, task_owner_path: String) -> Self {
+    pub fn paths(
+        mut self,
+        log_path: String,
+        config_path: String,
+        task_path: String,
+        task_owner_path: String,
+    ) -> Self {
         self.log_path = PathBuf::from(log_path);
         self.config_path = PathBuf::from(config_path);
         self.task_path = PathBuf::from(task_path);
@@ -158,7 +158,7 @@ impl MinerBuilder<AccountKeypair> {
                 let client = OnlineClient::<PolkadotConfig>::from_url(url).await?;
 
                 Ok(Miner {
-                    parent_runtime: ParentRuntime{ task: None, port: None },
+                    parent_runtime: ParentRuntime{ task: None , port: None, },
                     client,
                     keypair: self.keypair.0,
                     cess_gateway: self.cess_gateway
@@ -187,7 +187,10 @@ mod tests {
     async fn test_node_uri() {
         // Test setting the node URI in the builder.
         let builder = MinerBuilder::default().parachain_url("ws://127.0.0.1:9988".to_string());
-        assert_eq!(builder.parachain_url, Some("ws://127.0.0.1:9988".to_string()));
+        assert_eq!(
+            builder.parachain_url,
+            Some("ws://127.0.0.1:9988".to_string())
+        );
 
         // Test setting both node URI and keypair.
         let builder = MinerBuilder::default()
@@ -213,7 +216,10 @@ mod tests {
             .expect("keypair was not set correctly")
             .public_key();
 
-        assert_eq!(builder.keypair.0.public_key().to_account_id(), expected_public_key.to_account_id());
+        assert_eq!(
+            builder.keypair.0.public_key().to_account_id(),
+            expected_public_key.to_account_id()
+        );
     }
 
     /* #[tokio::test]
@@ -269,7 +275,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_paths() -> Result<()> {
-
         // Test setting the paths in the builder.
         let builder = MinerBuilder::default()
             .parachain_url("ws://127.0.0.1:9944".to_string())
@@ -284,7 +289,10 @@ mod tests {
         assert_eq!(builder.log_path, PathBuf::from("/tmp/cyborg.log"));
         assert_eq!(builder.config_path, PathBuf::from("/tmp/cyborg.config"));
         assert_eq!(builder.task_path, PathBuf::from("/tmp/cyborg.task"));
-        assert_eq!(builder.task_owner_path, PathBuf::from("/tmp/cyborg.task_owner"));
+        assert_eq!(
+            builder.task_owner_path,
+            PathBuf::from("/tmp/cyborg.task_owner")
+        );
 
         // Test setting the paths without a keypair.
         let builder = MinerBuilder::default()
@@ -299,7 +307,10 @@ mod tests {
         assert_eq!(builder.log_path, PathBuf::from("/tmp/cyborg.log"));
         assert_eq!(builder.config_path, PathBuf::from("/tmp/cyborg.config"));
         assert_eq!(builder.task_path, PathBuf::from("/tmp/cyborg.task"));
-        assert_eq!(builder.task_owner_path, PathBuf::from("/tmp/cyborg.task_owner"));
+        assert_eq!(
+            builder.task_owner_path,
+            PathBuf::from("/tmp/cyborg.task_owner")
+        );
 
         Ok(())
     }

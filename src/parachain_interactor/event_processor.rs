@@ -1,15 +1,12 @@
-use subxt::{events::EventDetails, PolkadotConfig};
-use crate::{
-    error::{Error, Result}, 
-    types::Miner
-};
 use crate::substrate_interface;
-use crate::traits::ParachainInteractor;
+use crate::traits::{InferenceServer, ParachainInteractor};
+use crate::{
+    error::{Error, Result},
+    types::Miner,
+};
+use subxt::{events::EventDetails, PolkadotConfig};
 
-pub async fn process_event(
-    miner: &mut Miner, 
-    event: &EventDetails<PolkadotConfig>
-) -> Result<()> {
+pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfig>) -> Result<()> {
     // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::TaskScheduled>();
     // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::SubmittedCompletedTask>();
     // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::VerifierResolverAssigned>();
@@ -79,10 +76,11 @@ pub async fn process_event(
             let assigned_miner = &task_scheduled.assigned_worker;
 
             if *assigned_miner == miner.miner_identity {
-
                 let task_fid_string = String::from_utf8(task_scheduled.task.0)?;
 
-                miner.write_log(format!("New task scheduled for worker: {}", task_fid_string).as_str());
+                miner.write_log(
+                    format!("New task scheduled for worker: {}", task_fid_string).as_str(),
+                );
 
                 //TODO spawn thread downloading model
 
@@ -96,26 +94,26 @@ pub async fn process_event(
         _ => {} // Skip non-matching events
     }
 
-    /*
-    //TODO activate this after subxt gen
-    // Check for SubmittedCompletedTask event to check if worker was assigned to verify task
-    match event.as_event::<substrate_interface::api::neuro_zk::events::ProofRequested>() {
-        Ok(Some(requested_proof)) => {
-            let task_id = &submitted_task.task_id;
+    if let Some(current_task) = &miner.current_task {
+        match event.as_event::<substrate_interface::api::neuro_zk::events::ProofRequested>() {
+            Ok(Some(requested_proof)) => {
+                let task_id = &requested_proof.task_id;
 
-            if *prover == self.current_task {
-                //TODO request nzk engine to generate proof
-                //TODO submit the proof
+                if *task_id == current_task.0 {
+                    let proof = miner.parent_runtime.generate_proof().await?;
+                    let res = miner.submit_zkml_proof(proof).await?;
+                }   
             }
+            Err(e) => {
+                println!("Error decoding SubmittedCompletedTask event: {:?}", e);
+                return Err(Error::Subxt(e.into()));
+            }
+            _ => {} // Skip non-matching events
         }
-        Err(e) => {
-            println!("Error decoding SubmittedCompletedTask event: {:?}", e);
-            return Err(Error::Subxt(e.into()));
-        }
-        _ => {} // Skip non-matching events
     }
 
-    //TODO activate this after subxt gen
+    /*
+    //TODO check if proof was submitted (after parachain update)
     // Check for SubmittedCompletedTask event to check if worker was assigned to verify task
     match event.as_event::<substrate_interface::api::neuro_zk::events::ProofSubmitted>() {
         Ok(Some(submitted_proof)) => {

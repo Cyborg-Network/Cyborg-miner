@@ -14,8 +14,8 @@ publish = false
 
 [workspace]
 members = [
-	"child_runtimes/neuro_zk_runtime",
-	"child_runtimes/open_inference_runtime",
+	"child-runtimes/neuro-zk-runtime",
+	"child-runtimes/open-inference-runtime",
 ]
 
 [dependencies]
@@ -51,8 +51,8 @@ zbus = "5.1.1"
 zbus_names = "4.1.0"
 zip = "2.2.0"
 
-neuro_zk_runtime = { path = "child_runtimes/neuro_zk_runtime", optional = true }
-open_inference_runtime = { path = "child_runtimes/open_inference_runtime", optional = true }
+neuro-zk-runtime = { path = "child-runtimes/neuro-zk-runtime" }
+open-inference-runtime = { path = "child-runtimes/open-inference-runtime" }
 axum = "0.8.4"
 
 [build-dependencies]
@@ -70,6 +70,4 @@ halo2_proofs = { git = "https://github.com/zkonduit/halo2#f441c920be45f8f05d2c06
 default = []
 runtime-benchmarks = ["sp-runtime/runtime-benchmarks"]
 try-runtime = ["sp-runtime/try-runtime"]
-neuro_zk = ["neuro_zk_runtime"]
-open_inference = ["open_inference_runtime"]
 

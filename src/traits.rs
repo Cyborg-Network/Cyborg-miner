@@ -1,27 +1,15 @@
+use crate::{
+    error::Result,
+    parachain_interactor::{
+        cess_interactor, config, event_processor, logs, registration, task_management,
+    },
+    parent_runtime::{inference, proof},
+    types::{Miner, ParentRuntime, TaskType},
+};
 use async_trait::async_trait;
-use subxt::PolkadotConfig;
 use std::path::PathBuf;
 use subxt::events::EventDetails;
-use crate::{
-    error::Result, 
-    parachain_interactor::{
-        cess_interactor, 
-        config, 
-        event_processor, 
-        logs, 
-        registration, 
-        task_management
-    }, 
-    parent_runtime::{
-        proof, 
-        inference
-    }, 
-    types::{
-        Miner,
-        ParentRuntime,
-        TaskType
-    }
-};
+use subxt::PolkadotConfig;
 
 #[async_trait]
 pub trait InferenceServer {
@@ -32,25 +20,23 @@ pub trait InferenceServer {
     ///
     /// # Returns
     /// An `impl Stream<Item = Result<Message, tungstenite::Error>>` representing the output stream of messages.
-    async fn perform_inference(&self) 
-        -> Result<()>;
+    async fn perform_inference(&self) -> Result<()>;
 
     /// Generates a zkml proof for the model currently in execution.
     ///
     /// # Returns
     /// A `Result` containing a vector of bytes representing the proof.
-    async fn generate_proof(&self) 
-        -> Result<Vec<u8>>;
+    async fn generate_proof(&self) -> Result<Vec<u8>>;
 }
 
 #[async_trait]
-impl InferenceServer for ParentRuntime{
+impl InferenceServer for ParentRuntime {
     async fn perform_inference(&self) -> Result<()> {
-        inference::perform_inference(&self.task, self.port).await
+        inference::spawn_inference_server(&self.task, self.port).await
     }
 
     async fn generate_proof(&self) -> Result<Vec<u8>> {
-       proof::generate_proof().await
+        proof::generate_proof().await
     }
 }
 
@@ -121,7 +107,7 @@ pub trait ParachainInteractor {
     fn reset_log(&self);
 
     /// Attempts to update the worker config file.
-    /// 
+    ///
     /// # Arguments
     /// * `file_path` - A `&str` representing the path to the config file.
     /// * `content` - A `&str` representing the content to be written to the config file.
@@ -143,11 +129,8 @@ impl ParachainInteractor for Miner {
         registration::start_miner(self).await
     }
 
-    async fn process_event(
-        &mut self, 
-        event: &EventDetails<PolkadotConfig>
-    ) -> Result<()> {
-       event_processor::process_event(self, event).await 
+    async fn process_event(&mut self, event: &EventDetails<PolkadotConfig>) -> Result<()> {
+        event_processor::process_event(self, event).await
     }
 
     async fn stop_task_and_vacate_miner(&self) -> Result<()> {
@@ -158,12 +141,8 @@ impl ParachainInteractor for Miner {
         task_management::submit_zkml_proof(proof).await
     }
 
-    async fn download_model_archive(
-        &mut self,
-        cess_fid: &str,
-        task_type: TaskType
-    ) -> Result<()> {
-       cess_interactor::download_model_archive(self, cess_fid, task_type).await 
+    async fn download_model_archive(&mut self, cess_fid: &str, task_type: TaskType) -> Result<()> {
+        cess_interactor::download_model_archive(self, cess_fid, task_type).await
     }
 
     fn write_log(&self, message: &str) {

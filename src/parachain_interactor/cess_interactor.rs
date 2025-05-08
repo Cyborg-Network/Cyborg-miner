@@ -1,29 +1,31 @@
-use crate::types::{Miner, TaskType};
-use crate::error::{Result, Error};
+use crate::error::{Error, Result};
 use crate::traits::ParachainInteractor;
-use std::fs::{File, self};
-use std::process::{Command, Stdio};
+use crate::types::{Miner, TaskType};
 use reqwest::get;
+use std::fs::{self, File};
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
+use std::process::{Command, Stdio};
 
 pub async fn download_model_archive(
     miner: &mut Miner,
     cess_fid: &str,
-    task_type: TaskType
 ) -> Result<()> {
+    //TODO the extraction of the archive will be left up to the individual runtimes, as they might treat it differently
     println!("Starting download model archive: {}", cess_fid);
 
     miner.write_log(format!("Retrieving model archive with fid: {}...", &cess_fid).as_str());
 
-    // TODO: validate its a valid ipfs hash
-    let url = format!("https://ipfs.io/ipfs/{}", cess_fid);
+    let url = format!("{}/{}", miner.cess_gateway, cess_fid);
 
     let response = get(&url).await?;
-    
+
     if !response.status().is_success() {
         eprintln!("Error: {}", response.status());
-        return Err(Error::Custom(format!("Failed to download work package, server responded with {}", response.status()))); 
+        return Err(Error::Custom(format!(
+            "Failed to download model archive, CESS responded with {}",
+            response.status()
+        )));
     }
 
     if let Some(parent) = &miner.task_path.parent() {
@@ -40,15 +42,17 @@ pub async fn download_model_archive(
 
     let response_bytes = response.bytes().await?;
 
-    println!("Downloaded {} bytes from IPFS gateway.", response_bytes.len());
+    println!(
+        "Downloaded {} bytes from IPFS gateway.",
+        response_bytes.len()
+    );
 
     file.write_all(&response_bytes)?;
 
     // File needs to be dropped, else there will be a race condition and the file will not be executable
     drop(file);
 
-    let mut perms = fs::metadata(&miner.task_path)?
-        .permissions();
+    let mut perms = fs::metadata(&miner.task_path)?.permissions();
 
     perms.set_mode(perms.mode() | 0o111);
 
@@ -58,13 +62,15 @@ pub async fn download_model_archive(
 
     miner.write_log("Executing work package...");
 
-    let execution = Command::new(&miner.task_path).stdout(Stdio::piped()).spawn()?;
+    let execution = Command::new(&miner.task_path)
+        .stdout(Stdio::piped())
+        .spawn()?;
 
     // TODO: This only permits the execution of tasks with one ouput - need to establish a standard for measuring intermittent results
-    if let Some (output) = execution.wait_with_output().ok() {
+    if let Some(output) = execution.wait_with_output().ok() {
         miner.write_log("Work package executed!");
         return Ok(());
-    } else{
+    } else {
         return Err(Error::Custom("Failed to execute work package".to_string()));
     }
 }

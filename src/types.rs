@@ -1,10 +1,10 @@
-use serde::{Deserialize, Serialize};
-use codec::{Decode, Encode};
 use crate::substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
-use subxt::utils::AccountId32;
-use subxt_signer::sr25519::Keypair;
-use subxt::{OnlineClient, PolkadotConfig};
+use codec::{Decode, Encode};
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use subxt::utils::AccountId32;
+use subxt::{OnlineClient, PolkadotConfig};
+use subxt_signer::sr25519::Keypair;
 
 // Datastructure for worker registration persistence
 #[derive(Debug, Clone, PartialEq, Eq, Decode, Encode, Serialize, Deserialize)]
@@ -13,6 +13,10 @@ pub struct MinerData {
     pub miner_identity: (AccountId32, u64),
 }
 
+#[derive(Clone)]
+pub struct CurrentTask((u64, TaskType));
+
+#[derive(Clone)]
 pub enum TaskType {
     OpenInference,
     NeuroZk,
@@ -55,11 +59,11 @@ pub struct Miner {
     pub task_path: PathBuf,
     pub config_path: PathBuf,
     pub task_owner_path: PathBuf,
-    pub current_task: Option<TaskType>,
+    pub current_task: Option<(u64, TaskType)>,
 }
 
-pub struct ParentRuntime{ 
-    pub task: Option<String>,
+pub struct ParentRuntime {
+    pub task: Option<(u64, TaskType)>,
     //This is kept as an option, because it might be user dynamic in the future
     pub port: Option<u16>,
 }
