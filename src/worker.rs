@@ -210,6 +210,32 @@ pub struct CyborgClient {
     pub config_path: PathBuf,
     pub task_owner_path: PathBuf,
     pub current_task: Option<CyborgTask>,
+    pub current_ip: String,
+}
+
+impl CyborgClient {
+    async fn check_ip_change(&mut self) -> Result<bool> {
+        let new_ip = self.get_current_ip().await?;
+        if new_ip != self.current_ip {
+            self.current_ip = new_ip;
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+
+    async fn get_current_ip(&self) -> Result<String> {
+        Ok(reqwest::get("https://api.ipify.org?format=json")
+            .await?
+            .json::<IpResponse>()
+            .await?
+            .ip)
+    }
+
+    #[allow(dead_code)]
+    async fn handle_ip_change(&self) -> Result<()> {
+        Err(Error::Custom("IP address changed - stopping worker".into()))
+    }
 }
 
 /// Implementation of the `BlockchainClient` trait for `CyborgClient`.
@@ -279,42 +305,78 @@ impl BlockchainClient for CyborgClient {
     /// A `Result` indicating success or an error if starting the session fails.
     async fn start_mining_session(&mut self) -> Result<()> {
         println!("Starting mining session...");
-
         self.write_log("Waiting for tasks...");
 
         info!("============ event_listener_tester ============");
 
+        // Initialize current IP
+        self.current_ip = self.get_current_ip().await?;
+        self.write_log(&format!("Initial IP address: {}", self.current_ip));
+
         let mut blocks = self.client.blocks().subscribe_finalized().await?;
+        let mut ip_check_interval = tokio::time::interval(std::time::Duration::from_secs(60)); // Check every minute
 
         loop {
-            if let Err(e) = crate::utils::substrate_transactions::process_transactions(
-                &self.client,
-                &self.keypair,
-            )
-            .await
-            {
-                println!("Error processing transactions: {:?}", e);
-            }
-
-            let block = match blocks.next().await {
-                Some(Ok(block)) => block,
-                Some(Err(e)) => {
-                    println!("Error receiving block: {:?}", e);
-                    continue;
-                }
-                None => break,
-            };
-
-            let events = block.events().await?;
-
-            for event in events.iter() {
-                match event {
-                    Ok(ev) => {
-                        if let Err(e) = self.process_event(&ev).await {
-                            println!("Error processing event: {:?}", e);
+            tokio::select! {
+                _ = ip_check_interval.tick() => {
+                    match self.check_ip_change().await {
+                        Ok(true) => {
+                            self.write_log(&format!("IP address changed to: {}", self.current_ip));
+                            self.write_log("Stopping worker due to IP address change");
+                            return Err(Error::Custom("IP address changed - stopping worker".into()));
+                        }
+                        Ok(false) => {
+                        }
+                        Err(e) => {
+                            self.write_log(&format!("Error checking IP address: {}", e));
                         }
                     }
-                    Err(e) => eprintln!("Error decoding event: {:?}", e),
+                }
+
+                _ = async {
+                    if let Err(e) = crate::utils::substrate_transactions::process_transactions(
+                        &self.client,
+                        &self.keypair,
+                    )
+                    .await
+                    {
+                        println!("Error processing transactions: {:?}", e);
+                        self.write_log(&format!("Error processing transactions: {}", e));
+                    }
+                } => {}
+
+                block = blocks.next() => {
+                    match block {
+                        Some(Ok(block)) => {
+                            let events = match block.events().await {
+                                Ok(events) => events,
+                                Err(e) => {
+                                    self.write_log(&format!("Error getting block events: {}", e));
+                                    continue;
+                                }
+                            };
+
+                            for event in events.iter() {
+                                match event {
+                                    Ok(ev) => {
+                                        if let Err(e) = self.process_event(&ev).await {
+                                            self.write_log(&format!("Error processing event: {}", e));
+                                        }
+                                    }
+                                    Err(e) => {
+                                        self.write_log(&format!("Error decoding event: {}", e));
+                                    }
+                                }
+                            }
+                        }
+                        Some(Err(e)) => {
+                            self.write_log(&format!("Error receiving block: {}", e));
+                        }
+                        None => {
+                            self.write_log("Block subscription ended");
+                            break;
+                        }
+                    }
                 }
             }
         }

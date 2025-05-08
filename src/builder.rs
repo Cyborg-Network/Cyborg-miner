@@ -1,11 +1,14 @@
-use crate::{worker::{CyborgClient, WorkerData}, error::Result};
-use std::path::PathBuf;
-use subxt::utils::AccountId32;
-use subxt::{OnlineClient, PolkadotConfig};
-use subxt_signer::{SecretUri, sr25519::Keypair as SR25519Keypair};
-use std::str::FromStr;
+use crate::{
+    error::Result,
+    worker::{CyborgClient, IpResponse, WorkerData},
+};
 use pinata_sdk::PinataApi;
 use std::env;
+use std::path::PathBuf;
+use std::str::FromStr;
+use subxt::utils::AccountId32;
+use subxt::{OnlineClient, PolkadotConfig};
+use subxt_signer::{sr25519::Keypair as SR25519Keypair, SecretUri};
 
 pub struct NoKeypair;
 pub struct AccountKeypair(SR25519Keypair);
@@ -51,7 +54,7 @@ impl<Keypair> CyborgClientBuilder<Keypair> {
     ///
     /// # Arguments
     /// * `url` - A string representing the WebSocket URL of the node.
-    /// 
+    ///
     /// # Returns
     /// A `CyborgClientBuilder` instance with the parachain_url set.
     pub fn parachain_url(mut self, url: String) -> Self {
@@ -66,15 +69,10 @@ impl<Keypair> CyborgClientBuilder<Keypair> {
     ///
     /// # Returns
     /// A `Result` that, if successful, contains a new `CyborgClientBuilder` instance with an `AccountKeypair`.
-    pub fn keypair(
-        self,
-        seed: &str,
-    ) -> Result<CyborgClientBuilder<AccountKeypair>> {
+    pub fn keypair(self, seed: &str) -> Result<CyborgClientBuilder<AccountKeypair>> {
         println!("Keypair: {}", seed);
-        let uri = SecretUri::from_str(seed)
-            .expect("Keypair was not set correctly");
-        let keypair = SR25519Keypair::from_uri(&uri)
-            .expect("Keypair from URI failed");
+        let uri = SecretUri::from_str(seed).expect("Keypair was not set correctly");
+        let keypair = SR25519Keypair::from_uri(&uri).expect("Keypair from URI failed");
 
         Ok(CyborgClientBuilder {
             parachain_url: self.parachain_url,
@@ -98,7 +96,12 @@ impl<Keypair> CyborgClientBuilder<Keypair> {
     ///     
     /// # Returns
     /// A `CyborgClientBuilder` instance with the IPFS URI set.
-    pub async fn ipfs_api(mut self, ipfs_url: Option<String>, ipfs_api_key: Option<String>, ipfs_api_secret: Option<String>) -> Self {
+    pub async fn ipfs_api(
+        mut self,
+        ipfs_url: Option<String>,
+        ipfs_api_key: Option<String>,
+        ipfs_api_secret: Option<String>,
+    ) -> Self {
         let url;
         let key;
         let secret;
@@ -117,7 +120,7 @@ impl<Keypair> CyborgClientBuilder<Keypair> {
                 .expect("Not able to process CYBORG_WORKER_NODE_IPFS_API_KEY environment variable - please check if it is set.");
         }
 
-        if let Some(ipfs_api_secret) = ipfs_api_secret {        
+        if let Some(ipfs_api_secret) = ipfs_api_secret {
             secret = ipfs_api_secret;
         } else {
             secret = env::var("CYBORG_WORKER_NODE_IPFS_API_SECRET")
@@ -128,8 +131,7 @@ impl<Keypair> CyborgClientBuilder<Keypair> {
         println!("IPFS API KEY: {}", key);
         println!("IPFS API SECRET: {}", secret);
 
-        let api = PinataApi::new(key, secret)
-            .expect("Not able to create IPFS API client");
+        let api = PinataApi::new(key, secret).expect("Not able to create IPFS API client");
 
         let result = api.test_authentication().await;
 
@@ -147,7 +149,7 @@ impl<Keypair> CyborgClientBuilder<Keypair> {
     ///
     /// # Arguments
     /// * `config` - A `WorkerData` struct containing the identity and the creator of the worker.
-    /// 
+    ///
     /// # Returns
     /// A `CyborgClientBuilder` instance with the identity and the creator set.
     pub fn config(mut self, config: WorkerData) -> Self {
@@ -163,10 +165,16 @@ impl<Keypair> CyborgClientBuilder<Keypair> {
     /// * `config_path` - A string representing the path to the config file.
     /// * `task_path` - A string representing the path to the task file.
     /// * `task_owner_path` - A string representing the path to the task owner file.
-    /// 
+    ///
     /// # Returns
     /// A `CyborgClientBuilder` instance with the required paths set.
-    pub fn paths(mut self, log_path: String, config_path: String, task_path: String, task_owner_path: String) -> Self {
+    pub fn paths(
+        mut self,
+        log_path: String,
+        config_path: String,
+        task_path: String,
+        task_owner_path: String,
+    ) -> Self {
         self.log_path = PathBuf::from(log_path);
         self.config_path = PathBuf::from(config_path);
         self.task_path = PathBuf::from(task_path);
@@ -186,6 +194,12 @@ impl CyborgClientBuilder<AccountKeypair> {
                 // Create an online client that connects to the specified Substrate node URL.
                 let client = OnlineClient::<PolkadotConfig>::from_url(url).await?;
 
+                let current_ip = reqwest::get("https://api.ipify.org?format=json")
+                    .await?
+                    .json::<IpResponse>()
+                    .await?
+                    .ip;
+
                 Ok(CyborgClient {
                     client,
                     keypair: self.keypair.0,
@@ -198,6 +212,7 @@ impl CyborgClientBuilder<AccountKeypair> {
                     task_path: self.task_path,
                     task_owner_path: self.task_owner_path,
                     current_task: None,
+                    current_ip,
                 })
             }
             None => Err("No node URI provided. Please specify a node URI to connect.".into()),
@@ -212,8 +227,12 @@ mod tests {
     #[tokio::test]
     async fn test_node_uri() {
         // Test setting the node URI in the builder.
-        let builder = CyborgClientBuilder::default().parachain_url("ws://127.0.0.1:9988".to_string());
-        assert_eq!(builder.parachain_url, Some("ws://127.0.0.1:9988".to_string()));
+        let builder =
+            CyborgClientBuilder::default().parachain_url("ws://127.0.0.1:9988".to_string());
+        assert_eq!(
+            builder.parachain_url,
+            Some("ws://127.0.0.1:9988".to_string())
+        );
 
         // Test setting both node URI and keypair.
         let builder = CyborgClientBuilder::default()
@@ -239,7 +258,10 @@ mod tests {
             .expect("keypair was not set correctly")
             .public_key();
 
-        assert_eq!(builder.keypair.0.public_key().to_account_id(), expected_public_key.to_account_id());
+        assert_eq!(
+            builder.keypair.0.public_key().to_account_id(),
+            expected_public_key.to_account_id()
+        );
     }
 
     /* #[tokio::test]
@@ -295,7 +317,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_paths() -> Result<()> {
-
         // Test setting the paths in the builder.
         let builder = CyborgClientBuilder::default()
             .parachain_url("ws://127.0.0.1:9944".to_string())
@@ -310,7 +331,10 @@ mod tests {
         assert_eq!(builder.log_path, PathBuf::from("/tmp/cyborg.log"));
         assert_eq!(builder.config_path, PathBuf::from("/tmp/cyborg.config"));
         assert_eq!(builder.task_path, PathBuf::from("/tmp/cyborg.task"));
-        assert_eq!(builder.task_owner_path, PathBuf::from("/tmp/cyborg.task_owner"));
+        assert_eq!(
+            builder.task_owner_path,
+            PathBuf::from("/tmp/cyborg.task_owner")
+        );
 
         // Test setting the paths without a keypair.
         let builder = CyborgClientBuilder::default()
@@ -325,7 +349,10 @@ mod tests {
         assert_eq!(builder.log_path, PathBuf::from("/tmp/cyborg.log"));
         assert_eq!(builder.config_path, PathBuf::from("/tmp/cyborg.config"));
         assert_eq!(builder.task_path, PathBuf::from("/tmp/cyborg.task"));
-        assert_eq!(builder.task_owner_path, PathBuf::from("/tmp/cyborg.task_owner"));
+        assert_eq!(
+            builder.task_owner_path,
+            PathBuf::from("/tmp/cyborg.task_owner")
+        );
 
         Ok(())
     }
