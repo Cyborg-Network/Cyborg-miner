@@ -24,9 +24,6 @@ pub enum Error {
     Subxt(subxt::Error),
 
     #[from]
-    Ipfs(pinata_sdk::ApiError),
-
-    #[from]
     Conversion(std::string::FromUtf8Error),
 }
 

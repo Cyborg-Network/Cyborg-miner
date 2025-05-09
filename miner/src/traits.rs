@@ -89,7 +89,7 @@ pub trait ParachainInteractor {
     ///
     /// # Returns
     /// A `Result` containing `Ok(())` if the model archive is successfully downloaded, or an `Error` if it fails.
-    async fn download_model_archive(&mut self, cid: &str, task_type: TaskType) -> Result<()>;
+    async fn download_model_archive(&mut self, fid: &str) -> Result<()>;
 
     /// Vacates a miner erasing current user data and resetting the miner state.
     ///
@@ -141,7 +141,7 @@ impl ParachainInteractor for Miner {
         task_management::submit_zkml_proof(proof).await
     }
 
-    async fn download_model_archive(&mut self, cess_fid: &str, task_type: TaskType) -> Result<()> {
+    async fn download_model_archive(&mut self, cess_fid: &str) -> Result<()> {
         cess_interactor::download_model_archive(self, cess_fid).await
     }
 

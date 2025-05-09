@@ -1,12 +1,15 @@
 use ezkl::{
     commands::Commands::{GenWitness, GetSrs, Prove}, execute::run, Commitments
 };
-use serde_json::Value;
 use std::{fs::File, path::{Path, PathBuf}};
-use tokio::sync::mpsc::{Receiver, Sender};
 use std::io::{copy, BufReader};
 use flate2::read::GzDecoder;
 use tar::Archive;
+use futures::{
+    Stream, 
+    Future,
+    stream::StreamExt
+};
 
 #[derive(Debug)]
 pub struct NeuroZKEngine {
@@ -43,11 +46,16 @@ impl NeuroZKEngine {
     ///
     /// # Returns
     /// A result containing either the inference output stream, or an Error `Result<(), Box<dyn std::error::Error>>`
-    pub async fn run(
+    pub async fn run<S, C, CFut>(
         &self,
-        mut request_stream: Receiver<Value>,
-        response_stream: Sender<String>,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+        mut request_stream: S,
+        mut response_closure: C,
+    ) -> Result<(), Box<dyn std::error::Error>>
+    where
+        S: Stream<Item = String> + Unpin + Send + 'static,
+        C: FnMut(String) -> CFut + Send + 'static,
+        CFut: Future<Output = ()> + Send + 'static,
+    {
 
         let neuro_zk_task_dir = std::env::var("NZK_TASK_PATH")?;
 
@@ -65,19 +73,21 @@ impl NeuroZKEngine {
             SETTINGS_PATH
         ).await?;
 
-        while let Some(request) = request_stream.recv().await {
+        while let Some(request) = request_stream.next().await {
             println!("Processing inference for request: {}", request);
 
-            let result = self
-                .generate_inference_result(
-                    &neuro_zk_task_dir,
-                    MODEL_PATH,
-                    SRS_PATH,
-                    WITNESS_PATH,
-                    serde_json::to_string(&request).ok()
-                )
-                .await?;
-            response_stream.send(result).await?;
+            if let Some(data) = serde_json::to_string(&request).ok() {
+                let result = self
+                    .generate_inference_result(
+                        &neuro_zk_task_dir,
+                        MODEL_PATH,
+                        SRS_PATH,
+                        WITNESS_PATH,
+                        data
+                    ).await?;
+
+                response_closure(result).await;
+            }
         }
 
         Ok(())
@@ -237,14 +247,14 @@ impl NeuroZKEngine {
         model_path: &str,
         srs_path: &str,
         witness_path: &str,
-        input_data: Option<String>,
+        input_data: String,
     ) -> Result<String, Box<dyn std::error::Error>> {
         let model_path = PathBuf::from(format!("{}/{}", prefix, model_path));
         let srs_path = PathBuf::from(format!("{}/{}", prefix, srs_path));
         let witness_path = PathBuf::from(format!("{}/{}", prefix, witness_path));
 
         let witness = run(GenWitness {
-            data: input_data,
+            data: Some(ezkl::commands::DataField(input_data)),
             compiled_circuit: Some(model_path),
             output: Some(witness_path),
             vk_path: None,

@@ -1,73 +1,17 @@
-[package]
-name = "cyborg-miner"
-description = "An edge-computing worker, designed to connect to the cyborg-network, built, among others with Polkadot Sdk. (polkadot v1.13.0)"
-version = "0.1.0"
-license = "Unlicense"
-authors = ["Cyborg Network <https://github.com/Cyborg-Network>"]
-edition = "2021"
-homepage = "https://cyborgnetwork.io/"
-repository = "https://github.com/Cyborg-Network/cyborg-node/"
-publish = false
-
-# [[bin]]
-# name = "cyborg-miner"
-
 [workspace]
 members = [
-	"child-runtimes/neuro-zk-runtime",
-	"child-runtimes/open-inference-runtime",
+	"miner",
+	"neuro-zk-runtime",
+	"open-inference-runtime",
 ]
 
-[dependencies]
-async-trait = { git = "https://github.com/dtolnay/async-trait.git" }
-axum = { version = "0.8.4", features = ["ws"] }
-chrono = "0.4.38"
-clap = { version = "4.5.3", features = ["derive"] }
-codec = { package = "parity-scale-codec", version = "3.6.12", default-features = false }
-color-print = { version = "0.3.4" } 
-derive_more = { version = "1.0.0", features = ["from"] }
-dirs = "5.0.1"
-docify = { version = "0.2.8" }
-fs2 = "0.4.3"
-futures = "0.3.28"
-hex = { version = "0.4.3" } 
-ipfs-api-backend-hyper = { version = "0.6.0", features = ["with-send-sync", "with-hyper-tls"] }
-jsonrpsee = { version = "0.22", features = ["server"] }
-log = { version = "0.4.21", default-features = false }
-pinata-sdk = "1.1.0"
-reqwest = { version = "0.12.9", features = ["json"] }
+[workspace.dependencies]
+async-stream = { version = "0.3.6" }
+futures = { version = "0.3.28" }
 serde = { version = "1.0.197", default-features = false }
 serde_json = { version = "1.0.114", default-features = false }
-sp-api = { version = "33.0.0", default-features = false }
-sp-blockchain = { version = "35.0.0" }
-sp-core = { version = "34.0.0", default-features = false }
-sp-runtime = { version = "38.0.0", default-features = false }
-subxt = { version = "0.38" }
-subxt-signer = "0.38.0"
-sys-info = { version = "0.9.1" }
-sysinfo = "0.32.0"
-tokio = "1.41.0"
-url = { version = "2.5.2" }
-zbus = "5.1.1"
-zbus_names = "4.1.0"
-zip = "2.2.0"
+tokio = { version = "1.41.0" }
 
-neuro-zk-runtime = { path = "child-runtimes/neuro-zk-runtime" }
-open-inference-runtime = { path = "child-runtimes/open-inference-runtime" }
-
-[build-dependencies]
-
-[dev-dependencies]
-mockall = "0.13.1"
-
-[patch.'https://github.com/zkonduit/halo2']
-halo2_proofs = { git = "https://github.com/zkonduit/halo2#f441c920be45f8f05d2c06a173d82e8885a5ed4d", package = "halo2_proofs" }
-
-[patch.'https://github.com/zkonduit/halo2#0654e92bdf725fd44d849bfef3643870a8c7d50b']
-halo2_proofs = { git = "https://github.com/zkonduit/halo2#f441c920be45f8f05d2c06a173d82e8885a5ed4d", package = "halo2_proofs" }
-
-[features]
-default = []
-runtime-benchmarks = ["sp-runtime/runtime-benchmarks"]
-try-runtime = ["sp-runtime/try-runtime"]
-
+miner = { path = "miner" }
+neuro-zk-runtime = { path = "neuro-zk-runtime" }
+open-inference-runtime = { path = "open-inference-runtime" }

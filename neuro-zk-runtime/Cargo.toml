@@ -4,11 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ezkl = { git = "https://github.com/zkonduit/ezkl.git", tag = "v20.2.0" }
+async-stream = { workspace = true }
+futures = { workspace = true }
+
+ezkl = { git = "https://github.com/zkonduit/ezkl.git", tag = "v22.0.1" }
 tokio = "1.41.0"
 serde = { version = "1.0.197", default-features = false }
 serde_json = { version = "1.0.114", default-features = false }
 flate2 = { version = "1.1.1" }
 tar = { version = "0.4.44" }
-subxt = { version = "0.38" }
-subxt-signer = "0.38.0"

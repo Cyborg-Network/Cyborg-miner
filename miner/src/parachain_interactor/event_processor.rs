@@ -82,9 +82,8 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     format!("New task scheduled for worker: {}", task_fid_string).as_str(),
                 );
 
-                //TODO spawn thread downloading model
+                //TODO spawn thread that downloads the model archive and starts inference
 
-                //TODO spawn thread running inference when download thread done
             }
         }
         Err(e) => {
