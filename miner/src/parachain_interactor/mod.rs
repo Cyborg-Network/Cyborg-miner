@@ -1,5 +1,5 @@
 pub mod cess_interactor;
-pub mod config;
+pub mod identity;
 pub mod event_processor;
 pub mod logs;
 pub mod registration;

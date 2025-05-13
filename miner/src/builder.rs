@@ -2,12 +2,11 @@ use crate::{
     error::Result,
     types::{AccountKeypair, Miner, MinerData, ParentRuntime},
 };
-use std::env;
-use std::path::PathBuf;
-use std::str::FromStr;
+use std::{env, path::PathBuf, str::FromStr, sync::Arc};
 use subxt::utils::AccountId32;
 use subxt::{OnlineClient, PolkadotConfig};
 use subxt_signer::{sr25519::Keypair as SR25519Keypair, SecretUri};
+use tokio::sync::RwLock;
 
 /// A builder pattern for constructing a `Miner` instance.
 ///
@@ -151,20 +150,20 @@ impl MinerBuilder<AccountKeypair> {
     ///
     /// # Returns
     /// A `Result` that, if successful, contains the constructed `Miner`.
-    pub async fn build(self) -> Result<Miner> {
+    pub async fn build(self) -> Result<Arc<RwLock<Miner>>> {
         match &self.parachain_url {
             Some(url) => {
                 // Create an online client that connects to the specified Substrate node URL.
                 let client = OnlineClient::<PolkadotConfig>::from_url(url).await?;
 
-                Ok(Miner {
-                    parent_runtime: ParentRuntime{ task: None , port: None, },
-                    client,
+                Ok(Arc::new(RwLock::new(Miner {
+                    parent_runtime: Arc::new(ParentRuntime{ task: None , port: None, }),
+                    client: Arc::new(client),
                     keypair: self.keypair.0,
                     cess_gateway: self.cess_gateway
-                        .expect("Failed to initialize IPFS client, cannot run worker without connection to IPFS."),
+                        .expect("Failed to initialize CESS gateway, cannot run miner without connection to CESS."),
                     parachain_url: self.parachain_url
-                        .expect("Node URI was not set, cannot run worker without an endpoint connecting it to cyborg network."),
+                        .expect("Parachain URL was not set, cannot run worker without an endpoint connecting it to cyborg network."),
                     miner_identity: self.identity,
                     creator: self.creator,
                     log_path: self.log_path,
@@ -172,7 +171,7 @@ impl MinerBuilder<AccountKeypair> {
                     task_path: self.task_path,
                     task_owner_path: self.task_owner_path,
                     current_task: None,
-                })
+                })))
             }
             None => Err("No node URI provided. Please specify a node URI to connect.".into()),
         }

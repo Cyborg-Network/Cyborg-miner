@@ -5,14 +5,14 @@ use crate::{
     types::Miner,
 };
 use subxt::{events::EventDetails, PolkadotConfig};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
-pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfig>) -> Result<()> {
-    // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::TaskScheduled>();
-    // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::SubmittedCompletedTask>();
-    // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::VerifierResolverAssigned>();
-    // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::VerifiedCompletedTask>();
-    // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::ResolvedCompletedTask>();
-    // subscription_builder.subscribe_to::<cyborg_node::pallet_task_management::events::TaskReassigned>();
+pub async fn process_event(miner: Arc<RwLock<Miner>>, event: &EventDetails<PolkadotConfig>) -> Result<()> {
+    let (parent_runtime, miner_identity, current_task) = {
+        let miner = miner.read().await;
+        (Arc::clone(&miner.parent_runtime), miner.miner_identity.clone(), miner.current_task.clone())
+    };
 
     // Check for WorkerRegistered event
     match event.as_event::<substrate_interface::api::edge_connect::events::WorkerRegistered>() {
@@ -75,15 +75,25 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
         Ok(Some(task_scheduled)) => {
             let assigned_miner = &task_scheduled.assigned_worker;
 
-            if *assigned_miner == miner.miner_identity {
+            if *assigned_miner == miner_identity {
                 let task_fid_string = String::from_utf8(task_scheduled.task.0)?;
 
                 miner.write_log(
                     format!("New task scheduled for worker: {}", task_fid_string).as_str(),
                 );
 
-                //TODO spawn thread that downloads the model archive and starts inference
+                let mut miner_clone = Arc::clone(&miner);
+                let parent_runtime_clone = Arc::clone(&parent_runtime);
 
+                tokio::spawn(async move {
+                    if let Err(e) = miner_clone.download_model_archive(&task_fid_string).await {
+                        eprintln!("Error downloading model archive: {}", e);
+                    }
+
+                    if let Err(e) = parent_runtime_clone.perform_inference().await {
+                        eprintln!("Error performing inference: {}", e)
+                    };
+                });
             }
         }
         Err(e) => {
@@ -93,14 +103,14 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
         _ => {} // Skip non-matching events
     }
 
-    if let Some(current_task) = &miner.current_task {
+    if let Some(current_task) = &current_task {
         match event.as_event::<substrate_interface::api::neuro_zk::events::ProofRequested>() {
             Ok(Some(requested_proof)) => {
                 let task_id = &requested_proof.task_id;
 
                 if *task_id == current_task.0 {
-                    let proof = miner.parent_runtime.generate_proof().await?;
-                    let res = miner.submit_zkml_proof(proof).await?;
+                    let proof = parent_runtime.generate_proof().await?;
+                    let _ = miner.submit_zkml_proof(proof).await?;
                 }   
             }
             Err(e) => {

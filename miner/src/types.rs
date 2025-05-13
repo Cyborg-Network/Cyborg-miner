@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use subxt::utils::AccountId32;
 use subxt::{OnlineClient, PolkadotConfig};
 use subxt_signer::sr25519::Keypair;
+use std::sync::Arc;
 
 // Datastructure for worker registration persistence
 #[derive(Debug, Clone, PartialEq, Eq, Decode, Encode, Serialize, Deserialize)]
@@ -48,9 +49,10 @@ pub struct AccountKeypair(pub Keypair);
 /// This struct is used to interact with the Cyborg blockchain, manage key pairs,
 /// and optionally communicate with IPFS or node URIs.
 pub struct Miner {
-    pub(crate) client: OnlineClient<PolkadotConfig>,
+    // Some fields wrapped in an Arc to eg. keep extraction out of an RwLock before await cheap
+    pub(crate) client: Arc<OnlineClient<PolkadotConfig>>,
     pub(crate) keypair: Keypair,
-    pub parent_runtime: ParentRuntime,
+    pub parent_runtime: Arc<ParentRuntime>,
     pub cess_gateway: String,
     pub parachain_url: String,
     pub miner_identity: (AccountId32, u64),

@@ -1,13 +1,14 @@
 use crate::{
     error::Result,
     parachain_interactor::{
-        cess_interactor, config, event_processor, logs, registration, task_management,
+        cess_interactor, identity, event_processor, logs, registration, task_management,
     },
     parent_runtime::{inference, proof},
-    types::{Miner, ParentRuntime, TaskType},
+    types::{Miner, ParentRuntime},
 };
 use async_trait::async_trait;
-use std::path::PathBuf;
+use tokio::sync::RwLock;
+use std::{path::PathBuf, sync::Arc};
 use subxt::events::EventDetails;
 use subxt::PolkadotConfig;
 
@@ -45,7 +46,7 @@ impl InferenceServer for ParentRuntime {
 ///
 /// Provides an asynchronous API for interacting with a blockchain, which enables clients to register workers,
 /// initiate mining sessions, and handle blockchain events with asynchronous operations.
-pub trait ParachainInteractor {
+pub trait ParachainInteractor: Send + Sync {
     /// Confirms the registration of a worker node on the blockchain.
     ///
     /// # Returns
@@ -71,7 +72,7 @@ pub trait ParachainInteractor {
     ///
     /// # Returns
     /// An `Option<String>` containing relevant information derived from the event, or `None` if no information is extracted.
-    async fn process_event(&mut self, event: &EventDetails<PolkadotConfig>) -> Result<()>;
+    async fn process_event(&self, event: &EventDetails<PolkadotConfig>) -> Result<()>;
 
     /// Submits a zkml (Zero Knowledge Machine Learning) proof to the blockchain.
     ///
@@ -106,31 +107,31 @@ pub trait ParachainInteractor {
     /// Resets the log so that the log file is empty when a new task is assinged for execution.
     fn reset_log(&self);
 
-    /// Attempts to update the worker config file.
+    /// Attempts to update the miner identity file.
     ///
     /// # Arguments
     /// * `file_path` - A `&str` representing the path to the config file.
     /// * `content` - A `&str` representing the content to be written to the config file.
-    fn update_config_file(&self, path: &PathBuf, content: &str) -> Result<()>;
+    fn update_identity_file(&self, path: &PathBuf, content: &str) -> Result<()>;
 }
 
 /// Implementation of `ParachainInteractor` trait for `Miner`.
 #[async_trait]
-impl ParachainInteractor for Miner {
+impl ParachainInteractor for Arc<RwLock<Miner>> {
     async fn confirm_registration(&self) -> Result<bool> {
-        registration::confirm_registration().await
+        registration::confirm_registration(Arc::clone(&self)).await
     }
 
     async fn register_miner(&self) -> Result<()> {
-        registration::register_miner(self).await
+        registration::register_miner(Arc::clone(&self)).await
     }
 
     async fn start_miner(&mut self) -> Result<()> {
-        registration::start_miner(self).await
+        registration::start_miner(Arc::clone(&self)).await
     }
 
-    async fn process_event(&mut self, event: &EventDetails<PolkadotConfig>) -> Result<()> {
-        event_processor::process_event(self, event).await
+    async fn process_event(&self, event: &EventDetails<PolkadotConfig>) -> Result<()> {
+        event_processor::process_event(Arc::clone(&self), event).await
     }
 
     async fn stop_task_and_vacate_miner(&self) -> Result<()> {
@@ -138,22 +139,22 @@ impl ParachainInteractor for Miner {
     }
 
     async fn submit_zkml_proof(&self, proof: Vec<u8>) -> Result<()> {
-        task_management::submit_zkml_proof(proof).await
+        task_management::submit_zkml_proof(Arc::clone(&self), proof).await
     }
 
     async fn download_model_archive(&mut self, cess_fid: &str) -> Result<()> {
-        cess_interactor::download_model_archive(self, cess_fid).await
+        cess_interactor::download_model_archive(Arc::clone(&self), cess_fid).await
     }
 
     fn write_log(&self, message: &str) {
-        logs::write_log(self, message);
+        logs::write_log(message);
     }
 
     fn reset_log(&self) {
-        logs::reset_log(self);
+        logs::reset_log();
     }
 
-    fn update_config_file(&self, path: &PathBuf, content: &str) -> Result<()> {
-        config::update_config_file(self, path, content)
+    fn update_identity_file(&self, path: &PathBuf, content: &str) -> Result<()> {
+        identity::update_identity_file(path, content)
     }
 }

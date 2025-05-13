@@ -2033,6 +2033,7 @@ dependencies = [
  "derive_more 1.0.0",
  "dirs 5.0.1",
  "docify",
+ "dotenv",
  "fs2",
  "futures",
  "hex",
@@ -2041,6 +2042,7 @@ dependencies = [
  "log",
  "mockall",
  "neuro-zk-runtime",
+ "once_cell",
  "open-inference-runtime",
  "parity-scale-codec",
  "pinata-sdk",
@@ -2457,6 +2459,12 @@ dependencies = [
  "toml 0.8.22",
  "walkdir",
 ]
+
+[[package]]
+name = "dotenv"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
 name = "downcast"

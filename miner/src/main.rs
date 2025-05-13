@@ -1,10 +1,9 @@
-/// The main function serves as the entry point for the Cyborg Client application.
+/// The main function serves as the entry point for the Cyborg Miner application.
 /// It parses command-line arguments using Clap and executes the corresponding subcommand.
 ///
 /// # Commands:
 ///
-/// - `registration`: Registers a worker with the given blockchain node URL and account seed.
-/// - `startmining`: Starts a mining session with the provided blockchain node URL, account seed, and IPFS URL.
+/// - `startminer`: Starts a mining session with the provided parachain URL URL, and account seed
 ///
 /// # Errors:
 ///
@@ -12,7 +11,7 @@
 ///
 /// # Usage:
 ///
-/// Run the executable with appropriate subcommands to register or start mining a worker.
+/// Run the executable with appropriate arguments to start mining.
 mod builder;
 mod cli;
 mod error;
@@ -23,20 +22,16 @@ mod substrate_interface;
 mod traits;
 mod types;
 mod utils;
+mod config;
 
 use builder::MinerBuilder;
+use config::run_config;
 use clap::Parser;
 use cli::{Cli, Commands};
 use error::Result;
 use std::fs;
 use traits::ParachainInteractor;
 use types::MinerData;
-//use subxt::ext::jsonrpsee::core::client::error;
-
-const CONFIG_PATH: &str = "/var/lib/cyborg/worker-node/config/worker_config.json";
-const LOG_PATH: &str = "/var/lib/cyborg/worker-node/logs/worker_log.txt";
-const TASK_PATH: &str = "/var/lib/cyborg/worker-node/task/current_task";
-const TASK_OWNER_PATH: &str = "/var/lib/cyborg/worker-node/task/task_owner.json";
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -58,6 +53,8 @@ async fn main() -> Result<()> {
 
             println!("Config: {config:?}");
 
+            run_config(parachain_url).await;
+
             // Build the Miner using the provided parachain URL, account seed, and CESS gateway.
             let mut miner = MinerBuilder::default()
                 .parachain_url(parachain_url.to_string())
@@ -65,12 +62,6 @@ async fn main() -> Result<()> {
                 .cess_gateway(None)
                 .await
                 .config(config)
-                .paths(
-                    LOG_PATH.to_string(),
-                    CONFIG_PATH.to_string(),
-                    TASK_PATH.to_string(),
-                    TASK_OWNER_PATH.to_string(),
-                )
                 .build()
                 .await?;
 

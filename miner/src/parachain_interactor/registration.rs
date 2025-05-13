@@ -1,18 +1,44 @@
+use crate::config;
 use crate::error::Result;
+use crate::parachain_interactor::identity;
 use crate::specs;
 use crate::substrate_interface;
-use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
+use crate::substrate_interface::api::polkadot_xcm::storage::types::queries;
+use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::{WorkerType, Worker};
 use crate::traits::ParachainInteractor;
 use crate::types::{Miner, MinerData};
 use log::info;
+use std::process::id;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
-pub async fn confirm_registration() -> Result<bool> {
-    println!("Registration confirmation is unimplemented!!!!");
+pub async fn confirm_registration(miner: Arc<RwLock<Miner>>) -> Result<bool> {
+    let client = config::get_parachain_client()?;
+    let identity = &miner.read().await.miner_identity;
 
-    Ok(true)
+    let miner_registration_confirmation_query = substrate_interface::api::storage()
+        .edge_connect()
+        .executable_workers(&identity.0, &identity.1);
+
+    let result = client
+        .storage()
+        .at_latest()
+        .await?
+        .fetch(&miner_registration_confirmation_query)
+        .await?;
+
+    if let Some(_) = result {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
 }
 
-pub async fn register_miner(miner: &Miner) -> Result<()> {
+pub async fn register_miner(miner: Arc<RwLock<Miner>>) -> Result<()> {
+    let client = config::get_parachain_client()?;
+    let config_path = &config::get_paths()?.identity_path;
+    let keypair = &miner.read().await.keypair;
+
     let worker_specs = specs::gather_worker_spec().await?;
 
     let worker_registration = substrate_interface::api::tx()
@@ -32,10 +58,9 @@ pub async fn register_miner(miner: &Miner) -> Result<()> {
     println!("Call: {:?}", worker_registration.call_name());
     println!("Parameters: {:?}", worker_registration.call_data());
 
-    let worker_registration_events = miner
-        .client
+    let worker_registration_events = client
         .tx()
-        .sign_and_submit_then_watch_default(&worker_registration, &miner.keypair)
+        .sign_and_submit_then_watch_default(&worker_registration, keypair)
         .await
         .map(|e| {
             println!("Miner registration submitted, waiting for transaction to be finalized...");
@@ -49,12 +74,12 @@ pub async fn register_miner(miner: &Miner) -> Result<()> {
     )?;
 
     if let Some(event) = registration_event {
-        let worker_file_json = serde_json::to_string(&MinerData {
+        let worker_identity_json = serde_json::to_string(&MinerData {
             miner_owner: event.creator.clone().to_string(),
             miner_identity: event.worker.clone(),
         })?;
 
-        miner.update_config_file(&miner.config_path, &worker_file_json)?;
+        miner.update_identity_file(config_path, &worker_identity_json)?;
 
         println!("Miner registered successfully: {event:?}");
     } else {
@@ -64,16 +89,18 @@ pub async fn register_miner(miner: &Miner) -> Result<()> {
     Ok(())
 }
 
-pub async fn start_miner(miner: &mut Miner) -> Result<()> {
+pub async fn start_miner(miner: Arc<RwLock<Miner>>) -> Result<()> {
     println!("Starting miner...");
 
     miner.write_log("Waiting for tasks...");
+
+    let client = config::get_parachain_client()?; 
 
     if !miner.confirm_registration().await? {
         miner.register_miner().await?
     }
 
-    let mut blocks = miner.client.blocks().subscribe_finalized().await?;
+    let mut blocks = client.blocks().subscribe_finalized().await?;
 
     while let Some(Ok(block)) = blocks.next().await {
         info!("New block imported: {:?}", block.hash());

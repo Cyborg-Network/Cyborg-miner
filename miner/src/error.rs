@@ -10,6 +10,7 @@ pub enum Error {
     #[from]
     Custom(String),
 
+
     // -- Externals
     #[from]
     Io(std::io::Error),
@@ -30,6 +31,22 @@ pub enum Error {
 impl Error {
     pub fn custom(val: impl std::fmt::Display) -> Self {
         Self::Custom(val.to_string())
+    }
+    
+    pub fn parachain_client_not_intitialized() -> Self {
+        Self::Custom("Parachain client not initialized".to_string())
+    }
+
+    pub fn identity_not_initialized() -> Self {
+        Self::Custom("Identity not initialized".to_string())
+    }
+
+    pub fn config_paths_not_initialized() -> Self {
+        Self::Custom("Config paths not initialized".to_string())
+    }
+
+    pub fn no_current_task() -> Self {
+        Self::Custom("The miner does not have a running task".to_string())
     }
 }
 
