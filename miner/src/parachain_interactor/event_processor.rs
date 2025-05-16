@@ -4,15 +4,12 @@ use crate::{
     error::{Error, Result},
     types::Miner,
 };
+use cess_rust_sdk::polkadot::asset_conversion::storage;
 use subxt::{events::EventDetails, PolkadotConfig};
+use tracing::info;
 use std::sync::Arc;
-use tokio::sync::RwLock;
 
-pub async fn process_event(miner: Arc<RwLock<Miner>>, event: &EventDetails<PolkadotConfig>) -> Result<()> {
-    let (parent_runtime, miner_identity, current_task) = {
-        let miner = miner.read().await;
-        (Arc::clone(&miner.parent_runtime), miner.miner_identity.clone(), miner.current_task.clone())
-    };
+pub async fn process_event(miner: &Miner, event: &EventDetails<PolkadotConfig>) -> Result<()> {
 
     // Check for WorkerRegistered event
     match event.as_event::<substrate_interface::api::edge_connect::events::WorkerRegistered>() {
@@ -74,23 +71,27 @@ pub async fn process_event(miner: Arc<RwLock<Miner>>, event: &EventDetails<Polka
     match event.as_event::<substrate_interface::api::task_management::events::TaskScheduled>() {
         Ok(Some(task_scheduled)) => {
             let assigned_miner = &task_scheduled.assigned_worker;
+            let identity = &miner.miner_identity
+                .as_ref()
+                .ok_or(Error::identity_not_initialized())?;
 
-            if *assigned_miner == miner_identity {
+            if &assigned_miner == identity {
+                //TODO uncomment this and remove the hardcoded cipher after subxt is regen
+                //let storage_encryption_cipher = &task_scheduled.cipher;
+                let storage_encryption_cipher = "password";
                 let task_fid_string = String::from_utf8(task_scheduled.task.0)?;
 
-                miner.write_log(
-                    format!("New task scheduled for worker: {}", task_fid_string).as_str(),
-                );
+                info!("New task scheduled for worker: {}", task_fid_string);
 
-                let mut miner_clone = Arc::clone(&miner);
-                let parent_runtime_clone = Arc::clone(&parent_runtime);
+                let parent_runtime_clone = Arc::clone(&miner.parent_runtime);
 
                 tokio::spawn(async move {
-                    if let Err(e) = miner_clone.download_model_archive(&task_fid_string).await {
-                        eprintln!("Error downloading model archive: {}", e);
-                    }
+                    if let Err(e) = parent_runtime_clone.read().await.
+                        download_model_archive(&task_fid_string, storage_encryption_cipher).await {
+                            eprintln!("Error downloading model archive: {}", e);
+                        };
 
-                    if let Err(e) = parent_runtime_clone.perform_inference().await {
+                    if let Err(e) = parent_runtime_clone.read().await.perform_inference().await {
                         eprintln!("Error performing inference: {}", e)
                     };
                 });
@@ -103,13 +104,13 @@ pub async fn process_event(miner: Arc<RwLock<Miner>>, event: &EventDetails<Polka
         _ => {} // Skip non-matching events
     }
 
-    if let Some(current_task) = &current_task {
+    if let Some(current_task) = &miner.current_task {
         match event.as_event::<substrate_interface::api::neuro_zk::events::ProofRequested>() {
             Ok(Some(requested_proof)) => {
                 let task_id = &requested_proof.task_id;
 
                 if *task_id == current_task.0 {
-                    let proof = parent_runtime.generate_proof().await?;
+                    let proof = miner.parent_runtime.read().await.generate_proof().await?;
                     let _ = miner.submit_zkml_proof(proof).await?;
                 }   
             }

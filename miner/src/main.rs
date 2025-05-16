@@ -23,15 +23,14 @@ mod traits;
 mod types;
 mod utils;
 mod config;
+mod log;
 
 use builder::MinerBuilder;
 use config::run_config;
 use clap::Parser;
 use cli::{Cli, Commands};
 use error::Result;
-use std::fs;
 use traits::ParachainInteractor;
-use types::MinerData;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -46,22 +45,15 @@ async fn main() -> Result<()> {
         }) => {
             println!("Starting miner. Parachain URL: {}", parachain_url);
 
-            let config_string =
-                fs::read_to_string("/var/lib/cyborg/worker-node/config/worker_config.json")?;
-
-            let config: MinerData = serde_json::from_str(&config_string)?;
-
-            println!("Config: {config:?}");
-
             run_config(parachain_url).await;
 
+            let _log_guard = log::init_logger();
+
             // Build the Miner using the provided parachain URL, account seed, and CESS gateway.
-            let mut miner = MinerBuilder::default()
+            let miner = MinerBuilder::default()
                 .parachain_url(parachain_url.to_string())
                 .keypair(account_seed)?
-                .cess_gateway(None)
-                .await
-                .config(config)
+                .config()?
                 .build()
                 .await?;
 

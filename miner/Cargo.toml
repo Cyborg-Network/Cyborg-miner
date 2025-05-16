@@ -21,10 +21,14 @@ futures = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-appender = { workspace = true }
 
 async-trait = { git = "https://github.com/dtolnay/async-trait.git" }
 axum = { version = "0.8.4", features = ["ws"] }
 axum-macros = { version = "0.5.0" }
+cess-rust-sdk = { git = 'https://github.com/CESSProject/cess-rust-sdk.git' , branch = 'cess-v0.7.9-venus' }
 chrono = "0.4.38"
 clap = { version = "4.5.3", features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "3.6.12", default-features = false }
@@ -36,11 +40,8 @@ dotenv = "0.15.0"
 once_cell = "1.21.3"
 fs2 = "0.4.3"
 hex = { version = "0.4.3" } 
-ipfs-api-backend-hyper = { version = "0.6.0", features = ["with-send-sync", "with-hyper-tls"] }
 jsonrpsee = { version = "0.22", features = ["server"] }
-log = { version = "0.4.21", default-features = false }
-pinata-sdk = "1.1.0"
-reqwest = { version = "0.12.9", features = ["json"] }
+reqwest = { version = "0.12.9", features = ["json", "blocking"] }
 sp-api = { version = "33.0.0", default-features = false }
 sp-blockchain = { version = "35.0.0" }
 sp-core = { version = "34.0.0", default-features = false }

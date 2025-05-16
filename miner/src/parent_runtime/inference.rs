@@ -12,16 +12,22 @@ struct AppState {
 }
 
 pub async fn spawn_inference_server(task: &Option<(u64, TaskType)>, port: Option<u16>) -> Result<()> {
-    if let (Some(task), Some(port)) = (task, port) {
+    if let Some(task) = task {
         let state = AppState {
             task: task.clone(),
         };
+
+        let mut default_port: u16 = 3000;
+
+        if let Some(port) = port {
+           default_port = port 
+        }
 
         let app = Router::new()
             .route(&format!("/inference/{}", &task.0), get(ws_handler))
             .with_state(state);
 
-        let listener = TcpListener::bind(format!("127.0.0.1:{}", port)).await?;
+        let listener = TcpListener::bind(format!("127.0.0.1:{}", default_port)).await?;
 
         println!("listening on {}", listener.local_addr().unwrap());
 

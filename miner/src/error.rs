@@ -10,7 +10,6 @@ pub enum Error {
     #[from]
     Custom(String),
 
-
     // -- Externals
     #[from]
     Io(std::io::Error),
@@ -26,6 +25,9 @@ pub enum Error {
 
     #[from]
     Conversion(std::string::FromUtf8Error),
+
+    #[from]
+    Cess(cess_rust_sdk::core::Error)
 }
 
 impl Error {
@@ -47,6 +49,10 @@ impl Error {
 
     pub fn no_current_task() -> Self {
         Self::Custom("The miner does not have a running task".to_string())
+    }
+
+    pub fn cess_gateway_not_initialized() -> Self {
+        Self::Custom("CESS gateway not initialized".to_string())
     }
 }
 

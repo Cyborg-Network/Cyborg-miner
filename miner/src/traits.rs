@@ -1,19 +1,29 @@
 use crate::{
     error::Result,
     parachain_interactor::{
-        cess_interactor, identity, event_processor, logs, registration, task_management,
+        behavior_control, event_processor, identity, registration, task_management
     },
-    parent_runtime::{inference, proof},
+    parent_runtime::{
+        inference, proof, cess_interactor
+    },
     types::{Miner, ParentRuntime},
 };
 use async_trait::async_trait;
-use tokio::sync::RwLock;
-use std::{path::PathBuf, sync::Arc};
+use std::{path::PathBuf};
 use subxt::events::EventDetails;
 use subxt::PolkadotConfig;
 
 #[async_trait]
 pub trait InferenceServer {
+    /// Downloads a model archive (containing the model and potential additional data eg. proving key) from CESS
+    ///
+    /// # Arguments
+    /// * `fid` - A `&str` representing the CESS fid (fiile ID) of the model archive
+    ///
+    /// # Returns
+    /// A `Result` containing `Ok(())` if the model archive is successfully downloaded, or an `Error` if it fails.
+    async fn download_model_archive(&self, fid: &str, cipher: &str) -> Result<()>;
+    
     /// Starts performing inference, selecting the correct inference engine based on the task type
     ///
     /// # Arguments
@@ -32,6 +42,10 @@ pub trait InferenceServer {
 
 #[async_trait]
 impl InferenceServer for ParentRuntime {
+    async fn download_model_archive(&self, cess_fid: &str, cipher: &str) -> Result<()> {
+        cess_interactor::download_model_archive(cess_fid, cipher).await
+    }
+
     async fn perform_inference(&self) -> Result<()> {
         inference::spawn_inference_server(&self.task, self.port).await
     }
@@ -46,7 +60,7 @@ impl InferenceServer for ParentRuntime {
 ///
 /// Provides an asynchronous API for interacting with a blockchain, which enables clients to register workers,
 /// initiate mining sessions, and handle blockchain events with asynchronous operations.
-pub trait ParachainInteractor: Send + Sync {
+pub trait ParachainInteractor {
     /// Confirms the registration of a worker node on the blockchain.
     ///
     /// # Returns
@@ -63,7 +77,7 @@ pub trait ParachainInteractor: Send + Sync {
     ///
     /// # Returns
     /// A `Result` indicating `Ok(())` if the session starts successfully, or an `Error` if it fails.
-    async fn start_miner(&mut self) -> Result<()>;
+    async fn start_miner(&self) -> Result<()>;
 
     /// Processes an event received from the blockchain.
     ///
@@ -83,29 +97,11 @@ pub trait ParachainInteractor: Send + Sync {
     /// A `Result` indicating `Ok(())` if the result is successfully submitted, or an `Error` if it fails.
     async fn submit_zkml_proof(&self, proof: Vec<u8>) -> Result<()>;
 
-    /// Downloads a model archive (containing the model and potential additional data eg. proving key) from CESS
-    ///
-    /// # Arguments
-    /// * `fid` - A `&str` representing the CESS fid (fiile ID) of the model archive
-    ///
-    /// # Returns
-    /// A `Result` containing `Ok(())` if the model archive is successfully downloaded, or an `Error` if it fails.
-    async fn download_model_archive(&mut self, fid: &str) -> Result<()>;
-
     /// Vacates a miner erasing current user data and resetting the miner state.
     ///
     /// # Returns
     /// A `Result` indicating `Ok(())` if the session vacates successfully, or an `Error` if it fails.
     async fn stop_task_and_vacate_miner(&self) -> Result<()>;
-
-    /// Writes a message to the log.
-    ///
-    /// # Arguments
-    /// * `message` - A `&str` representing the message to be written to the log.
-    fn write_log(&self, message: &str);
-
-    /// Resets the log so that the log file is empty when a new task is assinged for execution.
-    fn reset_log(&self);
 
     /// Attempts to update the miner identity file.
     ///
@@ -113,25 +109,32 @@ pub trait ParachainInteractor: Send + Sync {
     /// * `file_path` - A `&str` representing the path to the config file.
     /// * `content` - A `&str` representing the content to be written to the config file.
     fn update_identity_file(&self, path: &PathBuf, content: &str) -> Result<()>;
+
+    //TODO this might also notify the user that the miner has been corrupted and that the current task should be pulled
+    /// Suspends the miner by sending a transaction to the parachain that deactivates the miner for further tasks..
+    /// 
+    /// # Returns
+    /// A `Result` indicating `Ok(())` if the miner is successfully suspended, or an `Error` if it fails.
+    async fn suspend_miner(&self) -> Result<()>;
 }
 
 /// Implementation of `ParachainInteractor` trait for `Miner`.
 #[async_trait]
-impl ParachainInteractor for Arc<RwLock<Miner>> {
+impl ParachainInteractor for Miner {
     async fn confirm_registration(&self) -> Result<bool> {
-        registration::confirm_registration(Arc::clone(&self)).await
+        registration::confirm_registration(self).await
     }
 
     async fn register_miner(&self) -> Result<()> {
-        registration::register_miner(Arc::clone(&self)).await
+        registration::register_miner(self).await
     }
 
-    async fn start_miner(&mut self) -> Result<()> {
-        registration::start_miner(Arc::clone(&self)).await
+    async fn start_miner(&self) -> Result<()> {
+        registration::start_miner(self).await
     }
 
     async fn process_event(&self, event: &EventDetails<PolkadotConfig>) -> Result<()> {
-        event_processor::process_event(Arc::clone(&self), event).await
+        event_processor::process_event(self, event).await
     }
 
     async fn stop_task_and_vacate_miner(&self) -> Result<()> {
@@ -139,22 +142,14 @@ impl ParachainInteractor for Arc<RwLock<Miner>> {
     }
 
     async fn submit_zkml_proof(&self, proof: Vec<u8>) -> Result<()> {
-        task_management::submit_zkml_proof(Arc::clone(&self), proof).await
-    }
-
-    async fn download_model_archive(&mut self, cess_fid: &str) -> Result<()> {
-        cess_interactor::download_model_archive(Arc::clone(&self), cess_fid).await
-    }
-
-    fn write_log(&self, message: &str) {
-        logs::write_log(message);
-    }
-
-    fn reset_log(&self) {
-        logs::reset_log();
+        task_management::submit_zkml_proof(self, proof).await
     }
 
     fn update_identity_file(&self, path: &PathBuf, content: &str) -> Result<()> {
         identity::update_identity_file(path, content)
+    }
+    
+    async fn suspend_miner(&self) -> Result<()> {
+        behavior_control::suspend_miner(self).await
     }
 }

@@ -1,11 +1,10 @@
 use crate::substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
 use codec::{Decode, Encode};
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 use subxt::utils::AccountId32;
-use subxt::{OnlineClient, PolkadotConfig};
 use subxt_signer::sr25519::Keypair;
 use std::sync::Arc;
+use tokio::sync::RwLock;
 
 // Datastructure for worker registration persistence
 #[derive(Debug, Clone, PartialEq, Eq, Decode, Encode, Serialize, Deserialize)]
@@ -50,18 +49,12 @@ pub struct AccountKeypair(pub Keypair);
 /// and optionally communicate with IPFS or node URIs.
 pub struct Miner {
     // Some fields wrapped in an Arc to eg. keep extraction out of an RwLock before await cheap
-    pub(crate) client: Arc<OnlineClient<PolkadotConfig>>,
     pub(crate) keypair: Keypair,
-    pub parent_runtime: Arc<ParentRuntime>,
-    pub cess_gateway: String,
-    pub parachain_url: String,
-    pub miner_identity: (AccountId32, u64),
-    pub creator: AccountId32,
-    pub log_path: PathBuf,
-    pub task_path: PathBuf,
-    pub config_path: PathBuf,
-    pub task_owner_path: PathBuf,
+    pub parent_runtime: Arc<RwLock<ParentRuntime>>,
+    pub miner_identity: Option<(AccountId32, u64)>,
+    pub creator: Option<AccountId32>,
     pub current_task: Option<(u64, TaskType)>,
+    pub log_failure_count: u8,
 }
 
 pub struct ParentRuntime {

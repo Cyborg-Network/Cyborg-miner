@@ -7,7 +7,7 @@ use crate::{
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-pub async fn confirm_task_reception(miner: Arc<RwLock<Miner>>) -> Result<()> {
+pub async fn confirm_task_reception(miner: &Miner) -> Result<()> {
     //TODO uncomment after subxt regen
 
     /* 
@@ -60,12 +60,12 @@ pub async fn stop_task_and_vacate_miner() -> Result<()> {
     Ok(())
 }
 
-pub async fn submit_zkml_proof(miner: Arc<RwLock<Miner>>, proof: Vec<u8>) -> Result<()> {
+pub async fn submit_zkml_proof(miner: &Miner, proof: Vec<u8>) -> Result<()> {
     let proof: BoundedVec<u8> = BoundedVec::from(BoundedVec(proof));
 
     let client = config::get_parachain_client()?;
-    let keypair = &miner.read().await.keypair;
-    let current_task = miner.read().await.current_task
+    let keypair = &miner.keypair;
+    let current_task = miner.current_task
         .as_ref()
         .ok_or(Error::no_current_task())?
         .0
@@ -94,7 +94,7 @@ pub async fn submit_zkml_proof(miner: Arc<RwLock<Miner>>, proof: Vec<u8>) -> Res
         .wait_for_finalized_success()
         .await?;
 
-    // TODO uncomment after subxt regen
+    // TODO uncomment after subxt regen (no event emitted for proof submission yet)
     /*
     let proof_submission_event = proof_submission_events_events
         .find_first::<substrate_interface::api::neuro_zk::events::ProofSubmitted>(

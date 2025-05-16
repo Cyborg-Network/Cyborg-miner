@@ -1,12 +1,11 @@
 use crate::{
-    error::Result,
-    types::{AccountKeypair, Miner, MinerData, ParentRuntime},
+    config, error::Result, types::{AccountKeypair, Miner, MinerData, ParentRuntime}
 };
-use std::{env, path::PathBuf, str::FromStr, sync::Arc};
+use std::{fs, str::FromStr, sync::Arc};
 use subxt::utils::AccountId32;
-use subxt::{OnlineClient, PolkadotConfig};
 use subxt_signer::{sr25519::Keypair as SR25519Keypair, SecretUri};
 use tokio::sync::RwLock;
+use tracing::warn;
 
 /// A builder pattern for constructing a `Miner` instance.
 ///
@@ -15,13 +14,8 @@ use tokio::sync::RwLock;
 pub struct MinerBuilder<Keypair> {
     parachain_url: Option<String>,
     keypair: Keypair,
-    cess_gateway: Option<String>,
-    identity: (AccountId32, u64),
-    creator: AccountId32,
-    log_path: PathBuf,
-    config_path: PathBuf,
-    task_path: PathBuf,
-    task_owner_path: PathBuf,
+    identity: Option<(AccountId32, u64)>,
+    creator: Option<AccountId32>,
 }
 
 pub struct NoKeypair;
@@ -35,13 +29,8 @@ impl Default for MinerBuilder<NoKeypair> {
         MinerBuilder {
             parachain_url: None,
             keypair: NoKeypair,
-            cess_gateway: None,
-            identity: (AccountId32::from([0u8; 32]), 0),
-            creator: AccountId32::from([0u8; 32]),
-            log_path: PathBuf::from("./"),
-            config_path: PathBuf::from("./"),
-            task_path: PathBuf::from("./"),
-            task_owner_path: PathBuf::from("./"),
+            identity: None,
+            creator: None,
         }
     }
 }
@@ -74,37 +63,9 @@ impl<Keypair> MinerBuilder<Keypair> {
         Ok(MinerBuilder {
             parachain_url: self.parachain_url,
             keypair: AccountKeypair(keypair),
-            cess_gateway: self.cess_gateway,
             identity: self.identity,
             creator: self.creator,
-            log_path: self.log_path,
-            config_path: self.config_path,
-            task_path: self.task_path,
-            task_owner_path: self.task_owner_path,
         })
-    }
-
-    /// Sets the CESS gateway for the miner to use.
-    ///
-    /// # Arguments
-    /// * `cess_gateway` - An optionally (in case it is not set as environment variable) provided string representing the CESS gateway URL.
-    ///     
-    /// # Returns
-    /// A `MinerBuilder` instance with the CESS gateway set.
-    pub async fn cess_gateway(mut self, cess_gateway: Option<String>) -> Self {
-        let gateway;
-
-        if let Some(cess_gateway) = cess_gateway {
-            gateway = cess_gateway;
-        } else {
-            gateway = env::var("MINER_CESS_GATEWAY")
-                .expect("Not able to process MINER_CESS_GATEWAY environment variable - please check if it is set.");
-        }
-
-        println!("CESS GATEWAY: {}", gateway);
-
-        self.cess_gateway = Some(gateway);
-        self
     }
 
     /// Sets the identity and the creator of the miner they are kept separate because the way that IDs are generated for the workers is subject to change.
@@ -114,34 +75,28 @@ impl<Keypair> MinerBuilder<Keypair> {
     ///
     /// # Returns
     /// A `MinerBuilder` instance with the identity and the creator set.
-    pub fn config(mut self, config: MinerData) -> Self {
-        self.identity = config.miner_identity;
-        self.creator = AccountId32::from_str(&config.miner_owner).unwrap();
-        self
-    }
+    pub fn config(mut self) -> Result<Self> {
+        let mut identity: Option<(AccountId32, u64)> = None;
+        let mut creator: Option<AccountId32> = None;
 
-    /// Sets the paths for the log, config, and task files.
-    ///
-    /// # Arguments
-    /// * `log_path` - A string representing the path to the log file.
-    /// * `config_path` - A string representing the path to the config file.
-    /// * `task_path` - A string representing the path to the task file.
-    /// * `task_owner_path` - A string representing the path to the task owner file.
-    ///
-    /// # Returns
-    /// A `MinerBuilder` instance with the required paths set.
-    pub fn paths(
-        mut self,
-        log_path: String,
-        config_path: String,
-        task_path: String,
-        task_owner_path: String,
-    ) -> Self {
-        self.log_path = PathBuf::from(log_path);
-        self.config_path = PathBuf::from(config_path);
-        self.task_path = PathBuf::from(task_path);
-        self.task_owner_path = PathBuf::from(task_owner_path);
-        self
+        if let Some(paths) = config::PATHS.get() {
+            match fs::read_to_string(&paths.identity_path)
+                .and_then(|s| serde_json::from_str::<MinerData>(&s)
+                .map_err(|e| e.into()))
+            {
+                Ok(config) => {
+                    identity = Some(config.miner_identity.clone());
+                    creator = Some(config.miner_identity.0);
+                }
+                Err(e) => println!("Error reading identity file: {}", e),
+            }
+        } else {
+            warn!("No miner identity present, identity will be set when registering...");
+        }
+
+        self.identity = identity;
+        self.creator = creator;
+        Ok(self)
     }
 }
 
@@ -150,31 +105,15 @@ impl MinerBuilder<AccountKeypair> {
     ///
     /// # Returns
     /// A `Result` that, if successful, contains the constructed `Miner`.
-    pub async fn build(self) -> Result<Arc<RwLock<Miner>>> {
-        match &self.parachain_url {
-            Some(url) => {
-                // Create an online client that connects to the specified Substrate node URL.
-                let client = OnlineClient::<PolkadotConfig>::from_url(url).await?;
-
-                Ok(Arc::new(RwLock::new(Miner {
-                    parent_runtime: Arc::new(ParentRuntime{ task: None , port: None, }),
-                    client: Arc::new(client),
-                    keypair: self.keypair.0,
-                    cess_gateway: self.cess_gateway
-                        .expect("Failed to initialize CESS gateway, cannot run miner without connection to CESS."),
-                    parachain_url: self.parachain_url
-                        .expect("Parachain URL was not set, cannot run worker without an endpoint connecting it to cyborg network."),
-                    miner_identity: self.identity,
-                    creator: self.creator,
-                    log_path: self.log_path,
-                    config_path: self.config_path,
-                    task_path: self.task_path,
-                    task_owner_path: self.task_owner_path,
-                    current_task: None,
-                })))
-            }
-            None => Err("No node URI provided. Please specify a node URI to connect.".into()),
-        }
+    pub async fn build(self) -> Result<Miner> {
+        Ok(Miner {
+            parent_runtime: Arc::new(RwLock::new(ParentRuntime{ task: None , port: None, })),
+            keypair: self.keypair.0,
+            miner_identity: self.identity,
+            creator: self.creator,
+            current_task: None,
+            log_failure_count: 0,
+        })
     }
 }
 
@@ -277,39 +216,11 @@ mod tests {
         // Test setting the paths in the builder.
         let builder = MinerBuilder::default()
             .parachain_url("ws://127.0.0.1:9944".to_string())
-            .keypair("//Alice")?
-            .paths(
-                "/tmp/cyborg.log".to_string(),
-                "/tmp/cyborg.config".to_string(),
-                "/tmp/cyborg.task".to_string(),
-                "/tmp/cyborg.task_owner".to_string(),
-            );
-
-        assert_eq!(builder.log_path, PathBuf::from("/tmp/cyborg.log"));
-        assert_eq!(builder.config_path, PathBuf::from("/tmp/cyborg.config"));
-        assert_eq!(builder.task_path, PathBuf::from("/tmp/cyborg.task"));
-        assert_eq!(
-            builder.task_owner_path,
-            PathBuf::from("/tmp/cyborg.task_owner")
-        );
+            .keypair("//Alice")?;
 
         // Test setting the paths without a keypair.
         let builder = MinerBuilder::default()
-            .parachain_url("ws://127.0.0.1:9944".to_string())
-            .paths(
-                "/tmp/cyborg.log".to_string(),
-                "/tmp/cyborg.config".to_string(),
-                "/tmp/cyborg.task".to_string(),
-                "/tmp/cyborg.task_owner".to_string(),
-            );
-
-        assert_eq!(builder.log_path, PathBuf::from("/tmp/cyborg.log"));
-        assert_eq!(builder.config_path, PathBuf::from("/tmp/cyborg.config"));
-        assert_eq!(builder.task_path, PathBuf::from("/tmp/cyborg.task"));
-        assert_eq!(
-            builder.task_owner_path,
-            PathBuf::from("/tmp/cyborg.task_owner")
-        );
+            .parachain_url("ws://127.0.0.1:9944".to_string());
 
         Ok(())
     }
