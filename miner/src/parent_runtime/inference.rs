@@ -4,7 +4,8 @@ use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 use tokio::{net::TcpListener, sync::Mutex};
 use neuro_zk_runtime::NeuroZKEngine;
 use futures::{SinkExt, StreamExt};
-use open_inference_runtime;
+use open_inference_runtime::client::TritonClient;
+use serde_json::Value;
 
 #[derive(Clone)]
 struct AppState {
@@ -55,18 +56,12 @@ async fn ws_handler(
 }
 
 async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
-    let (sender, mut receiver) = socket.split();
+    let (sender, receiver) = socket.split();
 
-    let request_stream = Box::pin(async_stream::stream! {
-        while let Some(Ok(msg)) = receiver.next().await {
-            if let Message::Text(text) = msg {
-                yield text.to_string();
-            }
-        }
-    });
-
+    // Wrap the sender in an Arc<Mutex> to allow safe shared access.
     let sender = Arc::new(Mutex::new(sender));
 
+    // Response stream to send back data to the client
     let response_stream = {
         let sender = Arc::clone(&sender);
         move |response: String| {
@@ -77,16 +72,60 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
         }
     };
 
+    // Match on the task type and handle separately
     match state.task.1 {
         TaskType::NeuroZk => {
-
+            let mut receiver = receiver; 
             let engine = NeuroZKEngine::new(PathBuf::from(""));
+            let request_stream = Box::pin(async_stream::stream! {
+                while let Some(Ok(msg)) = receiver.next().await {
+                    if let Message::Text(text) = msg {
+                        yield text.to_string();
+                    }
+                }
+            });
 
             let _ = engine.run(request_stream, response_stream);
-            
             Ok(())
-       },
-       //TODO add OI entry point
-       _ => return Err("Unknown task type".into())
+        },
+        TaskType::OpenInference => {
+            println!("Starting Open Inference Task...");
+
+            
+            let mut receiver = receiver;
+
+            while let Some(Ok(msg)) = receiver.next().await {
+                if let Message::Text(text) = msg {
+                    match serde_json::from_str::<Value>(&text) {
+                        Ok(value) => {
+                            if let (Some(model_name), Some(archive_path), Some(extract_to), Some(input_file)) = (
+                                value["model_name"].as_str(),
+                                value["archive_path"].as_str(),
+                                value["extract_to"].as_str(),
+                                value["input_file"].as_str()
+                            ) {
+                                let client = TritonClient::new("http://localhost:8000".to_string());
+                                match client.run_inference(model_name, archive_path, extract_to, input_file).await {
+                                    Ok(result) => {
+                                        response_stream(format!("Inference Result: {:?}", result)).await;
+                                    },
+                                    Err(e) => {
+                                        response_stream(format!("Open Inference Error: {:?}", e)).await;
+                                    }
+                                }
+                            } else {
+                                response_stream("Missing parameters".to_string()).await;
+                            }
+                        },
+                        Err(e) => {
+                            response_stream(format!("JSON Parse Error: {:?}", e)).await;
+                        }
+                    }
+                }
+            }
+            Ok(())
+        },
+        _ => Err("Unknown task type".into()),
     }
 }
+

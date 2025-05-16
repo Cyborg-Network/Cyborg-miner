@@ -44,10 +44,10 @@ impl TensorData {
 }
 
 impl TritonClient {
-    pub fn new(TRITON_URL:String) -> Self {
+    pub fn new(triton_url:String) -> Self {
         Self {
             client: Client::new(),
-            url:TRITON_URL
+            url:triton_url
         }
     }
 
