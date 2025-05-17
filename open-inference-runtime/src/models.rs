@@ -1,11 +1,16 @@
 // models.rs
 use serde::{Deserialize, Serialize};
-use std::fs::{File, metadata};
 use std::io::{self, BufReader, copy};
 use flate2::read::GzDecoder;
 use tar::Archive;
 use zip::ZipArchive;
 use std::path::{Path, PathBuf};
+use std::fs::{File, metadata, remove_file};
+
+const BASE_PATH: &str = "/var/lib/cyborg/miner/current_task/";
+
+// const BASE_PATH: &str = "/home/ronnie/Model";
+
 
 /// Represents a model available in Triton
 #[derive(Debug, Serialize, Deserialize)]
@@ -40,11 +45,29 @@ pub struct ModelExtractor {
 }
 
 impl ModelExtractor {
-    pub fn new(archive_path: &str, output_folder: &str) -> Self {
-        Self {
-            archive_path: PathBuf::from(archive_path),
-            output_folder: PathBuf::from(output_folder),
+    pub fn new(model_name: &str) -> io::Result<Self> {
+        let tar_gz_path = Path::new(BASE_PATH).join(format!("{}.tar.gz", model_name));
+        let zip_path = Path::new(BASE_PATH).join(format!("{}.zip", model_name));
+        let extracted_path = Path::new(BASE_PATH).join(model_name);
+
+        // Check if already extracted
+        if extracted_path.is_dir() {
+            println!("✅ Model already extracted at: {:?}", extracted_path);
+            return Err(io::Error::new(io::ErrorKind::AlreadyExists, "Model already extracted"));
         }
+
+        let archive_path = if tar_gz_path.exists() {
+            tar_gz_path
+        } else if zip_path.exists() {
+            zip_path
+        } else {
+            return Err(io::Error::new(io::ErrorKind::NotFound, "Model archive not found"));
+        };
+
+        Ok(Self {
+            archive_path,
+            output_folder: PathBuf::from(BASE_PATH),
+        })
     }
 
     /// Main extraction handler that chooses the right method
@@ -57,11 +80,17 @@ impl ModelExtractor {
             "gz" => self.extract_tar_gz(),
             "zip" => self.extract_zip(),
             _ => Err(io::Error::new(io::ErrorKind::InvalidInput, "Unsupported archive format")),
-        }
+        }?;
+
+        // Delete the archive after successful extraction
+        println!("🗑️ Deleting archive {:?}", self.archive_path);
+        remove_file(&self.archive_path)?;
+
+        Ok(())
     }
 
-    /// Extracts all files from the tar.gz archive to the specified output folder
-    fn extract_tar_gz(&self) -> io::Result<()> {
+     /// Extracts all files from the tar.gz archive to the specified output folder
+     fn extract_tar_gz(&self) -> io::Result<()> {
         println!("🔍 Detected .tar.gz format. Extracting...");
         let archive_file = File::open(&self.archive_path)?;
         let decoder = GzDecoder::new(BufReader::new(archive_file));
@@ -84,7 +113,7 @@ impl ModelExtractor {
 
             let mut out_file = File::create(&output_path)?;
             copy(&mut entry, &mut out_file)?;
-            println!("Extracted {:?} to {:?}", path, &self.output_folder);
+            println!("✅ Extracted {:?} to {:?}", path, &self.output_folder);
         }
         Ok(())
     }
@@ -108,9 +137,10 @@ impl ModelExtractor {
                 }
                 let mut out_file = File::create(&out_path)?;
                 copy(&mut file, &mut out_file)?;
-                println!("Extracted {:?} to {:?}", file.name(), &self.output_folder);
+                println!("✅ Extracted {:?} to {:?}", file.name(), &self.output_folder);
             }
         }
         Ok(())
     }
+
 }

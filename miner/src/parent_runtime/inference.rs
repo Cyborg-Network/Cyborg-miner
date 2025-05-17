@@ -5,7 +5,9 @@ use tokio::{net::TcpListener, sync::Mutex};
 use neuro_zk_runtime::NeuroZKEngine;
 use futures::{SinkExt, StreamExt};
 use open_inference_runtime::client::TritonClient;
+use open_inference_runtime::client::TensorData;
 use serde_json::Value;
+use std::collections::HashMap;
 
 #[derive(Clone)]
 struct AppState {
@@ -89,32 +91,46 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
             Ok(())
         },
         TaskType::OpenInference => {
-            println!("Starting Open Inference Task...");
-
-            
             let mut receiver = receiver;
+            println!("Starting Open Inference Task...");
+            let client = TritonClient::new("http://localhost:8000/v2".to_string());
 
             while let Some(Ok(msg)) = receiver.next().await {
                 if let Message::Text(text) = msg {
                     match serde_json::from_str::<Value>(&text) {
                         Ok(value) => {
-                            if let (Some(model_name), Some(archive_path), Some(extract_to), Some(input_file)) = (
-                                value["model_name"].as_str(),
-                                value["archive_path"].as_str(),
-                                value["extract_to"].as_str(),
-                                value["input_file"].as_str()
-                            ) {
-                                let client = TritonClient::new("http://localhost:8000".to_string());
-                                match client.run_inference(model_name, archive_path, extract_to, input_file).await {
-                                    Ok(result) => {
-                                        response_stream(format!("Inference Result: {:?}", result)).await;
-                                    },
-                                    Err(e) => {
-                                        response_stream(format!("Open Inference Error: {:?}", e)).await;
+                            if let Some(model_name) = value["model_name"].as_str() {
+                                if let Some(inputs) = value["inputs"].as_object() {
+                                    // Prepare input data for Triton
+                                    let mut input_data: HashMap<&str, (TensorData, Vec<usize>)> = HashMap::new();
+                                    
+                                    for (key, val) in inputs.iter() {
+                                        if let Some(data_array) = val["data"].as_array() {
+                                            let data: Vec<f32> = data_array.iter()
+                                                .filter_map(|v| v.as_f64().map(|f| f as f32))
+                                                .collect();
+                                            
+                                            if let Some(shape_array) = val["shape"].as_array() {
+                                                let shape: Vec<usize> = shape_array.iter()
+                                                    .filter_map(|v| v.as_u64().map(|u| u as usize))
+                                                    .collect();
+                                                
+                                                // Wrapping in TensorData::F32
+                                                input_data.insert(key.as_str(), (TensorData::F32(data), shape));
+                                            }
+                                        }
                                     }
+
+                                    // Call the inference method
+                                    match client.run_inference(model_name, input_data).await {
+                                        Ok(result) => response_stream(format!("Inference Result: {:?}", result)).await,
+                                        Err(e) => response_stream(format!("Open Inference Error: {:?}", e)).await,
+                                    }
+                                } else {
+                                    response_stream("Missing 'inputs' parameter".to_string()).await;
                                 }
                             } else {
-                                response_stream("Missing parameters".to_string()).await;
+                                response_stream("Missing 'model_name' parameter".to_string()).await;
                             }
                         },
                         Err(e) => {

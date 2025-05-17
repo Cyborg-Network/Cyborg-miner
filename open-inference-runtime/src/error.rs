@@ -1,4 +1,3 @@
-// error.rs
 use thiserror::Error;
 use reqwest::StatusCode;
 

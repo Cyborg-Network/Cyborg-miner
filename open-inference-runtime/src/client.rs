@@ -2,12 +2,13 @@
 // client.rs
 use reqwest::Client;
 use serde_json::Value;
-// use std::collections::HashMap;
+use std::collections::HashMap;
 use serde_json::json;
 use image::io::Reader as ImageReader;
 use csv::ReaderBuilder;
 use std::fs::File;
 use std::path::Path;
+use std::io::Cursor;
 use std::io::BufReader;
 
 use crate::models::{Model, ModelStatus,ModelExtractor};
@@ -44,10 +45,10 @@ impl TensorData {
 }
 
 impl TritonClient {
-    pub fn new(triton_url:String) -> Self {
+    pub fn new(TRITON_URL:String) -> Self {
         Self {
             client: Client::new(),
-            url:triton_url
+            url:TRITON_URL
         }
     }
 
@@ -144,7 +145,7 @@ impl TritonClient {
 
     // Get model status
     // pub async fn get_model_status(&self, model_name: &str) -> Result<ModelStatus, TritonError> {
-    //     let url = format!("{}/models/{}/stats", TRITON_URL, model_name);
+    //     let url = format!("{}/models/{}/stats", self.url, model_name);
     //     let response = self.client.get(&url).send().await?;
     
     //     if response.status().is_success() {
@@ -175,165 +176,118 @@ impl TritonClient {
     //     }
     // }
     
-    pub fn load_data_from_file(&self, file_path: &str) -> Result<TensorData, Box<dyn std::error::Error>> {
-        if file_path.ends_with(".jpg") || file_path.ends_with(".png") {
-            let img = ImageReader::open(file_path)?.decode()?;
-            let resized = img.resize_exact(224, 224, image::imageops::FilterType::Nearest);
-            let rgb = resized.to_rgb8();
-            let tensor_data: Vec<f32> = rgb
-                .pixels()
-                .flat_map(|p| vec![p[0] as f32 / 255.0, p[1] as f32 / 255.0, p[2] as f32 / 255.0])
-                .collect();
-            Ok(TensorData::F32(tensor_data))
-        } else if file_path.ends_with(".csv") {
-            let mut rdr = ReaderBuilder::new().from_path(file_path)?;
-            let mut data_f32 = vec![];
-            let mut data_i32 = vec![];
-            let mut data_i64 = vec![];
-            let mut data_u8 = vec![];
-            let mut data_bool = vec![];
-            let mut data_str = vec![];
-    
-            for result in rdr.records() {
-                let record = result?;
-                for field in record.iter() {
-                    if let Ok(val) = field.parse::<f32>() {
-                        data_f32.push(val);
-                    } else if let Ok(val) = field.parse::<i32>() {
-                        data_i32.push(val);
-                    } else if let Ok(val) = field.parse::<i64>() {
-                        data_i64.push(val);
-                    } else if let Ok(val) = field.parse::<u8>() {
-                        data_u8.push(val);
-                    } else if let Ok(val) = field.parse::<bool>() {
-                        data_bool.push(val);
-                    } else {
-                        data_str.push(field.to_string());
-                    }
-                }
-            }
-    
-            // Choose the appropriate data type based on some logic, like content or file type
-            if !data_f32.is_empty() {
-                Ok(TensorData::F32(data_f32))
-            } else if !data_i32.is_empty() {
-                Ok(TensorData::I32(data_i32))
-            } else if !data_i64.is_empty() {
-                Ok(TensorData::I64(data_i64))
-            } else if !data_u8.is_empty() {
-                Ok(TensorData::U8(data_u8))
-            } else if !data_bool.is_empty() {
-                Ok(TensorData::Bool(data_bool))
-            } else if !data_str.is_empty() {
-                Ok(TensorData::Str(data_str))
-            } else {
-                Err("No valid data found in CSV".into())
-            }
-        } else if file_path.ends_with(".json") {
-            let file = File::open(file_path)?;
-            let reader = BufReader::new(file);
-            let json_data: serde_json::Value = serde_json::from_reader(reader)?;
-            
-            // Extract the "data" field from the first object
-            if let Some(array) = json_data.as_array() {
-                if let Some(first_obj) = array.get(0) {
-                    if let Some(data) = first_obj["data"].as_array() {
-                        let data_f32: Vec<f32> = data
-                            .iter()
-                            .map(|v| v.as_f64().unwrap() as f32)
-                            .collect();
-                        
-                        return Ok(TensorData::F32(data_f32));
-                    }
-                }
-            }
-            Err("Failed to parse data from JSON".into())
-        } else {
-            Err("Unsupported file type".into())
-        }
-    }
-    
-
     pub async fn infer(
         &self,
         model_name: &str,
-        file_path: &str,
-    ) -> Result<Value, TritonError> {
+        input_data: HashMap<&str, (TensorData, Vec<usize>)>,
+    ) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        // Step 1: Get model metadata
         let metadata_url = format!("{}/models/{}", self.url, model_name);
         let metadata_response = self.client.get(&metadata_url).send().await?;
+    
         if !metadata_response.status().is_success() {
-            return Err(TritonError::Http(metadata_response.status()));
+            let error_message = metadata_response.text().await?;
+            return Err(format!("❌ Failed to fetch model metadata: HTTP- {}", error_message).into());
         }
     
-        let metadata: Value = metadata_response.json().await?;
-        let inputs = metadata["inputs"].as_array()
-            .ok_or(TritonError::InvalidResponse("Invalid model metadata"))?;
+        let metadata: serde_json::Value = metadata_response.json().await?;
     
-        let expected_input = &inputs[0];
-        let input_name = expected_input["name"].as_str().unwrap();
-        let shape: Vec<usize> = expected_input["shape"]
+        // Step 2: Extract input names and shapes
+        let inputs = metadata["inputs"]
             .as_array()
-            .unwrap()
-            .iter()
-            .map(|v| v.as_u64().unwrap() as usize)
-            .collect();
+            .ok_or("❌ Invalid model metadata format: 'inputs' not found")?;
     
-        let tensor_data = self.load_data_from_file(file_path)
-            .expect("Failed to load data from the specified file");
+        // Step 3: Map the inputs to Triton's expected format
+        let mut model_inputs = vec![];
+        for input in inputs {
+            let name = input["name"].as_str().unwrap();
+            let expected_shape = input["shape"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|v| v.as_u64().unwrap() as usize)
+                .collect::<Vec<usize>>();
     
+            if let Some((tensor_data, shape)) = input_data.get(name) {
+                // Auto-fix if batch dimension is there
+                let mut corrected_shape = shape.clone();
+                if shape.len() == expected_shape.len() + 1 && shape[0] == 1 {
+                    corrected_shape.remove(0);
+                }
+    
+                // Shape check
+                if corrected_shape == expected_shape {
+                    // Get the datatype from the enum
+                    let datatype = match tensor_data {
+                        TensorData::F32(_) => "FP32",
+                        TensorData::I32(_) => "INT32",
+                        TensorData::I64(_) => "INT64",
+                        TensorData::U8(_) => "UINT8",
+                        TensorData::Bool(_) => "BOOL",
+                        TensorData::Str(_) => "BYTES",
+                    };
+    
+                    // Add to the model inputs with serialization
+                    model_inputs.push(serde_json::json!({
+                        "name": name,
+                        "shape": corrected_shape,
+                        "datatype": datatype,
+                        "data": tensor_data.to_serializable()
+                    }));
+                } else {
+                    println!("⚠️  Shape mismatch for '{}'. Expected {:?}, but got {:?}", name, expected_shape, corrected_shape);
+                    return Err(format!("❌ Shape mismatch for '{}'. Expected {:?}, but got {:?}", name, expected_shape, corrected_shape).into());
+                }
+            } else {
+                println!("⚠️  Missing data for input: '{}'", name);
+                return Err(format!("❌ Missing data for input: '{}'", name).into());
+            }
+        }
+    
+        // Step 4: Build the request body
+        let request_body = serde_json::json!({
+            "inputs": model_inputs
+        });
+    
+        // Step 5: Send the inference request
         let url = format!("{}/models/{}/infer", self.url, model_name);
         let response = self.client.post(&url)
-            .json(&serde_json::json!({ "inputs": [json!({
-                "name": input_name,
-                "shape": shape,
-                "datatype": "FP32",
-                "data": tensor_data.to_serializable()
-            })]}))
+            .json(&request_body)
             .send()
             .await?;
-        // println!("Payload sent to Triton: {:?}", serde_json::json!({ 
-        //     "inputs": [json!({
-        //         "name": input_name,
-        //         "shape": shape,
-        //         "datatype": "FP32",
-        //         "data": tensor_data.to_serializable()
-        //     })]
-        // }));
-    
     
         if response.status().is_success() {
-            Ok(response.json().await?)
+            let result: serde_json::Value = response.json().await?;
+            Ok(result)
         } else {
-            Err(TritonError::Http(response.status()))
+            let error_message = response.text().await?;
+            println!("❌ Inference failed. Response: {}", error_message);
+            Err(format!("❌ Inference failed: HTTP - {}", error_message).into())
         }
-    
     }
+    
+   
+   
     
     pub async fn run_inference(
         &self,
         model_name: &str,   // Give me exact name of the model
-        archive_path: &str, // Where you downloaded the model 
-        extract_to: &str, // The model path where you extract every archive model in your local machine
-        file_path: &str, // Input file path
+        input_data: HashMap<&str, (TensorData, Vec<usize>)>, // Input file path
     ) -> Result<Value, TritonError> {
-      //  Extract Model Archive
-      //  Define the model extraction path
-        let model_path = format!("{}/{}", extract_to, model_name);
-
         // Check if the model is already extracted
-        if Path::new(&model_path).exists() {
-            println!("Model already extracted at: {}", model_path);
-        } else {
-            // Extract Model Archive
-            println!("Extracting model archive from {}", archive_path);
-            let extractor = ModelExtractor::new(archive_path, extract_to);
-            if let Err(e) = extractor.extract_model() {
-                println!("Failed to extract model archive: {:?}", e);
-                return Err(TritonError::InvalidResponse("Model extraction failed"));
+       
+        match ModelExtractor::new(model_name) {
+            Ok(extractor) => {
+                if let Err(e) = extractor.extract_model() {
+                    println!("❌ Extraction failed: {:?}", e);
+                } else {
+                    println!("✅ Model '{}' successfully extracted!", model_name);
+                }
+            },
+            Err(e) => {
+                println!("❌ Initialization failed: {:?}", e);
             }
-            println!("Model extraction complete!");
         }
-
         println!("-------------------------------------------");
 
 
@@ -374,11 +328,11 @@ impl TritonClient {
                 return Err(e);
             }
         }
-        println!("-------------------------------------------");
+        // println!("-------------------------------------------");
     
         // Run Inference
         println!("Running inference...");
-        match self.infer(model_name, file_path).await {
+        match self.infer(model_name,input_data).await {
             Ok(result) => {
                 println!("Inference Successful: {:#?}", result);
                 println!("-------------------------------------------");
@@ -389,7 +343,8 @@ impl TritonClient {
             Err(e) => {
                 println!("Inference failed: {:?}", e);
                 self.unload_model(model_name).await?;
-                Err(e)
+                Err(TritonError::Unknown(format!("Inference failed: {:?}", e)))
+
             }
         }  
     }
