@@ -6,8 +6,10 @@ use neuro_zk_runtime::NeuroZKEngine;
 use futures::{SinkExt, StreamExt};
 use open_inference_runtime::client::TritonClient;
 use open_inference_runtime::client::TensorData;
-use serde_json::Value;
 use std::collections::HashMap;
+use base64::decode;
+
+use serde_json::Value;
 
 #[derive(Clone)]
 struct AppState {
@@ -96,36 +98,42 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
             let client = TritonClient::new("http://localhost:8000/v2".to_string());
 
             while let Some(Ok(msg)) = receiver.next().await {
-                if let Message::Text(text) = msg {
-                    match serde_json::from_str::<Value>(&text) {
+                if let Message::Binary(data) = msg {
+                    match serde_json::from_slice::<Value>(&data) {
                         Ok(value) => {
                             if let Some(model_name) = value["model_name"].as_str() {
                                 if let Some(inputs) = value["inputs"].as_object() {
-                                    // Prepare input data for Triton
-                                    let mut input_data: HashMap<&str, (TensorData, Vec<usize>)> = HashMap::new();
-                                    
-                                    for (key, val) in inputs.iter() {
-                                        if let Some(data_array) = val["data"].as_array() {
-                                            let data: Vec<f32> = data_array.iter()
-                                                .filter_map(|v| v.as_f64().map(|f| f as f32))
-                                                .collect();
-                                            
-                                            if let Some(shape_array) = val["shape"].as_array() {
-                                                let shape: Vec<usize> = shape_array.iter()
-                                                    .filter_map(|v| v.as_u64().map(|u| u as usize))
-                                                    .collect();
-                                                
-                                                // Wrapping in TensorData::F32
-                                                input_data.insert(key.as_str(), (TensorData::F32(data), shape));
+                                    let parsed_inputs = inputs.iter().map(|(k, v)| {
+                                        if let Some(base64_str) = v.as_str() {
+                                            match decode(base64_str) {
+                                                Ok(decoded) => (k.clone(), TensorData::U8(decoded)),
+                                                Err(_) => (k.clone(), TensorData::Str(vec![base64_str.to_string()])),
                                             }
+                                        } else if v.is_array() {
+                                            let values: Vec<_> = v.as_array().unwrap().iter().map(|x| x.as_f64().unwrap() as f32).collect();
+                                            (k.clone(), TensorData::F32(values))
+                                        } else {
+                                            (k.clone(), TensorData::Str(vec![v.to_string()]))
+                                        }
+                                    }).collect::<HashMap<String, TensorData>>();
+
+                                    match client.align_inputs(model_name, parsed_inputs).await {
+                                        Ok(input_data) => {
+                                            let flattened_inputs = input_data
+                                                .into_iter()
+                                                .map(|(k, (tensor_data, _))| (k, tensor_data))
+                                                .collect::<HashMap<String, TensorData>>();
+                                    
+                                            match client.run_inference(model_name, flattened_inputs).await {
+                                                Ok(result) => response_stream(format!("Inference Result: {:?}", result)).await,
+                                                Err(e) => response_stream(format!("Open Inference Error: {:?}", e)).await,
+                                            }
+                                        },
+                                        Err(e) => {
+                                            response_stream(format!("Input Alignment Error: {:?}", e)).await;
                                         }
                                     }
-
-                                    // Call the inference method
-                                    match client.run_inference(model_name, input_data).await {
-                                        Ok(result) => response_stream(format!("Inference Result: {:?}", result)).await,
-                                        Err(e) => response_stream(format!("Open Inference Error: {:?}", e)).await,
-                                    }
+                                    
                                 } else {
                                     response_stream("Missing 'inputs' parameter".to_string()).await;
                                 }
@@ -144,4 +152,3 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
         _ => Err("Unknown task type".into()),
     }
 }
-

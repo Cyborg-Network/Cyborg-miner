@@ -5,7 +5,7 @@ use flate2::read::GzDecoder;
 use tar::Archive;
 use zip::ZipArchive;
 use std::path::{Path, PathBuf};
-use std::fs::{File, metadata, remove_file};
+use std::fs::{File, remove_file};
 
 const BASE_PATH: &str = "/var/lib/cyborg/miner/current_task/";
 
