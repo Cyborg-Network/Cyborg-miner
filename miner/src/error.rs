@@ -27,14 +27,14 @@ pub enum Error {
     Conversion(std::string::FromUtf8Error),
 
     #[from]
-    Cess(cess_rust_sdk::core::Error)
+    Cess(cess_rust_sdk::core::Error),
 }
 
 impl Error {
     pub fn custom(val: impl std::fmt::Display) -> Self {
         Self::Custom(val.to_string())
     }
-    
+
     pub fn parachain_client_not_intitialized() -> Self {
         Self::Custom("Parachain client not initialized".to_string())
     }

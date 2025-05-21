@@ -1,9 +1,9 @@
+use crate::error::Result;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
+use tracing_appender::non_blocking;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::fmt::writer::BoxMakeWriter;
-use crate::error::Result;
-use tracing_appender::non_blocking;
 
 static LOG_GUARD: Lazy<Mutex<Option<WorkerGuard>>> = Lazy::new(|| Mutex::new(None));
 

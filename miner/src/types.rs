@@ -1,9 +1,9 @@
 use crate::substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
 use codec::{Decode, Encode};
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 use subxt::utils::AccountId32;
 use subxt_signer::sr25519::Keypair;
-use std::sync::Arc;
 use tokio::sync::RwLock;
 
 // Datastructure for worker registration persistence
@@ -15,8 +15,8 @@ pub struct MinerData {
 
 #[derive(Clone, Debug)]
 pub struct CurrentTask {
-    pub id: u64, 
-    pub task_type: TaskType
+    pub id: u64,
+    pub task_type: TaskType,
 }
 
 #[derive(Clone, Debug)]

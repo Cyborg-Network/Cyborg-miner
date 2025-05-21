@@ -1,5 +1,7 @@
 use crate::{
-    config, error::Result, types::{AccountKeypair, Miner, MinerData, ParentRuntime}
+    config,
+    error::Result,
+    types::{AccountKeypair, Miner, MinerData, ParentRuntime},
 };
 use std::{fs, str::FromStr, sync::Arc};
 use subxt::utils::AccountId32;
@@ -81,8 +83,7 @@ impl<Keypair> MinerBuilder<Keypair> {
 
         if let Some(paths) = config::PATHS.get() {
             match fs::read_to_string(&paths.identity_path)
-                .and_then(|s| serde_json::from_str::<MinerData>(&s)
-                .map_err(|e| e.into()))
+                .and_then(|s| serde_json::from_str::<MinerData>(&s).map_err(|e| e.into()))
             {
                 Ok(config) => {
                     identity = Some(config.miner_identity.clone());
@@ -107,7 +108,7 @@ impl MinerBuilder<AccountKeypair> {
     /// A `Result` that, if successful, contains the constructed `Miner`.
     pub async fn build(self) -> Result<Miner> {
         Ok(Miner {
-            parent_runtime: Arc::new(RwLock::new(ParentRuntime{ port: None, })),
+            parent_runtime: Arc::new(RwLock::new(ParentRuntime { port: None })),
             keypair: self.keypair.0,
             miner_identity: self.identity,
             creator: self.creator,
@@ -219,8 +220,7 @@ mod tests {
             .keypair("//Alice")?;
 
         // Test setting the paths without a keypair.
-        let builder = MinerBuilder::default()
-            .parachain_url("ws://127.0.0.1:9944".to_string());
+        let builder = MinerBuilder::default().parachain_url("ws://127.0.0.1:9944".to_string());
 
         Ok(())
     }

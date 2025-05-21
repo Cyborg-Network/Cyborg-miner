@@ -1,15 +1,16 @@
 use ezkl::{
-    commands::Commands::{GenWitness, GetSrs, Prove}, execute::run, Commitments
+    commands::Commands::{GenWitness, GetSrs, Prove},
+    execute::run,
+    Commitments,
 };
-use std::{fs::File, path::{Path, PathBuf}};
-use std::io::{copy, BufReader};
 use flate2::read::GzDecoder;
-use tar::Archive;
-use futures::{
-    Stream, 
-    Future,
-    stream::StreamExt
+use futures::{stream::StreamExt, Future, Stream};
+use std::io::{copy, BufReader};
+use std::{
+    fs::File,
+    path::{Path, PathBuf},
 };
+use tar::Archive;
 
 #[derive(Debug)]
 pub struct NeuroZKEngine {
@@ -26,16 +27,16 @@ const SRS_PATH: &str = "kzg.srs";
 
 impl NeuroZKEngine {
     /// Creates a new `NeuroZKEngine` instance.
-    /// 
+    ///
     /// # Arguments
     /// * `model_archive_path` - The path to the model archive
-    /// 
+    ///
     /// # Returns
     /// A new `NeuroZKEngine` instance
     pub fn new(model_archive_path: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
         if let Some(parent_dir) = model_archive_path.clone().parent() {
             let task_dir_string = parent_dir.to_str().expect("Invalid model archive path");
-           
+
             Ok(Self {
                 model_archive_path,
                 task_dir_string: task_dir_string.to_string(),
@@ -46,23 +47,21 @@ impl NeuroZKEngine {
     }
 
     pub async fn setup(&self) -> Result<(), Box<dyn std::error::Error>> {
-            self.extract_model(
-                &self.model_archive_path,
-                &self.task_dir_string,
-                MODEL_PATH,
-                PROVING_KEY_PATH,
-                SETTINGS_PATH,
-            ).await?;
+        self.extract_model(
+            &self.model_archive_path,
+            &self.task_dir_string,
+            MODEL_PATH,
+            PROVING_KEY_PATH,
+            SETTINGS_PATH,
+        )
+        .await?;
 
-            self.check_or_get_srs(
-                &self.task_dir_string, 
-                SRS_PATH, 
-                SETTINGS_PATH
-            ).await?;
+        self.check_or_get_srs(&self.task_dir_string, SRS_PATH, SETTINGS_PATH)
+            .await?;
 
         Ok(())
     }
-    
+
     /// Takes a stream of inference data and starts performing inference, proving inference on request by submitting a ZK SNARK to the blockchain.
     ///
     /// # Arguments
@@ -87,19 +86,24 @@ impl NeuroZKEngine {
 
             let response: String;
 
-            match self.generate_inference_result(
-                &self.task_dir_string,
-                MODEL_PATH,
-                SRS_PATH,
-                WITNESS_PATH,
-                request.clone()
-            ).await {
+            match self
+                .generate_inference_result(
+                    &self.task_dir_string,
+                    MODEL_PATH,
+                    SRS_PATH,
+                    WITNESS_PATH,
+                    request.clone(),
+                )
+                .await
+            {
                 Ok(result) => {
                     response = result;
                 }
                 Err(e) => {
                     println!("Failed to generate inference result, likely incorrect request format! Error: {}", e);
-                    response = "Failed to generate inference result, likely incorrect request format!".to_string();
+                    response =
+                        "Failed to generate inference result, likely incorrect request format!"
+                            .to_string();
                 }
             }
 
@@ -124,22 +128,18 @@ impl NeuroZKEngine {
     /// # Returns
     /// `Result<(), Box<dyn std::error::Error>>`
     async fn extract_model(
-        &self, 
+        &self,
         model_archive_location: &PathBuf,
-        prefix: &str, 
+        prefix: &str,
         model_file_name: &str,
         proving_key_file_name: &str,
-        settings_file_name: &str
+        settings_file_name: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if self.check_files_exists(
-            prefix, 
-            [
-                model_file_name, 
-                proving_key_file_name, 
-                settings_file_name
-            ]
+            prefix,
+            [model_file_name, proving_key_file_name, settings_file_name],
         ) {
-             return Ok(()) 
+            return Ok(());
         };
 
         println!("Opening archive at: {:?}", model_archive_location);
@@ -150,11 +150,7 @@ impl NeuroZKEngine {
         let decoder = GzDecoder::new(BufReader::new(archive_file));
         let mut archive = Archive::new(decoder);
 
-        let targets = [
-            model_file_name,
-            proving_key_file_name,
-            settings_file_name,
-        ];
+        let targets = [model_file_name, proving_key_file_name, settings_file_name];
 
         for entry_result in archive.entries()? {
             let mut entry = entry_result?;
@@ -183,9 +179,9 @@ impl NeuroZKEngine {
     /// `Result<(), Box<dyn std::error::Error>>`
     async fn check_or_get_srs(
         &self,
-        prefix: &str, 
-        srs_path: &str, 
-        settings_path: &str
+        prefix: &str,
+        srs_path: &str,
+        settings_path: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let srs_path = PathBuf::from(format!("{}/{}", prefix, srs_path));
         let settings_path = PathBuf::from(format!("{}/{}", prefix, settings_path));
@@ -195,8 +191,9 @@ impl NeuroZKEngine {
                 settings_path: Some(settings_path),
                 srs_path: Some(srs_path),
                 commitment: Some(Commitments::KZG),
-                logrows: None
-            }).await?;
+                logrows: None,
+            })
+            .await?;
 
             Ok(())
         } else {
@@ -218,7 +215,7 @@ impl NeuroZKEngine {
 
         for file_path in nzk_files {
             if !std::fs::metadata(format!("{}/{}", prefix, file_path)).is_ok() {
-                return false
+                return false;
             }
         }
 
@@ -229,9 +226,9 @@ impl NeuroZKEngine {
     ///
     /// # Arguments
     /// * `&self`
-    /// * `prefix` - The directory for operations on NZK related files 
+    /// * `prefix` - The directory for operations on NZK related files
     /// * `model_path` - The location of the model currently loaded into the miner
-    /// * `proving_key_path` - The location of the proving key currently loaded into the miner 
+    /// * `proving_key_path` - The location of the proving key currently loaded into the miner
     /// * `srs_path` - The location of the SRS currently loaded into the miner
     /// * `witness_path` - The location of the witness currently loaded into the miner
     ///
@@ -259,14 +256,13 @@ impl NeuroZKEngine {
             proof_path: Some(proof_path),
             srs_path: Some(srs_path),
             proof_type: (ezkl::pfsys::ProofType::Single),
-            check_mode: None
-        }).await?;
+            check_mode: None,
+        })
+        .await?;
 
         //TODO Insert appropriate byte vector proof here OR return path of the proof and let the parachain interactor handle it
         Ok(vec![1, 2, 3])
     }
-
-
 
     /// Takes input and performs inference on the model currently loaded into the miner. Fails if `init_model` has not been called. Should be called for the vast majority of inference requests.
     ///

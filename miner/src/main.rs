@@ -14,7 +14,9 @@
 /// Run the executable with appropriate arguments to start mining.
 mod builder;
 mod cli;
+mod config;
 mod error;
+mod log;
 mod parachain_interactor;
 mod parent_runtime;
 mod specs;
@@ -22,13 +24,11 @@ mod substrate_interface;
 mod traits;
 mod types;
 mod utils;
-mod config;
-mod log;
 
 use builder::MinerBuilder;
-use config::run_config;
 use clap::Parser;
 use cli::{Cli, Commands};
+use config::run_config;
 use error::Result;
 use traits::ParachainInteractor;
 

@@ -31,8 +31,7 @@ pub async fn submit_result(
         .wait_for_finalized_success()
         .await?;
 
-    let submission_event = 
-        result_submission_events.find_first::<substrate_interface::api::task_management::events::SubmittedCompletedTask>()?;
+    let submission_event = result_submission_events.find_first::<substrate_interface::api::task_management::events::SubmittedCompletedTask>()?;
     if let Some(event) = submission_event {
         println!("Task submitted successfully: {event:?}");
     } else {
@@ -68,8 +67,7 @@ pub async fn submit_result_verification(
         .wait_for_finalized_success()
         .await?;
 
-    let submission_event = 
-        verification_submission_events.find_first::<substrate_interface::api::task_management::events::VerifiedCompletedTask>()?;
+    let submission_event = verification_submission_events.find_first::<substrate_interface::api::task_management::events::VerifiedCompletedTask>()?;
     if let Some(event) = submission_event {
         println!("Task submitted successfully: {event:?}");
     } else {
@@ -105,8 +103,7 @@ pub async fn submit_result_resolution(
         .wait_for_finalized_success()
         .await?;
 
-    let submission_event = 
-        resolution_submission_events.find_first::<substrate_interface::api::task_management::events::ResolvedCompletedTask>()?;
+    let submission_event = resolution_submission_events.find_first::<substrate_interface::api::task_management::events::ResolvedCompletedTask>()?;
     if let Some(event) = submission_event {
         println!("Task submitted successfully: {event:?}");
     } else {

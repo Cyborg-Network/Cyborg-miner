@@ -1,16 +1,30 @@
-use crate::{config::get_paths, error::{Error, Result}, types::{CurrentTask, TaskType}};
-use axum::{extract::{ws::{Message, WebSocket, WebSocketUpgrade}, ConnectInfo, State}, routing::get, serve, Router};
-use std::{net::SocketAddr, path::PathBuf, sync::Arc};
-use tokio::{net::TcpListener, sync::{Mutex, watch}};
-use neuro_zk_runtime::NeuroZKEngine;
-use futures::{SinkExt, StreamExt};
 use crate::parent_runtime::server_control::SHUTDOWN_SENDER;
+use crate::{
+    config::get_paths,
+    error::{Error, Result},
+    types::{CurrentTask, TaskType},
+};
+use axum::{
+    extract::{
+        ws::{Message, WebSocket, WebSocketUpgrade},
+        ConnectInfo, State,
+    },
+    routing::get,
+    serve, Router,
+};
+use futures::{SinkExt, StreamExt};
+use neuro_zk_runtime::NeuroZKEngine;
+use std::{net::SocketAddr, path::PathBuf, sync::Arc};
+use tokio::{
+    net::TcpListener,
+    sync::{watch, Mutex},
+};
 //use open_inference_runtime::OpenInferenceEngine;
 
 #[derive(Clone)]
-pub enum InferenceEngine{
+pub enum InferenceEngine {
     //OpenInference(open_inference_runtime::OpenInferenceRuntime),
-    NeuroZk(Arc<Mutex<NeuroZKEngine>>)
+    NeuroZk(Arc<Mutex<NeuroZKEngine>>),
 }
 
 #[derive(Clone)]
@@ -29,16 +43,18 @@ enum EngineStatus {
 }
 
 pub async fn spawn_inference_server(
-    task: &CurrentTask, 
+    task: &CurrentTask,
     port: Option<u16>,
 ) -> Result<tokio::task::JoinHandle<()>> {
     let (status_tx, status_rx) = watch::channel(EngineStatus::Idle);
     let paths = get_paths()?;
-    let engine = Arc::new(Mutex::new(NeuroZKEngine::new(PathBuf::from(
-        format!("{}/{}", paths.task_dir_path, paths.task_file_name),
-    )).map_err(
-        |e|Error::Custom(format!("Failed to create engine: {}", e.to_string()))
-    )?));
+    let engine = Arc::new(Mutex::new(
+        NeuroZKEngine::new(PathBuf::from(format!(
+            "{}/{}",
+            paths.task_dir_path, paths.task_file_name
+        )))
+        .map_err(|e| Error::Custom(format!("Failed to create engine: {}", e.to_string())))?,
+    ));
 
     let (shutdown_tx, mut shutdown_rx) = watch::channel(false);
     {
@@ -51,7 +67,7 @@ pub async fn spawn_inference_server(
         tokio::spawn(async move {
             let _ = status_tx.send(EngineStatus::Initializing);
 
-            match engine.lock().await.setup().await{
+            match engine.lock().await.setup().await {
                 Ok(()) => {
                     let _ = status_tx.send(EngineStatus::Ready);
                 }
@@ -71,7 +87,7 @@ pub async fn spawn_inference_server(
     let mut default_port: u16 = 3000;
 
     if let Some(port) = port {
-        default_port = port 
+        default_port = port
     }
 
     let app = Router::new()
@@ -84,13 +100,16 @@ pub async fn spawn_inference_server(
 
     let handle = tokio::spawn(async move {
         println!("Starting inference server...");
-        axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
-            .with_graceful_shutdown( async move {
-                shutdown_rx.changed().await.ok();
-                println!("Shutdown signal received, stopping inference server!");                    
-            })
-            .await
-            .expect("Server failed to start...");
+        axum::serve(
+            listener,
+            app.into_make_service_with_connect_info::<SocketAddr>(),
+        )
+        .with_graceful_shutdown(async move {
+            shutdown_rx.changed().await.ok();
+            println!("Shutdown signal received, stopping inference server!");
+        })
+        .await
+        .expect("Server failed to start...");
     });
 
     println!("Returning handle");
@@ -132,7 +151,11 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
             let sender = Arc::clone(&sender);
             println!("Sending response: {}", response);
             async move {
-                let _ = sender.lock().await.send(Message::Text(response.into())).await;
+                let _ = sender
+                    .lock()
+                    .await
+                    .send(Message::Text(response.into()))
+                    .await;
             }
         }
     };
@@ -148,13 +171,30 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
             }
         }
         EngineStatus::Initializing => {
-            sender.lock().await.send(Message::Text("Engine is initializing...".into())).await.ok();
+            sender
+                .lock()
+                .await
+                .send(Message::Text("Engine is initializing...".into()))
+                .await
+                .ok();
         }
         EngineStatus::Failed(ref err) => {
-            sender.lock().await.send(Message::Text(format!("Engine failed to initialize: {}", err).into())).await.ok();
+            sender
+                .lock()
+                .await
+                .send(Message::Text(
+                    format!("Engine failed to initialize: {}", err).into(),
+                ))
+                .await
+                .ok();
         }
         EngineStatus::Idle => {
-            sender.lock().await.send(Message::Text("Engine has not started.".into())).await.ok();
+            sender
+                .lock()
+                .await
+                .send(Message::Text("Engine has not started.".into()))
+                .await
+                .ok();
         }
     }
 

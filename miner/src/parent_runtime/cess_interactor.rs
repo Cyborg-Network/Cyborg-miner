@@ -6,10 +6,7 @@ use cess_rust_sdk::utils::account::get_pair_address_as_ss58_address;
 use cess_rust_sdk::utils::str::get_random_code;
 use tracing::info;
 
-pub async fn download_model_archive(
-    cess_fid: &str,
-    cipher: &str,
-) -> Result<()> {
+pub async fn download_model_archive(cess_fid: &str, cipher: &str) -> Result<()> {
     //! The extraction of the archive will be left up to the individual runtimes, as they might treat it differently
     /*
     println!("Starting download model archive: {}", cess_fid);

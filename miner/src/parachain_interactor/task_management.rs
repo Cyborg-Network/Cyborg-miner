@@ -1,8 +1,11 @@
 use crate::{
-    config, 
-    error::{Error, Result}, 
-    substrate_interface::{self, api::{neuro_zk, runtime_types::bounded_collections::bounded_vec::BoundedVec}}, 
-    types::Miner
+    config,
+    error::{Error, Result},
+    substrate_interface::{
+        self,
+        api::{neuro_zk, runtime_types::bounded_collections::bounded_vec::BoundedVec},
+    },
+    types::Miner,
 };
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -10,7 +13,7 @@ use tokio::sync::RwLock;
 pub async fn confirm_task_reception(miner: &Miner) -> Result<()> {
     //TODO uncomment after subxt regen
 
-    /* 
+    /*
     let client = config::get_parachain_client()?;
     let config_path = &config::get_paths()?.identity_path;
     let keypair = &miner.read().await.keypair;
@@ -65,7 +68,8 @@ pub async fn submit_zkml_proof(miner: &Miner, proof: Vec<u8>) -> Result<()> {
 
     let client = config::get_parachain_client()?;
     let keypair = &miner.keypair;
-    let current_task = miner.current_task
+    let current_task = miner
+        .current_task
         .as_ref()
         .ok_or(Error::no_current_task())?
         .id
@@ -73,10 +77,7 @@ pub async fn submit_zkml_proof(miner: &Miner, proof: Vec<u8>) -> Result<()> {
 
     let proof_submission = substrate_interface::api::tx()
         .neuro_zk()
-        .submit_proof(
-            current_task, 
-            proof
-        );
+        .submit_proof(current_task, proof);
 
     println!("Transaction Details:");
     println!("Module: {:?}", proof_submission.pallet_name());
@@ -88,7 +89,9 @@ pub async fn submit_zkml_proof(miner: &Miner, proof: Vec<u8>) -> Result<()> {
         .sign_and_submit_then_watch_default(&proof_submission, keypair)
         .await
         .map(|e| {
-            println!("Task reception confirmation submitted, waiting for transaction to be finalized...");
+            println!(
+                "Task reception confirmation submitted, waiting for transaction to be finalized..."
+            );
             e
         })?
         .wait_for_finalized_success()

@@ -5,15 +5,16 @@ use crate::{config, substrate_interface};
 
 pub async fn suspend_miner(miner: &Miner) -> Result<()> {
     let client = config::get_parachain_client()?;
-    let miner_id = miner.miner_identity.
-        as_ref().
-        ok_or(Error::identity_not_initialized())?.
-        1;
+    let miner_id = miner
+        .miner_identity
+        .as_ref()
+        .ok_or(Error::identity_not_initialized())?
+        .1;
 
     // TODO This needs a special function and miners need a quarantine or other way to punish suspicious behavior
     let worker_suspension = substrate_interface::api::tx()
         .edge_connect()
-        .toggle_worker_visibility(WorkerType::Executable, miner_id,  false);
+        .toggle_worker_visibility(WorkerType::Executable, miner_id, false);
 
     println!("Transaction Details:");
     println!("Module: {:?}", worker_suspension.pallet_name());
@@ -38,7 +39,6 @@ pub async fn suspend_miner(miner: &Miner) -> Result<()> {
     )?;
 
     if let Some(event) = suspension_event {
-
         println!("Miner suspended successfully: {event:?}");
     } else {
         println!("Miner suspension failed");

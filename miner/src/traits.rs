@@ -1,11 +1,9 @@
 use crate::{
     error::Result,
     parachain_interactor::{
-        behavior_control, event_processor, identity, registration, task_management
+        behavior_control, event_processor, identity, registration, task_management,
     },
-    parent_runtime::{
-        cess_interactor, inference, proof
-    },
+    parent_runtime::{cess_interactor, inference, proof},
     types::{CurrentTask, Miner, ParentRuntime},
 };
 use async_trait::async_trait;
@@ -23,7 +21,7 @@ pub trait InferenceServer {
     /// # Returns
     /// A `Result` containing `Ok(())` if the model archive is successfully downloaded, or an `Error` if it fails.
     async fn download_model_archive(&self, fid: &str, cipher: &str) -> Result<()>;
-    
+
     /// Starts performing inference, selecting the correct inference engine based on the task type
     ///
     /// # Arguments
@@ -31,10 +29,7 @@ pub trait InferenceServer {
     ///
     /// # Returns
     /// An `impl Stream<Item = Result<Message, tungstenite::Error>>` representing the output stream of messages.
-    async fn perform_inference(
-        &self, 
-        current_task: &CurrentTask, 
-    ) -> Result<JoinHandle<()>>;
+    async fn perform_inference(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>>;
 
     /// Generates a zkml proof for the model currently in execution.
     ///
@@ -49,10 +44,7 @@ impl InferenceServer for ParentRuntime {
         cess_interactor::download_model_archive(cess_fid, cipher).await
     }
 
-    async fn perform_inference(
-        &self, 
-        current_task: &CurrentTask, 
-    ) -> Result<JoinHandle<()>> {
+    async fn perform_inference(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>> {
         inference::spawn_inference_server(current_task, self.port).await
     }
 
@@ -118,7 +110,7 @@ pub trait ParachainInteractor {
 
     //TODO this might also notify the user that the miner has been corrupted and that the current task should be pulled
     /// Suspends the miner by sending a transaction to the parachain that deactivates the miner for further tasks..
-    /// 
+    ///
     /// # Returns
     /// A `Result` indicating `Ok(())` if the miner is successfully suspended, or an `Error` if it fails.
     async fn suspend_miner(&self) -> Result<()>;
@@ -154,7 +146,7 @@ impl ParachainInteractor for Miner {
     fn update_identity_file(&self, path: &str, content: &str) -> Result<()> {
         identity::update_identity_file(path, content)
     }
-    
+
     async fn suspend_miner(&self) -> Result<()> {
         behavior_control::suspend_miner(self).await
     }

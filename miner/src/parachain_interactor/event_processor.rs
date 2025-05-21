@@ -5,12 +5,11 @@ use crate::{
     error::{Error, Result},
     types::Miner,
 };
+use std::sync::Arc;
 use subxt::{events::EventDetails, PolkadotConfig};
 use tracing::info;
-use std::sync::Arc;
 
 pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfig>) -> Result<()> {
-
     // Check for WorkerRegistered event
     match event.as_event::<substrate_interface::api::edge_connect::events::WorkerRegistered>() {
         Ok(Some(worker_registered)) => {
@@ -71,7 +70,8 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
     match event.as_event::<substrate_interface::api::task_management::events::TaskScheduled>() {
         Ok(Some(task_scheduled)) => {
             let assigned_miner = &task_scheduled.assigned_worker;
-            let identity = &miner.miner_identity
+            let identity = &miner
+                .miner_identity
                 .as_ref()
                 .ok_or(Error::identity_not_initialized())?;
 
@@ -81,11 +81,11 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                 let storage_encryption_cipher = "password";
                 let task_fid_string = String::from_utf8(task_scheduled.task.0)?;
 
-                miner.current_task = Some(CurrentTask{
+                miner.current_task = Some(CurrentTask {
                     id: task_scheduled.task_id,
                     //TODO uncomment after subxt regen
                     //task_type: task_scheduled.task_type,
-                    task_type: TaskType::NeuroZk
+                    task_type: TaskType::NeuroZk,
                 });
 
                 info!("New task scheduled for worker: {}", task_fid_string);
@@ -95,12 +95,21 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
 
                 if let Some(current_task) = current_task_clone {
                     tokio::spawn(async move {
-                        if let Err(e) = parent_runtime_clone.read().await.
-                            download_model_archive(&task_fid_string, storage_encryption_cipher).await {
-                                eprintln!("Error downloading model archive: {}", e);
-                            };
+                        if let Err(e) = parent_runtime_clone
+                            .read()
+                            .await
+                            .download_model_archive(&task_fid_string, storage_encryption_cipher)
+                            .await
+                        {
+                            eprintln!("Error downloading model archive: {}", e);
+                        };
 
-                        if let Err(e) = parent_runtime_clone.read().await.perform_inference(&current_task).await {
+                        if let Err(e) = parent_runtime_clone
+                            .read()
+                            .await
+                            .perform_inference(&current_task)
+                            .await
+                        {
                             eprintln!("Error performing inference: {}", e)
                         };
                     });
@@ -124,7 +133,7 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                 if *task_id == current_task.id {
                     let proof = miner.parent_runtime.read().await.generate_proof().await?;
                     let _ = miner.submit_zkml_proof(proof).await?;
-                }   
+                }
             }
             Err(e) => {
                 println!("Error decoding SubmittedCompletedTask event: {:?}", e);

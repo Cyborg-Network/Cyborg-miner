@@ -4,21 +4,20 @@ use crate::error::Result;
 use crate::specs;
 use crate::substrate_interface;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
-use crate::traits::{ParachainInteractor, InferenceServer};
-use crate::types::{Miner, MinerData, TaskType, CurrentTask};
-use tracing::info;
+use crate::traits::{InferenceServer, ParachainInteractor};
+use crate::types::{CurrentTask, Miner, MinerData, TaskType};
 use std::sync::Arc;
+use tracing::info;
 
 pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
     let client = config::get_parachain_client()?;
     let identity = if let Some(id) = &miner.miner_identity {
         id
     } else {
-        return Ok(false)
+        return Ok(false);
     };
 
-    let miner_registration_confirmation_query = 
-        substrate_interface::api::storage()
+    let miner_registration_confirmation_query = substrate_interface::api::storage()
         .edge_connect()
         .executable_workers(&identity.0, &identity.1);
 
@@ -96,7 +95,7 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     println!("Waiting for tasks...");
 
-    let client = config::get_parachain_client()?; 
+    let client = config::get_parachain_client()?;
 
     /*
     if !miner.confirm_registration().await? {
@@ -135,11 +134,11 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
     let storage_encryption_cipher = "password";
     let task_fid_string = "f".to_string();
 
-    miner.current_task = Some(CurrentTask{
+    miner.current_task = Some(CurrentTask {
         id: 0,
         //TODO uncomment after subxt regen
         //task_type: task_scheduled.task_type,
-        task_type: TaskType::NeuroZk
+        task_type: TaskType::NeuroZk,
     });
 
     info!("New task scheduled for worker: {}", task_fid_string);
@@ -153,18 +152,23 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
     if let Some(current_task) = current_task_clone {
         println!("Spawnin 1");
         let handle_2 = tokio::spawn(async move {
-
             println!("Spawnin 2");
-            if let Err(e) = parent_runtime_clone.read().await.
-                download_model_archive(&task_fid_string, storage_encryption_cipher).await {
-                    println!("Error downloading model archive: {}", e);
-                };
-
+            if let Err(e) = parent_runtime_clone
+                .read()
+                .await
+                .download_model_archive(&task_fid_string, storage_encryption_cipher)
+                .await
+            {
+                println!("Error downloading model archive: {}", e);
+            };
 
             println!("Spawnin 3");
 
-            let handle = parent_runtime_clone.read().await.
-                perform_inference(&current_task).await;
+            let handle = parent_runtime_clone
+                .read()
+                .await
+                .perform_inference(&current_task)
+                .await;
 
             println!("Awaiting handle");
 
