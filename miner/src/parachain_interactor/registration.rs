@@ -146,13 +146,10 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
     let parent_runtime_clone = Arc::clone(&miner.parent_runtime);
     let current_task_clone = miner.current_task.clone();
 
-    println!("Before spawning");
     println!("Current task: {current_task_clone:?}");
 
     if let Some(current_task) = current_task_clone {
-        println!("Spawnin 1");
         let handle_2 = tokio::spawn(async move {
-            println!("Spawnin 2");
             if let Err(e) = parent_runtime_clone
                 .read()
                 .await
@@ -162,15 +159,11 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
                 println!("Error downloading model archive: {}", e);
             };
 
-            println!("Spawnin 3");
-
             let handle = parent_runtime_clone
                 .read()
                 .await
                 .perform_inference(&current_task)
                 .await;
-
-            println!("Awaiting handle");
 
             match handle {
                 Ok(handle) => {
@@ -185,7 +178,6 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
         handle_2.await.map_err(|e| Error::Custom(e.to_string()))?;
     } else {
-        println!("Spawnin 4");
         return Err(Error::Custom("No current task".to_string()));
     }
 

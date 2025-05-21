@@ -4,3 +4,4 @@ target/
 miner/current_task/
 miner/config/
 logs/
+witness.json

@@ -14,8 +14,6 @@ tokio = { version = "1.41.0" }
 tracing = { version = "0.1.41" }
 tracing-subscriber = { version = "0.3.19" }
 tracing-appender = { version = "0.2.3" }
-lazy_static = "1.5.0"
-
 
 miner = { path = "miner" }
 neuro-zk-runtime = { path = "neuro-zk-runtime" }
