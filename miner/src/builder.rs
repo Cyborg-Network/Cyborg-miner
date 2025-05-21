@@ -107,7 +107,7 @@ impl MinerBuilder<AccountKeypair> {
     /// A `Result` that, if successful, contains the constructed `Miner`.
     pub async fn build(self) -> Result<Miner> {
         Ok(Miner {
-            parent_runtime: Arc::new(RwLock::new(ParentRuntime{ task: None , port: None, })),
+            parent_runtime: Arc::new(RwLock::new(ParentRuntime{ port: None, })),
             keypair: self.keypair.0,
             miner_identity: self.identity,
             creator: self.creator,

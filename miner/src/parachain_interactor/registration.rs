@@ -4,15 +4,18 @@ use crate::error::Result;
 use crate::specs;
 use crate::substrate_interface;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
-use crate::traits::ParachainInteractor;
-use crate::types::{Miner, MinerData};
+use crate::traits::{ParachainInteractor, InferenceServer};
+use crate::types::{Miner, MinerData, TaskType, CurrentTask};
 use tracing::info;
+use std::sync::Arc;
 
 pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
     let client = config::get_parachain_client()?;
-    let identity = &miner.miner_identity
-        .as_ref()
-        .ok_or(Error::identity_not_initialized())?;
+    let identity = if let Some(id) = &miner.miner_identity {
+        id
+    } else {
+        return Ok(false)
+    };
 
     let miner_registration_confirmation_query = 
         substrate_interface::api::storage()
@@ -88,21 +91,25 @@ pub async fn register_miner(miner: &Miner) -> Result<()> {
     Ok(())
 }
 
-pub async fn start_miner(miner: &Miner) -> Result<()> {
+pub async fn start_miner(miner: &mut Miner) -> Result<()> {
     println!("Starting miner...");
 
     println!("Waiting for tasks...");
 
     let client = config::get_parachain_client()?; 
 
+    /*
     if !miner.confirm_registration().await? {
         miner.register_miner().await.map_err(|e| Error::Custom(format!(
             "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
         )))?
     }
+    */
 
     let mut blocks = client.blocks().subscribe_finalized().await?;
 
+    //TODO uncommented for testing of everything without having to listen to the blockchain
+    /*
     while let Some(Ok(block)) = blocks.next().await {
         info!("New block imported: {:?}", block.hash());
 
@@ -119,6 +126,66 @@ pub async fn start_miner(miner: &Miner) -> Result<()> {
             }
         }
     }
+    */
+
+    // -----------------------------------------------DELETE-----------------
+
+    //TODO uncomment this and remove the hardcoded cipher after subxt is regen
+    //let storage_encryption_cipher = &task_scheduled.cipher;
+    let storage_encryption_cipher = "password";
+    let task_fid_string = "f".to_string();
+
+    miner.current_task = Some(CurrentTask{
+        id: 0,
+        //TODO uncomment after subxt regen
+        //task_type: task_scheduled.task_type,
+        task_type: TaskType::NeuroZk
+    });
+
+    info!("New task scheduled for worker: {}", task_fid_string);
+
+    let parent_runtime_clone = Arc::clone(&miner.parent_runtime);
+    let current_task_clone = miner.current_task.clone();
+
+    println!("Before spawning");
+    println!("Current task: {current_task_clone:?}");
+
+    if let Some(current_task) = current_task_clone {
+        println!("Spawnin 1");
+        let handle_2 = tokio::spawn(async move {
+
+            println!("Spawnin 2");
+            if let Err(e) = parent_runtime_clone.read().await.
+                download_model_archive(&task_fid_string, storage_encryption_cipher).await {
+                    println!("Error downloading model archive: {}", e);
+                };
+
+
+            println!("Spawnin 3");
+
+            let handle = parent_runtime_clone.read().await.
+                perform_inference(&current_task).await;
+
+            println!("Awaiting handle");
+
+            match handle {
+                Ok(handle) => {
+                    handle.await.ok();
+                    println!("Inference server exited");
+                }
+                Err(e) => {
+                    eprintln!("Error starting inference server: {}", e);
+                }
+            }
+        });
+
+        handle_2.await.map_err(|e| Error::Custom(e.to_string()))?;
+    } else {
+        println!("Spawnin 4");
+        return Err(Error::Custom("No current task".to_string()));
+    }
+
+    // -----------------------------------------------DELETE TO HERE-----------------
 
     Ok(())
 }

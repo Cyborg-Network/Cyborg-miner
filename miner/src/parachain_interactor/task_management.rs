@@ -68,7 +68,7 @@ pub async fn submit_zkml_proof(miner: &Miner, proof: Vec<u8>) -> Result<()> {
     let current_task = miner.current_task
         .as_ref()
         .ok_or(Error::no_current_task())?
-        .0
+        .id
         .clone();
 
     let proof_submission = substrate_interface::api::tx()

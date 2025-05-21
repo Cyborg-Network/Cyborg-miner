@@ -50,7 +50,7 @@ async fn main() -> Result<()> {
             let _log_guard = log::init_logger();
 
             // Build the Miner using the provided parachain URL, account seed, and CESS gateway.
-            let miner = MinerBuilder::default()
+            let mut miner = MinerBuilder::default()
                 .parachain_url(parachain_url.to_string())
                 .keypair(account_seed)?
                 .config()?

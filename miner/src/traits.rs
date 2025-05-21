@@ -4,14 +4,14 @@ use crate::{
         behavior_control, event_processor, identity, registration, task_management
     },
     parent_runtime::{
-        inference, proof, cess_interactor
+        cess_interactor, inference, proof
     },
-    types::{Miner, ParentRuntime},
+    types::{CurrentTask, Miner, ParentRuntime},
 };
 use async_trait::async_trait;
-use std::{path::PathBuf};
 use subxt::events::EventDetails;
 use subxt::PolkadotConfig;
+use tokio::{sync::watch, task::JoinHandle};
 
 #[async_trait]
 pub trait InferenceServer {
@@ -31,7 +31,10 @@ pub trait InferenceServer {
     ///
     /// # Returns
     /// An `impl Stream<Item = Result<Message, tungstenite::Error>>` representing the output stream of messages.
-    async fn perform_inference(&self) -> Result<()>;
+    async fn perform_inference(
+        &self, 
+        current_task: &CurrentTask, 
+    ) -> Result<JoinHandle<()>>;
 
     /// Generates a zkml proof for the model currently in execution.
     ///
@@ -46,8 +49,11 @@ impl InferenceServer for ParentRuntime {
         cess_interactor::download_model_archive(cess_fid, cipher).await
     }
 
-    async fn perform_inference(&self) -> Result<()> {
-        inference::spawn_inference_server(&self.task, self.port).await
+    async fn perform_inference(
+        &self, 
+        current_task: &CurrentTask, 
+    ) -> Result<JoinHandle<()>> {
+        inference::spawn_inference_server(current_task, self.port).await
     }
 
     async fn generate_proof(&self) -> Result<Vec<u8>> {
@@ -77,7 +83,7 @@ pub trait ParachainInteractor {
     ///
     /// # Returns
     /// A `Result` indicating `Ok(())` if the session starts successfully, or an `Error` if it fails.
-    async fn start_miner(&self) -> Result<()>;
+    async fn start_miner(&mut self) -> Result<()>;
 
     /// Processes an event received from the blockchain.
     ///
@@ -86,7 +92,7 @@ pub trait ParachainInteractor {
     ///
     /// # Returns
     /// An `Option<String>` containing relevant information derived from the event, or `None` if no information is extracted.
-    async fn process_event(&self, event: &EventDetails<PolkadotConfig>) -> Result<()>;
+    async fn process_event(&mut self, event: &EventDetails<PolkadotConfig>) -> Result<()>;
 
     /// Submits a zkml (Zero Knowledge Machine Learning) proof to the blockchain.
     ///
@@ -108,7 +114,7 @@ pub trait ParachainInteractor {
     /// # Arguments
     /// * `file_path` - A `&str` representing the path to the config file.
     /// * `content` - A `&str` representing the content to be written to the config file.
-    fn update_identity_file(&self, path: &PathBuf, content: &str) -> Result<()>;
+    fn update_identity_file(&self, path: &str, content: &str) -> Result<()>;
 
     //TODO this might also notify the user that the miner has been corrupted and that the current task should be pulled
     /// Suspends the miner by sending a transaction to the parachain that deactivates the miner for further tasks..
@@ -129,11 +135,11 @@ impl ParachainInteractor for Miner {
         registration::register_miner(self).await
     }
 
-    async fn start_miner(&self) -> Result<()> {
+    async fn start_miner(&mut self) -> Result<()> {
         registration::start_miner(self).await
     }
 
-    async fn process_event(&self, event: &EventDetails<PolkadotConfig>) -> Result<()> {
+    async fn process_event(&mut self, event: &EventDetails<PolkadotConfig>) -> Result<()> {
         event_processor::process_event(self, event).await
     }
 
@@ -145,7 +151,7 @@ impl ParachainInteractor for Miner {
         task_management::submit_zkml_proof(self, proof).await
     }
 
-    fn update_identity_file(&self, path: &PathBuf, content: &str) -> Result<()> {
+    fn update_identity_file(&self, path: &str, content: &str) -> Result<()> {
         identity::update_identity_file(path, content)
     }
     

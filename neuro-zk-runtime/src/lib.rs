@@ -14,6 +14,7 @@ use futures::{
 #[derive(Debug)]
 pub struct NeuroZKEngine {
     model_archive_path: PathBuf,
+    task_dir_string: String,
 }
 
 const MODEL_PATH: &str = "circuit.ezkl";
@@ -21,7 +22,7 @@ const SETTINGS_PATH: &str = "settings.json";
 const PROVING_KEY_PATH: &str = "pk.key";
 const WITNESS_PATH: &str = "witness.json";
 const PROOF_PATH: &str = "proof.json";
-const SRS_PATH: &str = "srs.json";
+const SRS_PATH: &str = "kzg.srs";
 
 impl NeuroZKEngine {
     /// Creates a new `NeuroZKEngine` instance.
@@ -31,18 +32,43 @@ impl NeuroZKEngine {
     /// 
     /// # Returns
     /// A new `NeuroZKEngine` instance
-    pub fn new(model_archive_path: PathBuf) -> Self {
-        Self {
-            model_archive_path,
+    pub fn new(model_archive_path: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
+        if let Some(parent_dir) = model_archive_path.clone().parent() {
+            let task_dir_string = parent_dir.to_str().expect("Invalid model archive path");
+           
+            Ok(Self {
+                model_archive_path,
+                task_dir_string: task_dir_string.to_string(),
+            })
+        } else {
+            return Err("Invalid model archive path".into());
         }
+    }
+
+    pub async fn setup(&self) -> Result<(), Box<dyn std::error::Error>> {
+            self.extract_model(
+                &self.model_archive_path,
+                &self.task_dir_string,
+                MODEL_PATH,
+                PROVING_KEY_PATH,
+                SETTINGS_PATH,
+            ).await?;
+
+            self.check_or_get_srs(
+                &self.task_dir_string, 
+                SRS_PATH, 
+                SETTINGS_PATH
+            ).await?;
+
+        Ok(())
     }
     
     /// Takes a stream of inference data and starts performing inference, proving inference on request by submitting a ZK SNARK to the blockchain.
     ///
     /// # Arguments
     /// * `&self`
-    /// * `request_stream` - An iterable receiver of data to perform inference on
-    /// * `response_stream` - An iterable sender of inference responses
+    /// * `request_stream` - The stream of inference data
+    /// * `response_closure` - A closure that takes a string and returns a future that resolves to ()
     ///
     /// # Returns
     /// A result containing either the inference output stream, or an Error `Result<(), Box<dyn std::error::Error>>`
@@ -56,38 +82,30 @@ impl NeuroZKEngine {
         C: FnMut(String) -> CFut + Send + 'static,
         CFut: Future<Output = ()> + Send + 'static,
     {
-
-        let neuro_zk_task_dir = std::env::var("NZK_TASK_PATH")?;
-
-        self.extract_model(
-            &self.model_archive_path,
-            &neuro_zk_task_dir,
-            MODEL_PATH,
-            PROVING_KEY_PATH,
-            SETTINGS_PATH,
-        ).await?;
-
-        self.check_or_get_srs(
-            &neuro_zk_task_dir, 
-            SRS_PATH, 
-            SETTINGS_PATH
-        ).await?;
-
         while let Some(request) = request_stream.next().await {
             println!("Processing inference for request: {}", request);
 
-            if let Some(data) = serde_json::to_string(&request).ok() {
-                let result = self
-                    .generate_inference_result(
-                        &neuro_zk_task_dir,
-                        MODEL_PATH,
-                        SRS_PATH,
-                        WITNESS_PATH,
-                        data
-                    ).await?;
+            let response: String;
 
-                response_closure(result).await;
+            match self.generate_inference_result(
+                &self.task_dir_string,
+                MODEL_PATH,
+                SRS_PATH,
+                WITNESS_PATH,
+                request.clone()
+            ).await {
+                Ok(result) => {
+                    response = result;
+                }
+                Err(e) => {
+                    println!("Failed to generate inference result, likely incorrect request format! Error: {}", e);
+                    response = "Failed to generate inference result, likely incorrect request format!".to_string();
+                }
             }
+
+            println!("Generated inference result: {}", response);
+
+            response_closure(response).await;
         }
 
         Ok(())
@@ -97,6 +115,11 @@ impl NeuroZKEngine {
     ///
     /// # Arguments
     /// * `&self`
+    /// * `model_archive_location` - The path to the model archive
+    /// * `prefix` - The directory for operations on NZK related files
+    /// * `model_file_name` - The name of the model file
+    /// * `proving_key_file_name` - The name of the proving key file
+    /// * `settings_file_name` - The name of the settings file
     ///
     /// # Returns
     /// `Result<(), Box<dyn std::error::Error>>`
@@ -119,6 +142,10 @@ impl NeuroZKEngine {
              return Ok(()) 
         };
 
+        println!("Opening archive at: {:?}", model_archive_location);
+        if !model_archive_location.exists() {
+            return Err("Model archive path does not exist".into());
+        }
         let archive_file = File::open(model_archive_location)?;
         let decoder = GzDecoder::new(BufReader::new(archive_file));
         let mut archive = Archive::new(decoder);
@@ -148,6 +175,9 @@ impl NeuroZKEngine {
     ///
     /// # Arguments
     /// * `&self`
+    /// * `prefix` - The directory for operations on NZK related files
+    /// * `srs_path` - The path to save the SRS to
+    /// * `settings_path` - The path to the settings file
     ///
     /// # Returns
     /// `Result<(), Box<dyn std::error::Error>>`
@@ -178,7 +208,7 @@ impl NeuroZKEngine {
     ///
     /// # Arguments
     /// * `&self`
-    /// * `prefix` - The directory to check
+    /// * `prefix` - The directory for operations on NZK related files
     /// * `nzk_files` - An array of file names
     ///
     /// # Returns
@@ -198,7 +228,12 @@ impl NeuroZKEngine {
     /// Takes input and proves inference on the model currently loaded into the miner. Fails if `init_model` has not been called. Should be called intermittently to request a proof of correct model execution.
     ///
     /// # Arguments
-    /// * `model_location` - The location of the model currently loaded into the miner
+    /// * `&self`
+    /// * `prefix` - The directory for operations on NZK related files 
+    /// * `model_path` - The location of the model currently loaded into the miner
+    /// * `proving_key_path` - The location of the proving key currently loaded into the miner 
+    /// * `srs_path` - The location of the SRS currently loaded into the miner
+    /// * `witness_path` - The location of the witness currently loaded into the miner
     ///
     /// # Returns
     /// `Result<(), Box<dyn std::error::Error>>`
@@ -237,7 +272,11 @@ impl NeuroZKEngine {
     ///
     /// # Arguments
     /// * `&self`
-    /// * `data` - The input used to run inference on the model in circuit form
+    /// * `prefix` - The directory for operations on NZK related files
+    /// * `model_path` - The path to the model currently loaded into the miner
+    /// * `srs_path` - The path to the srs currently loaded into the miner
+    /// * `witness_path` - The path to the witness currently loaded into the miner
+    /// * `input_data` - The input used to run inference on the model in circuit form
     ///
     /// # Returns
     /// `Result<(), Box<dyn std::error::Error>>`
@@ -253,12 +292,14 @@ impl NeuroZKEngine {
         let srs_path = PathBuf::from(format!("{}/{}", prefix, srs_path));
         let witness_path = PathBuf::from(format!("{}/{}", prefix, witness_path));
 
+        println!("Generating inference result for: {}", input_data);
+
         let witness = run(GenWitness {
             data: Some(ezkl::commands::DataField(input_data)),
             compiled_circuit: Some(model_path),
-            output: Some(witness_path),
+            output: None,
             vk_path: None,
-            srs_path: Some(srs_path),
+            srs_path: None,
         })
         .await?;
 

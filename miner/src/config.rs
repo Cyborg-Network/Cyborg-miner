@@ -23,9 +23,9 @@ const IDENTITY_PATH: &str = "/var/lib/cyborg/worker-node/identity.json";
 pub struct Paths {
     pub log_path: PathBuf,
     pub task_file_name: String,
-    pub task_dir_path: PathBuf,
-    pub task_owner_path: PathBuf,
-    pub identity_path: PathBuf,
+    pub task_dir_path: String,
+    pub task_owner_path: String,
+    pub identity_path: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -53,9 +53,9 @@ pub async fn run_config(parachain_url: &str) {
 
     let log_path = PathBuf::from(env::var("LOG_FILE_PATH").expect("LOG_PATH must be set"));
     let task_file_name = String::from(env::var("TASK_FILE_NAME").expect("TASK_FILE_NAME must be set"));
-    let task_dir_path = PathBuf::from(env::var("TASK_DIR_PATH").expect("TASK_DIR_PATH must be set"));
-    let identity_path = PathBuf::from(env::var("IDENTITY_FILE_PATH").expect("IDENTITY_PATH must be set"));
-    let task_owner_path = PathBuf::from(env::var("TASK_OWNER_FILE_PATH").expect("TASK_OWNER_PATH must be set"));
+    let task_dir_path = String::from(env::var("TASK_DIR_PATH").expect("TASK_DIR_PATH must be set"));
+    let identity_path = String::from(env::var("IDENTITY_FILE_PATH").expect("IDENTITY_PATH must be set"));
+    let task_owner_path = String::from(env::var("TASK_OWNER_FILE_PATH").expect("TASK_OWNER_PATH must be set"));
 
     PATHS.set(Paths {
         log_path,

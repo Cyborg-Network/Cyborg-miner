@@ -1,4 +1,5 @@
 .DS_Store
 target/
 .env
-miner/
+miner/current_task/
+miner/config/

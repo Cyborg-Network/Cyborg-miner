@@ -13,10 +13,13 @@ pub struct MinerData {
     pub miner_identity: (AccountId32, u64),
 }
 
-#[derive(Clone)]
-pub struct CurrentTask((u64, TaskType));
+#[derive(Clone, Debug)]
+pub struct CurrentTask {
+    pub id: u64, 
+    pub task_type: TaskType
+}
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum TaskType {
     OpenInference,
     NeuroZk,
@@ -53,12 +56,11 @@ pub struct Miner {
     pub parent_runtime: Arc<RwLock<ParentRuntime>>,
     pub miner_identity: Option<(AccountId32, u64)>,
     pub creator: Option<AccountId32>,
-    pub current_task: Option<(u64, TaskType)>,
+    pub current_task: Option<CurrentTask>,
     pub log_failure_count: u8,
 }
 
 pub struct ParentRuntime {
-    pub task: Option<(u64, TaskType)>,
     //This is kept as an option, because it might be user dynamic in the future
     pub port: Option<u16>,
 }
