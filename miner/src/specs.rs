@@ -144,6 +144,7 @@ async fn get_ip_location() -> Result<(f64, f64)> {
     }
 }
 
+#[allow(dead_code)]
 pub async fn get_memory() -> Result<String> {
     let ps_child = Command::new("free") // `ps` command...
         .arg("-h") // with argument `axww`...

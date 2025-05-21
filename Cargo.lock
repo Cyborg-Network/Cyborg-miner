@@ -3201,6 +3201,7 @@ dependencies = [
  "futures",
  "hex",
  "jsonrpsee 0.22.5",
+ "log",
  "mockall",
  "neuro-zk-runtime",
  "once_cell",
