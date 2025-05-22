@@ -1,11 +1,12 @@
 // models.rs
 use serde::{Deserialize, Serialize};
-use std::io::{self, BufReader, copy};
+use std::io::{self, BufReader, copy, Read, Write};
 use flate2::read::GzDecoder;
 use tar::Archive;
 use zip::ZipArchive;
 use std::path::{Path, PathBuf};
-use std::fs::{File, remove_file};
+use std::fs::{File, metadata, remove_file};
+use sha2::{Digest, Sha256, Sha512};
 
 const BASE_PATH: &str = "/var/lib/cyborg/miner/current_task/";
 
@@ -70,22 +71,41 @@ impl ModelExtractor {
         })
     }
 
-    /// Main extraction handler that chooses the right method
     pub fn extract_model(&self) -> io::Result<()> {
         let extension = self.archive_path.extension()
             .and_then(|ext| ext.to_str())
             .unwrap_or("");
-
+    
         match extension {
             "gz" => self.extract_tar_gz(),
             "zip" => self.extract_zip(),
             _ => Err(io::Error::new(io::ErrorKind::InvalidInput, "Unsupported archive format")),
         }?;
-
-        // Delete the archive after successful extraction
+    
+        // Delete archive after extraction
         println!("🗑️ Deleting archive {:?}", self.archive_path);
         remove_file(&self.archive_path)?;
-
+    
+        // 🧠 Compute hash of model.onnx
+        let model_name = self.archive_path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("unknown_model")
+            .to_string();
+    
+        let model_path = self.output_folder.join(&model_name).join("1").join("model.onnx");
+        let output_txt_path = self.output_folder.join(&model_name).join("verifier_key.txt");
+    
+        if model_path.exists() {
+            println!("🔍 Found model file at: {:?}", model_path);
+            match Self::hash_model_file(&model_path, &output_txt_path) {
+                Ok(_) => println!("✅ Hash written to: {:?}", output_txt_path),
+                Err(e) => eprintln!("❌ Failed to hash model file: {}", e),
+            }
+        } else {
+            eprintln!("❌ model.onnx not found at expected path: {:?}", model_path);
+        }
+    
         Ok(())
     }
 
@@ -115,6 +135,24 @@ impl ModelExtractor {
             copy(&mut entry, &mut out_file)?;
             println!("✅ Extracted {:?} to {:?}", path, &self.output_folder);
         }
+        Ok(())
+    }
+
+    fn hash_model_file(model_path: &Path, output_path: &Path) -> io::Result<()> {
+        let mut file = File::open(model_path)?;
+        let mut buffer = Vec::new();
+        file.read_to_end(&mut buffer)?;
+    
+        let sha256 = Sha256::digest(&buffer);
+        let sha512 = Sha512::digest(&buffer);
+    
+        let sha256_hex = format!("{:x}", sha256);
+        let sha512_hex = format!("{:x}", sha512);
+    
+        let mut output_file = File::create(output_path)?;
+        writeln!(output_file, "SHA-256: {}", sha256_hex)?;
+        writeln!(output_file, "SHA-512: {}", sha512_hex)?;
+    
         Ok(())
     }
 
