@@ -112,7 +112,6 @@ pub async fn spawn_inference_server(
         .expect("Server failed to start...");
     });
 
-    println!("Returning handle");
     Ok(handle)
 }
 
