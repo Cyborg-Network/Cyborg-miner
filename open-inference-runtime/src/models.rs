@@ -7,12 +7,6 @@ use std::path::{Path, PathBuf};
 use std::fs::{File, remove_file};
 use sha2::{Digest, Sha256};
 
-
-// const BASE_PATH: &str = "/var/lib/cyborg/miner/current_task/";
-
-const BASE_PATH: &str = "/home/ronnie/Model";
-
-
 /// Handles extraction of model files from a tar.gz or zip archive
 pub struct ModelExtractor {
     archive_path: PathBuf,
@@ -20,10 +14,11 @@ pub struct ModelExtractor {
 }
 
 impl ModelExtractor {
-    pub fn new(model_name: &str) -> io::Result<Self> {
-        let tar_gz_path = Path::new(BASE_PATH).join(format!("{}.tar.gz", model_name));
-        let zip_path = Path::new(BASE_PATH).join(format!("{}.zip", model_name));
-        let extracted_path = Path::new(BASE_PATH).join(model_name);
+    pub fn new(model_name: &str,base_path:PathBuf) -> io::Result<Self> {
+        // let base_path = PathBuf::from(&get_paths()?.task_dir_path);
+        let tar_gz_path = Path::new(&base_path).join(format!("{}.tar.gz", model_name));
+        let zip_path = Path::new(&base_path).join(format!("{}.zip", model_name));
+        let extracted_path = Path::new(&base_path).join(model_name);
 
         // Check if already extracted
         if extracted_path.is_dir() {
@@ -41,7 +36,7 @@ impl ModelExtractor {
 
         Ok(Self {
             archive_path,
-            output_folder: PathBuf::from(BASE_PATH),
+            output_folder: PathBuf::from(base_path),
         })
     }
 
@@ -128,11 +123,11 @@ impl ModelExtractor {
         let mut blob: Vec<u8> = Vec::new();
     
         // Optional header to identify file type/version
-        blob.extend(b"WASM_HASH_V1");           // 12 bytes header
-        blob.push(0);                           // 1-byte null delimiter
+        blob.extend(b"WASM_HASH_V1");           
+        blob.push(0);                           
     
-        blob.extend(&(sha256.len() as u32).to_le_bytes());  // length of SHA-256
-        blob.extend(&sha256);                               // actual SHA-256 bytes
+        blob.extend(&(sha256.len() as u32).to_le_bytes());  
+        blob.extend(&sha256);                               
     
     
         // Write to output .wasmhash file
@@ -175,8 +170,8 @@ impl ModelExtractor {
 
 }
 
-pub fn verify_model_blob(model_name: &str) -> io::Result<()> {
-    let extracted_path = Path::new(BASE_PATH).join(model_name);
+pub fn verify_model_blob(model_name: &str,base_path:PathBuf) -> io::Result<()> {
+    let extracted_path = Path::new(&base_path).join(model_name);
     let model_path = extracted_path.join("1").join("model.onnx");
     let blob_path = extracted_path.join("verifier_hash.wasmhash");
     
