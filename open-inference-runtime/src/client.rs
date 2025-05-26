@@ -85,7 +85,7 @@ impl TritonClient {
         let url = format!("{}/repository/models/{}/load", self.url, self.model_name);
         let response = self.client.post(&url).json(&serde_json::json!({})).send().await?;
         if response.status().is_success() {
-            println!("✅ Successfully loaded model: {}", self.model_name);
+           // println!("✅ Successfully loaded model: {}", self.model_name);
             Ok(())
         } else {
             Err(format!("Failed to load model '{}'. HTTP Status: {:?}", self.model_name, response.status()).into())
@@ -98,7 +98,7 @@ impl TritonClient {
         let response = self.client.post(&url).json(&serde_json::json!({})).send().await?;
         
         if response.status().is_success() {
-            println!("✅ Successfully unloaded model: {}", self.model_name);
+           // println!("✅ Successfully unloaded model: {}", self.model_name);
             Ok(())
         } else {
             Err(format!("Failed to unload model '{}'. HTTP Status: {:?}", self.model_name, response.status()).into())
@@ -109,7 +109,7 @@ impl TritonClient {
     pub async fn get_model_metadata(&self) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
         let url = format!("{}/models/{}", self.url, self.model_name);
     
-        println!("⏳ Fetching metadata for model: {}", self.model_name);
+        //println!("⏳ Fetching metadata for model: {}", self.model_name);
     
         let response = self.client.get(&url).send().await?;
     
@@ -234,14 +234,14 @@ impl TritonClient {
         CFut: Future<Output = ()> + Send + 'static,
     {
         while let Some(request) = request_stream.next().await {
-            println!("📥 Received inference request: {}", request);
+           // println!("📥 Received inference request: {}", request);
 
             // Attempt to parse the request string into HashMap<String, TensorData>
             let parsed_inputs: Result<HashMap<String, TensorData>, _> = serde_json::from_str(&request);
 
             let result: Result<Value, Box<dyn std::error::Error + Send + Sync>> = match parsed_inputs {
                 Ok(inputs) => {
-                    println!("✅ Successfully parsed inputs.");
+                 //   println!("✅ Successfully parsed inputs.");
                     self.run_inference(inputs).await
                 }
                 Err(e) => {
@@ -256,7 +256,7 @@ impl TritonClient {
                 Err(e) => format!("❌ Inference error: {}", e),
             };
 
-            println!("📤 Sending inference response: {}", response);
+         //   println!("📤 Sending inference response: {}", response);
             response_closure(response).await;
         }
 
@@ -273,7 +273,7 @@ impl TritonClient {
             if let Err(e) = extractor.extract_model() {
                 println!("❌ Extraction failed: {:?}", e);
             } else {
-                println!("✅ Model '{}' successfully extracted!", self.model_name);
+                // println!("✅ Model '{}' successfully extracted!", self.model_name);
             }
         }
         Err(e) => {
@@ -282,35 +282,35 @@ impl TritonClient {
     }
 
     // Check if the Triton Server is live
-    println!("⏳ Checking if the server is live...");
+    // println!("⏳ Checking if the server is live...");
     if !self.is_server_live().await? {
         return Err("Server is not live".into());
     }
-    println!("✅ Server is live!");
+    // println!("✅ Server is live!");
 
     // Check if the Triton Server is ready
-    println!("⏳ Checking if the server is ready...");
+    // println!("⏳ Checking if the server is ready...");
     if !self.is_server_ready().await? {
         return Err("❌ Server is not ready".into());
     }
-    println!("✅ Server is ready!");
+    // println!("✅ Server is ready!");
 
     // Load the Model
-    println!("⏳ Loading model: {}", self.model_name);
+    // println!("⏳ Loading model: {}", self.model_name);
     self.load_model().await.unwrap();
     //verify Model hash after being loaded
     verify_model_blob(&self.model_name,self.model_path.clone())?;
 
     // Fetch Model Metadata (just for confirmation and debugging)
     match self.get_model_metadata().await {
-        Ok(metadata) => println!("Model Metadata: {:#?}", metadata),
+        Ok(_) => println!(),
         Err(e) => {
             return Err(e);
         }
     }
 
 	    // Run Inference
-	    println!("Running inference...");
+	   // println!("Running inference...");
 	    let aligned_inputs_result = self.align_inputs(inputs).await;
 	    match aligned_inputs_result {
 		Ok(aligned_inputs) => {
@@ -321,9 +321,9 @@ impl TritonClient {
 
 		    match self.infer( aligned_refs).await {
 		        Ok(result) => {
-		            println!("Inference Successful: {:#?}", result);
-		            println!("-------------------------------------------");
-		            println!("-------------------------------------------");
+		           // println!("Inference Successful: {:#?}", result);
+		           // println!("-------------------------------------------");
+		           // println!("-------------------------------------------");
 		            self.unload_model().await?;
 		            Ok(result)
 		        }
@@ -335,5 +335,8 @@ impl TritonClient {
 		}
 		Err(e) => Err(format!("❌ Inference failed: {:?}", e).into()),
 	    }
-	} 
+	}
+
+    
+    
 }

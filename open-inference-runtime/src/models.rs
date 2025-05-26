@@ -1,4 +1,3 @@
-use serde::{Deserialize, Serialize};
 use std::io::{self, BufReader, copy, Read, Write};
 use flate2::read::GzDecoder;
 use tar::Archive;
@@ -6,6 +5,10 @@ use zip::ZipArchive;
 use std::path::{Path, PathBuf};
 use std::fs::{File, remove_file};
 use sha2::{Digest, Sha256};
+
+
+
+
 
 /// Handles extraction of model files from a tar.gz or zip archive
 pub struct ModelExtractor {
@@ -22,7 +25,7 @@ impl ModelExtractor {
 
         // Check if already extracted
         if extracted_path.is_dir() {
-            println!("✅ Model already extracted at: {:?}", extracted_path);
+           // println!("✅ Model already extracted at: {:?}", extracted_path);
             return Err(io::Error::new(io::ErrorKind::AlreadyExists, "Model already extracted"));
         }
 
@@ -53,7 +56,7 @@ impl ModelExtractor {
         }?;
     
         // Delete archive after extraction
-        println!("🗑️ Deleting archive {:?}", self.archive_path);
+       // println!("🗑️ Deleting archive {:?}", self.archive_path);
         remove_file(&self.archive_path)?;
     
         // 🧠 Compute hash of model.onnx
@@ -67,9 +70,9 @@ impl ModelExtractor {
             let output_blob_path = self.output_folder.join(&model_name).join("verifier_hash.wasmhash");
             
             if model_path.exists() {
-                println!("🔍 Found model file at: {:?}", model_path);
+              //  println!("🔍 Found model file at: {:?}", model_path);
                 match Self::hash_model_file(&model_path, &output_blob_path) {
-                    Ok(_) => println!("✅ WASM hash blob saved: {:?}", output_blob_path),
+                    Ok(_) => println!(),
                     Err(e) => eprintln!("❌ Failed to hash model file: {}", e),
                 }
             }
@@ -81,7 +84,7 @@ impl ModelExtractor {
 
      /// Extracts all files from the tar.gz archive to the specified output folder
      fn extract_tar_gz(&self) -> io::Result<()> {
-        println!("🔍 Detected .tar.gz format. Extracting...");
+      //  println!("🔍 Detected .tar.gz format. Extracting...");
         let archive_file = File::open(&self.archive_path)?;
         let decoder = GzDecoder::new(BufReader::new(archive_file));
         let mut archive = Archive::new(decoder);
@@ -92,7 +95,7 @@ impl ModelExtractor {
             let output_path = self.output_folder.join(&path);
 
             if entry.header().entry_type().is_dir() {
-                println!("📂 Creating directory {:?}", output_path);
+               // println!("📂 Creating directory {:?}", output_path);
                 std::fs::create_dir_all(&output_path)?;
                 continue;
             }
@@ -103,7 +106,7 @@ impl ModelExtractor {
 
             let mut out_file = File::create(&output_path)?;
             copy(&mut entry, &mut out_file)?;
-            println!("✅ Extracted {:?} to {:?}", path, &self.output_folder);
+           // println!("✅ Extracted {:?} to {:?}", path, &self.output_folder);
         }
         Ok(())
     }
@@ -123,11 +126,11 @@ impl ModelExtractor {
         let mut blob: Vec<u8> = Vec::new();
     
         // Optional header to identify file type/version
-        blob.extend(b"WASM_HASH_V1");           
-        blob.push(0);                           
+        blob.extend(b"WASM_HASH_V1");           // 12 bytes header
+        blob.push(0);                           // 1-byte null delimiter
     
-        blob.extend(&(sha256.len() as u32).to_le_bytes());  
-        blob.extend(&sha256);                               
+        blob.extend(&(sha256.len() as u32).to_le_bytes());  // length of SHA-256
+        blob.extend(&sha256);                               // actual SHA-256 bytes
     
     
         // Write to output .wasmhash file
@@ -144,8 +147,9 @@ impl ModelExtractor {
 
 
     /// Extracts all files from the .zip archive to the specified output folder
+    #[allow(deprecated)]
     fn extract_zip(&self) -> io::Result<()> {
-        println!("🔍 Detected .zip format. Extracting...");
+       // println!("🔍 Detected .zip format. Extracting...");
         let archive_file = File::open(&self.archive_path)?;
         let mut archive = ZipArchive::new(archive_file)?;
 
@@ -154,7 +158,7 @@ impl ModelExtractor {
             let out_path = self.output_folder.join(file.sanitized_name());
 
             if file.is_dir() {
-                println!("📂 Creating directory {:?}", out_path);
+               // println!("📂 Creating directory {:?}", out_path);
                 std::fs::create_dir_all(&out_path)?;
             } else {
                 if let Some(parent) = out_path.parent() {
@@ -162,7 +166,7 @@ impl ModelExtractor {
                 }
                 let mut out_file = File::create(&out_path)?;
                 copy(&mut file, &mut out_file)?;
-                println!("✅ Extracted {:?} to {:?}", file.name(), &self.output_folder);
+              //  println!("✅ Extracted {:?} to {:?}", file.name(), &self.output_folder);
             }
         }
         Ok(())
@@ -175,19 +179,16 @@ pub fn verify_model_blob(model_name: &str,base_path:PathBuf) -> io::Result<()> {
     let model_path = extracted_path.join("1").join("model.onnx");
     let blob_path = extracted_path.join("verifier_hash.wasmhash");
     
-    // Step 1: Read the model and compute SHA-256
     let mut model_file = File::open(model_path)?;
     let mut model_data = Vec::new();
     model_file.read_to_end(&mut model_data)?;
 
     let model_sha256 = Sha256::digest(&model_data);
 
-    // Step 2: Read the blob
     let mut blob_file = File::open(blob_path)?;
     let mut blob = Vec::new();
     blob_file.read_to_end(&mut blob)?;
 
-    // Step 3: Validate header
     let expected_header = b"WASM_HASH_V1\0";
     if !blob.starts_with(expected_header) {
         return Err(io::Error::new(io::ErrorKind::InvalidData, "Invalid blob header"));
@@ -195,7 +196,6 @@ pub fn verify_model_blob(model_name: &str,base_path:PathBuf) -> io::Result<()> {
 
     let mut cursor = expected_header.len();
 
-    // Step 4: Read SHA-256 length
     if blob.len() < cursor + 4 {
         return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "Truncated SHA-256 length"));
     }
@@ -203,7 +203,6 @@ pub fn verify_model_blob(model_name: &str,base_path:PathBuf) -> io::Result<()> {
     let sha256_len = u32::from_le_bytes(blob[cursor..cursor+4].try_into().unwrap()) as usize;
     cursor += 4;
 
-    // Step 5: Read SHA-256 value
     if blob.len() < cursor + sha256_len {
         return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "Truncated SHA-256 value"));
     }
@@ -211,7 +210,7 @@ pub fn verify_model_blob(model_name: &str,base_path:PathBuf) -> io::Result<()> {
     let stored_sha256 = &blob[cursor..cursor + sha256_len];
 
     if model_sha256.as_slice() == stored_sha256 {
-        println!("✅ Hash verification passed");
+       // println!("✅ Hash verification passed");
         Ok(())
     } else {
         eprintln!("❌ Hash mismatch: model file has been tampered or is different");
