@@ -97,18 +97,14 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     let client = config::get_parachain_client()?;
 
-    /*
     if !miner.confirm_registration().await? {
         miner.register_miner().await.map_err(|e| Error::Custom(format!(
             "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
         )))?
     }
-    */
 
     let mut blocks = client.blocks().subscribe_finalized().await?;
 
-    //TODO uncommented for testing of everything without having to listen to the blockchain
-    /*
     while let Some(Ok(block)) = blocks.next().await {
         info!("New block imported: {:?}", block.hash());
 
@@ -125,7 +121,6 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
             }
         }
     }
-    */
 
     // -----------------------------------------------DELETE-----------------
 
