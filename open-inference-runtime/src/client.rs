@@ -56,7 +56,6 @@ impl TritonClient {
                 if let Err(e) = extractor.extract_model() {
                     println!("❌ Extraction failed: {:?}", e);
                 } else {
-                    println!("✅ Model '{}' successfully extracted!", client.model_name);
                 }
             }
             Err(e) => {
@@ -84,7 +83,6 @@ impl TritonClient {
         let url = format!("{}/repository/models/{}/load", self.url, self.model_name);
         let response = self.client.post(&url).json(&serde_json::json!({})).send().await?;
         if response.status().is_success() {
-           println!("✅ Successfully loaded model: {}", self.model_name);
             Ok(())
         } else {
             Err(format!("Failed to load model '{}'. HTTP Status: {:?}", self.model_name, response.status()).into())
@@ -122,7 +120,6 @@ impl TritonClient {
         let response = self.client.post(&url).json(&serde_json::json!({})).send().await?;
         
         if response.status().is_success() {
-           // println!("✅ Successfully unloaded model: {}", self.model_name);
             Ok(())
         } else {
             Err(format!("Failed to unload model '{}'. HTTP Status: {:?}", self.model_name, response.status()).into())
