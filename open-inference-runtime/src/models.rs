@@ -154,29 +154,3 @@ impl ModelExtractor {
     }
 
 }
-
-
-pub fn verify_model_blob(model_name: &str, base_path: PathBuf, expected_hash_hex: &str) -> io::Result<()> {
-    let extracted_path = base_path.join(model_name);
-    let model_path = extracted_path.join("1").join("model.onnx");
-
-    // Read model file into bytes
-    let mut model_file = File::open(model_path)?;
-    let mut model_data = Vec::new();
-    model_file.read_to_end(&mut model_data)?;
-
-    // Compute actual SHA-256 of model
-    let model_sha256 = Sha256::digest(&model_data);
-    let computed_hash_hex = hex::encode(&model_sha256);
-
-    // Compare with provided hash
-    if computed_hash_hex == expected_hash_hex.to_lowercase() {
-        println!("✅ Hash verification passed");
-        Ok(())
-    } else {
-        eprintln!("❌ Hash mismatch:");
-        eprintln!("  Computed : {}", computed_hash_hex);
-        eprintln!("  Expected : {}", expected_hash_hex.to_lowercase());
-        std::process::exit(1);
-    }
-}

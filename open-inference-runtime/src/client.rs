@@ -3,10 +3,13 @@ use reqwest::Client;
 use serde_json::Value;
 use std::collections::HashMap;
 use serde_json::json;
-use crate::models::{ModelExtractor,verify_model_blob};
-use std::path::PathBuf;
+use crate::models::ModelExtractor;
+use std::fs::File;
 use futures::{stream::StreamExt, Future, Stream};
 use serde::{Deserialize,Serialize};
+use std::io::{self, Read};
+use std::path::PathBuf;
+use sha2::{Digest, Sha256};
 
 pub struct TritonClient {
     client: Client,
@@ -72,14 +75,45 @@ impl TritonClient {
         if !response.status().is_success() {
            println!("✅ Server is not ready: {}",response.status());
         } 
-        // Load a model into Triton
-        url = format!("{}/repository/models/{}/load", &client.url, &client.model_name);
-        response = client.client.post(&url).json(&serde_json::json!({})).send().await?;
-        if response.status().is_success() {
-           println!("✅ Successfully loaded model: {}", &client.model_name);
-        } 
+      
 
         Ok(client)
+    }
+
+    pub async fn load_model(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>>  {
+        let url = format!("{}/repository/models/{}/load", self.url, self.model_name);
+        let response = self.client.post(&url).json(&serde_json::json!({})).send().await?;
+        if response.status().is_success() {
+           println!("✅ Successfully loaded model: {}", self.model_name);
+            Ok(())
+        } else {
+            Err(format!("Failed to load model '{}'. HTTP Status: {:?}", self.model_name, response.status()).into())
+        }
+    }
+
+    pub fn verify_model_blob(&self, expected_hash_hex: &str) -> io::Result<()> {
+        let extracted_path = self.model_path.join(&self.model_name);
+        let model_path = extracted_path.join("1").join("model.onnx");
+
+        // Read model file into bytes
+        let mut model_file = File::open(model_path)?;
+        let mut model_data = Vec::new();
+        model_file.read_to_end(&mut model_data)?;
+
+        // Compute actual SHA-256 of model
+        let model_sha256 = Sha256::digest(&model_data);
+        let computed_hash_hex = hex::encode(&model_sha256);
+
+        // Compare with provided hash
+        if computed_hash_hex == expected_hash_hex.to_lowercase() {
+            println!("✅ Hash verification passed");
+            Ok(())
+        } else {
+            eprintln!("❌ Hash mismatch:");
+            eprintln!("  Computed : {}", computed_hash_hex);
+            eprintln!("  Expected : {}", expected_hash_hex.to_lowercase());
+            std::process::exit(1);
+        }
     }
 
     // Unload a model from Triton
@@ -99,7 +133,6 @@ impl TritonClient {
     pub async fn get_model_metadata(&self) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
         let url = format!("{}/models/{}", self.url, self.model_name);
     
-        //println!("⏳ Fetching metadata for model: {}", self.model_name);
     
         let response = self.client.get(&url).send().await?;
     
@@ -254,6 +287,9 @@ impl TritonClient {
     &self,
     inputs: HashMap<String, TensorData>,
 ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync>> {
+    //  Load the Model
+    println!("⏳ Loading model: {}", self.model_name);
+    self.load_model().await.unwrap();
     match self.get_model_metadata().await {
         Ok(_) => println!(),
         Err(e) => {
@@ -262,9 +298,9 @@ impl TritonClient {
     }
 
 	    // Run Inference
-	    let aligned_inputs_result = self.align_inputs(inputs).await;
-	    match aligned_inputs_result {
-		Ok(aligned_inputs) => {
+	let aligned_inputs_result = self.align_inputs(inputs).await;
+	match aligned_inputs_result {
+	Ok(aligned_inputs) => {
 		    let aligned_refs: HashMap<&str, (TensorData, Vec<usize>)> = aligned_inputs
 		        .iter()
 		        .map(|(k, v)| (k.as_str(), v.clone()))
@@ -281,7 +317,7 @@ impl TritonClient {
 		        }
 		    }
 		}
-		Err(e) => Err(format!("❌ Inference failed: {:?}", e).into()),
+	    Err(e) => Err(format!("❌ Inference failed: {:?}", e).into()),
 	    }
 	}
 
