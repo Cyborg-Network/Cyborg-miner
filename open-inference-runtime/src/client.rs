@@ -8,13 +8,6 @@ use std::path::PathBuf;
 use futures::{stream::StreamExt, Future, Stream};
 use serde::{Deserialize,Serialize};
 
-
-// const TRITON_URL: &str = "http://localhost:8000/v2";
-
-// const BASE_PATH: &str = "/var/lib/cyborg/miner/current_task/";
-
-// const BASE_PATH: &str = "/home/ronnie/Model";
-
 pub struct TritonClient {
     client: Client,
     url: String,
@@ -47,49 +40,46 @@ impl TensorData {
 
 impl TritonClient {
     pub async fn new(triton_url:&str,model_name: &str,model_path:PathBuf) -> Result<Self, Box<dyn std::error::Error + Send + Sync>>  {
-        Ok(Self {
+        // Initialize the client
+        let client = TritonClient {
             client: Client::new(),
-            url:triton_url.to_string(),
-            model_name:model_name.to_string(),
-            model_path,
-        })
-    }
+            url: triton_url.to_string(),
+            model_name: model_name.to_string(),
+            model_path: model_path.clone(),
+        };
 
-   // Check if the server is live
-    pub async fn is_server_live(&self) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
-        let url = format!("{}/health/live", self.url);
-        let response = self.client.get(&url).send().await?;
-        
-        if response.status().is_success() {
-            Ok(true)
-        } else {
-            Err(format!("❌ Server is not live. HTTP Status: {:?}", response.status()).into())
+         match ModelExtractor::new(&client.model_name, model_path.clone()) {
+            Ok(extractor) => {
+                if let Err(e) = extractor.extract_model() {
+                    println!("❌ Extraction failed: {:?}", e);
+                } else {
+                    println!("✅ Model '{}' successfully extracted!", client.model_name);
+                }
+            }
+            Err(e) => {
+                println!("❌ Initialization of ModelExtractor failed: {:?}", e);
+            }
         }
-    }
+        // Check if the server is live
+        let mut url = format!("{}/health/ready", &client.url);
+        let mut response = client.client.get(&url).send().await?;
+        if !response.status().is_success() {
+           println!("✅ Server is not live: {}",response.status());
+        } 
+        // Check if the server is ready
+        url = format!("{}/health/ready", &client.url);
+        response = client.client.get(&url).send().await?;
+        if !response.status().is_success() {
+           println!("✅ Server is not ready: {}",response.status());
+        } 
+        // Load a model into Triton
+        url = format!("{}/repository/models/{}/load", &client.url, &client.model_name);
+        response = client.client.post(&url).json(&serde_json::json!({})).send().await?;
+        if response.status().is_success() {
+           println!("✅ Successfully loaded model: {}", &client.model_name);
+        } 
 
-    
-
-    // Check if the server is ready
-    pub async fn is_server_ready(&self ) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
-        let url = format!("{}/health/ready", self.url);
-        let response = self.client.get(&url).send().await?;
-        
-        if response.status().is_success() {
-            Ok(true)
-        } else {
-            Err(format!("❌ Server is not live. HTTP Status: {:?}", response.status()).into())
-        }
-    }
-    // Load a model into Triton
-    pub async fn load_model(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>>  {
-        let url = format!("{}/repository/models/{}/load", self.url, self.model_name);
-        let response = self.client.post(&url).json(&serde_json::json!({})).send().await?;
-        if response.status().is_success() {
-           // println!("✅ Successfully loaded model: {}", self.model_name);
-            Ok(())
-        } else {
-            Err(format!("Failed to load model '{}'. HTTP Status: {:?}", self.model_name, response.status()).into())
-        }
+        Ok(client)
     }
 
     // Unload a model from Triton
@@ -234,14 +224,11 @@ impl TritonClient {
         CFut: Future<Output = ()> + Send + 'static,
     {
         while let Some(request) = request_stream.next().await {
-           // println!("📥 Received inference request: {}", request);
 
-            // Attempt to parse the request string into HashMap<String, TensorData>
             let parsed_inputs: Result<HashMap<String, TensorData>, _> = serde_json::from_str(&request);
 
             let result: Result<Value, Box<dyn std::error::Error + Send + Sync>> = match parsed_inputs {
                 Ok(inputs) => {
-                 //   println!("✅ Successfully parsed inputs.");
                     self.run_inference(inputs).await
                 }
                 Err(e) => {
@@ -250,58 +237,23 @@ impl TritonClient {
                 }
             };
 
-            // Convert the result to JSON string for output
             let response = match result {
                 Ok(json) => json.to_string(),
                 Err(e) => format!("❌ Inference error: {}", e),
             };
 
-         //   println!("📤 Sending inference response: {}", response);
             response_closure(response).await;
         }
 
         Ok(())
     }
+
+
      
    pub async fn run_inference(
     &self,
     inputs: HashMap<String, TensorData>,
 ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync>> {
-    // Check if the model is already extracted
-    match ModelExtractor::new(&self.model_name,self.model_path.clone()) {
-        Ok(extractor) => {
-            if let Err(e) = extractor.extract_model() {
-                println!("❌ Extraction failed: {:?}", e);
-            } else {
-                // println!("✅ Model '{}' successfully extracted!", self.model_name);
-            }
-        }
-        Err(e) => {
-            println!("❌ Initialization failed: {:?}", e);
-        }
-    }
-
-    // Check if the Triton Server is live
-    // println!("⏳ Checking if the server is live...");
-    if !self.is_server_live().await? {
-        return Err("Server is not live".into());
-    }
-    // println!("✅ Server is live!");
-
-    // Check if the Triton Server is ready
-    // println!("⏳ Checking if the server is ready...");
-    if !self.is_server_ready().await? {
-        return Err("❌ Server is not ready".into());
-    }
-    // println!("✅ Server is ready!");
-
-    // Load the Model
-    // println!("⏳ Loading model: {}", self.model_name);
-    self.load_model().await.unwrap();
-    //verify Model hash after being loaded
-    verify_model_blob(&self.model_name,self.model_path.clone())?;
-
-    // Fetch Model Metadata (just for confirmation and debugging)
     match self.get_model_metadata().await {
         Ok(_) => println!(),
         Err(e) => {
@@ -310,7 +262,6 @@ impl TritonClient {
     }
 
 	    // Run Inference
-	   // println!("Running inference...");
 	    let aligned_inputs_result = self.align_inputs(inputs).await;
 	    match aligned_inputs_result {
 		Ok(aligned_inputs) => {
@@ -321,9 +272,6 @@ impl TritonClient {
 
 		    match self.infer( aligned_refs).await {
 		        Ok(result) => {
-		           // println!("Inference Successful: {:#?}", result);
-		           // println!("-------------------------------------------");
-		           // println!("-------------------------------------------");
 		            self.unload_model().await?;
 		            Ok(result)
 		        }
@@ -340,3 +288,4 @@ impl TritonClient {
     
     
 }
+
