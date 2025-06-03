@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::{
     error::Result,
     parachain_interactor::{
@@ -29,7 +31,7 @@ pub trait InferenceServer {
     ///
     /// # Returns
     /// An `impl Stream<Item = Result<Message, tungstenite::Error>>` representing the output stream of messages.
-    async fn perform_inference(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>>;
+    async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>>;
 
     /// Generates a zkml proof for the model currently in execution.
     ///
@@ -44,7 +46,7 @@ impl InferenceServer for ParentRuntime {
         cess_interactor::download_model_archive(cess_fid, cipher).await
     }
 
-    async fn perform_inference(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>> {
+    async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>> {
         inference::spawn_inference_server(current_task, self.port).await
     }
 

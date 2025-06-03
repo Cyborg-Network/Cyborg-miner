@@ -88,7 +88,7 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     task_type: TaskType::NeuroZk,
                 });
 
-                info!("New task scheduled for worker: {}", task_fid_string);
+                println!("New task scheduled for worker: {}", task_fid_string);
 
                 let parent_runtime_clone = Arc::clone(&miner.parent_runtime);
                 let current_task_clone = miner.current_task.clone();
@@ -101,16 +101,16 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                             .download_model_archive(&task_fid_string, storage_encryption_cipher)
                             .await
                         {
-                            eprintln!("Error downloading model archive: {}", e);
+                            println!("Error downloading model archive: {}", e);
                         };
 
                         if let Err(e) = parent_runtime_clone
                             .read()
                             .await
-                            .perform_inference(&current_task)
+                            .spawn_inference_server(&current_task)
                             .await
                         {
-                            eprintln!("Error performing inference: {}", e)
+                            println!("Error performing inference: {}", e)
                         };
                     });
                 } else {
@@ -126,7 +126,7 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
     }
 
     if let Some(current_task) = &miner.current_task {
-        match event.as_event::<substrate_interface::api::neuro_zk::events::ProofRequested>() {
+        match event.as_event::<substrate_interface::api::neuro_zk::events::NzkProofRequested>() {
             Ok(Some(requested_proof)) => {
                 let task_id = &requested_proof.task_id;
 

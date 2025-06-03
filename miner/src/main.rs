@@ -23,7 +23,7 @@ mod specs;
 mod substrate_interface;
 mod traits;
 mod types;
-mod utils;
+//mod utils;
 
 use builder::MinerBuilder;
 use clap::Parser;

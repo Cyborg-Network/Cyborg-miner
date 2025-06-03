@@ -7,7 +7,7 @@ use flate2::read::GzDecoder;
 use futures::{stream::StreamExt, Future, Stream};
 use std::io::{copy, BufReader};
 use std::{
-    fs::File,
+    fs::{File, self},
     path::{Path, PathBuf},
 };
 use tar::Archive;
@@ -21,8 +21,9 @@ pub struct NeuroZKEngine {
 const MODEL_PATH: &str = "circuit.ezkl";
 const SETTINGS_PATH: &str = "settings.json";
 const PROVING_KEY_PATH: &str = "pk.key";
+const PROOF_INPUT_PATH : &str = "input.json";
+const PROOF_WITNESS_PATH: &str = "proof-witness.json";
 const WITNESS_PATH: &str = "witness.json";
-const PROOF_PATH: &str = "proof.json";
 const SRS_PATH: &str = "kzg.srs";
 
 impl NeuroZKEngine {
@@ -50,6 +51,7 @@ impl NeuroZKEngine {
         self.extract_model(
             &self.model_archive_path,
             &self.task_dir_string,
+            PROOF_INPUT_PATH,
             MODEL_PATH,
             PROVING_KEY_PATH,
             SETTINGS_PATH,
@@ -131,13 +133,14 @@ impl NeuroZKEngine {
         &self,
         model_archive_location: &PathBuf,
         prefix: &str,
+        proof_input_file_name: &str, 
         model_file_name: &str,
         proving_key_file_name: &str,
         settings_file_name: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if self.check_files_exists(
             prefix,
-            [model_file_name, proving_key_file_name, settings_file_name],
+            [proof_input_file_name, model_file_name, proving_key_file_name, settings_file_name],
         ) {
             return Ok(());
         };
@@ -150,7 +153,7 @@ impl NeuroZKEngine {
         let decoder = GzDecoder::new(BufReader::new(archive_file));
         let mut archive = Archive::new(decoder);
 
-        let targets = [model_file_name, proving_key_file_name, settings_file_name];
+        let targets = [proof_input_file_name, model_file_name, proving_key_file_name, settings_file_name];
 
         for entry_result in archive.entries()? {
             let mut entry = entry_result?;
@@ -210,7 +213,7 @@ impl NeuroZKEngine {
     ///
     /// # Returns
     /// A `bool` indicating wether all of the files exist
-    fn check_files_exists(&self, prefix: &str, nzk_files: [&str; 3]) -> bool {
+    fn check_files_exists(&self, prefix: &str, nzk_files: [&str; 4]) -> bool {
         let res = true;
 
         for file_path in nzk_files {
@@ -234,34 +237,45 @@ impl NeuroZKEngine {
     ///
     /// # Returns
     /// `Result<(), Box<dyn std::error::Error>>`
-    async fn prove_inference(
+    pub async fn prove_inference(
         &self,
         prefix: &str,
         model_path: &str,
         proving_key_path: &str,
-        proof_path: &str,
         srs_path: &str,
-        witness_path: &str,
-    ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        proof_witness_path: &str,
+        proof_input_path: &str
+    ) -> Result<String, Box<dyn std::error::Error>> {
         let model_path = PathBuf::from(format!("{}/{}", prefix, model_path));
         let proving_key_path = PathBuf::from(format!("{}/{}", prefix, proving_key_path));
         let srs_path = PathBuf::from(format!("{}/{}", prefix, srs_path));
-        let proof_path = PathBuf::from(format!("{}/{}", prefix, proof_path));
-        let witness_path = PathBuf::from(format!("{}/{}", prefix, witness_path));
+        let proof_input_path = PathBuf::from(format!("{}/{}", prefix, proof_input_path));
+        let proof_witness_path = PathBuf::from(format!("{}/{}", prefix, proof_witness_path));
+
+        let input_string = fs::read_to_string(proof_input_path)?;
+
+
+        let _ = run(GenWitness {
+             data: Some(ezkl::commands::DataField(input_string)), 
+             compiled_circuit: Some(model_path.clone()), 
+             output: Some(proof_witness_path.clone()), 
+             vk_path: None, 
+             srs_path: Some(srs_path.clone()) 
+        })
+        .await?;
 
         let proof = run(Prove {
-            witness: Some(witness_path),
+            witness: Some(proof_witness_path),
             compiled_circuit: Some(model_path),
             pk_path: Some(proving_key_path),
-            proof_path: Some(proof_path),
+            proof_path: None,
             srs_path: Some(srs_path),
             proof_type: (ezkl::pfsys::ProofType::Single),
             check_mode: None,
         })
         .await?;
 
-        //TODO Insert appropriate byte vector proof here OR return path of the proof and let the parachain interactor handle it
-        Ok(vec![1, 2, 3])
+        Ok(proof)
     }
 
     /// Takes input and performs inference on the model currently loaded into the miner. Fails if `init_model` has not been called. Should be called for the vast majority of inference requests.

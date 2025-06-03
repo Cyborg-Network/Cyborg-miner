@@ -11,25 +11,26 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 pub async fn confirm_task_reception(miner: &Miner) -> Result<()> {
-    //TODO uncomment after subxt regen
-
-    /*
     let client = config::get_parachain_client()?;
     let config_path = &config::get_paths()?.identity_path;
-    let keypair = &miner.read().await.keypair;
-    let current_task = miner.read().await.current_task
-        .ok_or(Error::no_current_task())?;
+    let keypair = &miner.keypair;
+    let current_task = miner
+        .current_task
+        .as_ref()
+        .ok_or(Error::no_current_task())?
+        .id
+        .clone();
 
     let task_confirmation = substrate_interface::api::tx()
         .task_management()
         .confirm_task_reception(
-            task_id: current_task.0
+            current_task
         );
 
     println!("Transaction Details:");
-    println!("Module: {:?}", worker_registration.pallet_name());
-    println!("Call: {:?}", worker_registration.call_name());
-    println!("Parameters: {:?}", worker_registration.call_data());
+    println!("Module: {:?}", task_confirmation.pallet_name());
+    println!("Call: {:?}", task_confirmation.call_name());
+    println!("Parameters: {:?}", task_confirmation.call_data());
 
     let worker_registration_events = client
         .tx()
@@ -51,7 +52,6 @@ pub async fn confirm_task_reception(miner: &Miner) -> Result<()> {
     } else {
         println!("Task reception confirmation failed!");
     }
-    */
 
     Ok(())
 }
@@ -97,10 +97,8 @@ pub async fn submit_zkml_proof(miner: &Miner, proof: Vec<u8>) -> Result<()> {
         .wait_for_finalized_success()
         .await?;
 
-    // TODO uncomment after subxt regen (no event emitted for proof submission yet)
-    /*
-    let proof_submission_event = proof_submission_events_events
-        .find_first::<substrate_interface::api::neuro_zk::events::ProofSubmitted>(
+    let proof_submission_event = proof_submission_events
+        .find_first::<substrate_interface::api::neuro_zk::events::NzkProofSubmitted>(
     )?;
 
     if let Some(event) = proof_submission_event {
@@ -108,7 +106,6 @@ pub async fn submit_zkml_proof(miner: &Miner, proof: Vec<u8>) -> Result<()> {
     } else {
         println!("Task reception confirmation failed!");
     }
-    */
 
     Ok(())
 }

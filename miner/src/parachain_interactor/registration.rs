@@ -7,15 +7,29 @@ use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::W
 use crate::traits::{InferenceServer, ParachainInteractor};
 use crate::types::{CurrentTask, Miner, MinerData, TaskType};
 use std::sync::Arc;
+use serde::Deserialize;
+use subxt::utils::AccountId32;
 use tracing::info;
+use std::fs;
+
+
+#[derive(Deserialize)]
+struct Identity {
+    miner_owner: String,
+    miner_identity: (AccountId32, u64),
+}
 
 pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
     let client = config::get_parachain_client()?;
-    let identity = if let Some(id) = &miner.miner_identity {
-        id
-    } else {
-        return Ok(false);
-    };
+
+    let identity_path = &config::get_paths()?.identity_path;
+    let identity_file_content = fs::read_to_string(identity_path)?;
+    let identity: Identity = serde_json::from_str(&identity_file_content)?;
+    let identity = identity.miner_identity;
+    
+    println!("Confirming miner registration...");
+
+    println!("identity: {:?}", identity);
 
     let miner_registration_confirmation_query = substrate_interface::api::storage()
         .edge_connect()
@@ -28,9 +42,11 @@ pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
         .fetch(&miner_registration_confirmation_query)
         .await?;
 
-    if let Some(_) = result {
+    if let Some(miner) = result {
+        println!("Miner registered: {:?}", miner);
         Ok(true)
     } else {
+        println!("Miner not registered");
         Ok(false)
     }
 }
@@ -97,16 +113,31 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     let client = config::get_parachain_client()?;
 
-    if !miner.confirm_registration().await? {
-        miner.register_miner().await.map_err(|e| Error::Custom(format!(
+    /* 
+
+    match miner.confirm_registration().await {
+        Ok(true) => println!("Miner already registered"), 
+        Ok(false) => miner.register_miner().await.map_err(|e| Error::Custom(format!(
             "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
-        )))?
+        )))?,
+        Err(e) => {
+            println!("Error confirming miner registration: {}", e);
+            miner.register_miner().await.map_err(|e| Error::Custom(format!(
+                "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
+            )))?;
+        }
     }
+
+    */
+
+    miner.register_miner().await.map_err(|e| Error::Custom(format!(
+        "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
+    )))?;
 
     let mut blocks = client.blocks().subscribe_finalized().await?;
 
     while let Some(Ok(block)) = blocks.next().await {
-        info!("New block imported: {:?}", block.hash());
+        println!("New block imported: {:?}", block.hash());
 
         let events = block.events().await?;
 
@@ -122,6 +153,7 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
         }
     }
 
+    /* 
     // -----------------------------------------------DELETE-----------------
 
     //TODO uncomment this and remove the hardcoded cipher after subxt is regen
@@ -157,7 +189,7 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
             let handle = parent_runtime_clone
                 .read()
                 .await
-                .perform_inference(&current_task)
+                .spawn_inference_server(&current_task)
                 .await;
 
             match handle {
@@ -178,5 +210,6 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     // -----------------------------------------------DELETE TO HERE-----------------
 
+    */
     Ok(())
 }
