@@ -8,7 +8,7 @@ use tracing_subscriber::fmt::writer::BoxMakeWriter;
 static LOG_GUARD: Lazy<Mutex<Option<WorkerGuard>>> = Lazy::new(|| Mutex::new(None));
 
 pub fn init_logger() {
-    let file_appender = tracing_appender::rolling::never("logs", "miner.log");
+    let file_appender = tracing_appender::rolling::never("miner/logs", "miner.log");
 
     let (non_blocking_writer, guard) = non_blocking(file_appender);
 
@@ -24,7 +24,7 @@ pub fn init_logger() {
 fn reset_log_file() -> Result<()> {
     *LOG_GUARD.lock().unwrap() = None;
 
-    std::fs::remove_file("logs/miner.log")?;
+    std::fs::remove_file("miner/logs/miner.log")?;
 
     Ok(())
 }

@@ -1,3 +1,5 @@
+use crate::config::get_paths;
+use crate::parachain_interactor::identity::update_identity_file;
 use crate::substrate_interface;
 use crate::traits::{InferenceServer, ParachainInteractor};
 use crate::types::{CurrentTask, TaskType};
@@ -6,8 +8,15 @@ use crate::{
     types::Miner,
 };
 use std::sync::Arc;
+use serde::Serialize;
+use subxt::utils::AccountId32;
 use subxt::{events::EventDetails, PolkadotConfig};
 use tracing::info;
+
+#[derive(Serialize)]
+struct TaskOwner {
+    address: AccountId32,
+}
 
 pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfig>) -> Result<()> {
     // Check for WorkerRegistered event
@@ -87,6 +96,17 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     //task_type: task_scheduled.task_type,
                     task_type: TaskType::NeuroZk,
                 });
+
+                let task_owner_string = serde_json::to_string(&TaskOwner{
+                    address: task_scheduled.task_owner,
+                })?;
+
+                let task_owner_path = &get_paths()?.task_owner_path;
+
+                update_identity_file(
+                    task_owner_path,
+                    &task_owner_string,
+                )?;
 
                 println!("New task scheduled for worker: {}", task_fid_string);
 

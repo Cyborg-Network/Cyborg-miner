@@ -53,6 +53,12 @@ pub async fn run_config(parachain_url: &str) {
         String::from(env::var("IDENTITY_FILE_PATH").expect("IDENTITY_PATH must be set"));
     let task_owner_path =
         String::from(env::var("TASK_OWNER_FILE_PATH").expect("TASK_OWNER_PATH must be set"));
+    let parachain_url = if let Ok(parachain_url_env) = env::var("PARACHAIN_URL") {
+        parachain_url_env
+    } else {
+        parachain_url.to_string()
+    };
+
 
     PATHS
         .set(Paths {

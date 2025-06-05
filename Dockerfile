@@ -1,28 +1,43 @@
-FROM docker.io/paritytech/ci-unified:latest as builder
+# ---- Build stage ----
+FROM rustlang/rust:nightly-slim as builder
 
-WORKDIR /polkadot
-COPY . /polkadot
+WORKDIR /build
 
-RUN cargo fetch
-RUN cargo build --locked --release
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    perl \
+    && rm -rf /var/lib/apt/lists/*
 
-FROM docker.io/parity/base-bin:latest
+# Copy entire source repo
+COPY . .
 
-COPY --from=builder /polkadot/target/release/cyborg-node /usr/local/bin
+# Build the miner binary
+RUN cargo build --release --manifest-path miner/Cargo.toml
 
-USER root
-RUN useradd -m -u 1001 -U -s /bin/sh -d /polkadot polkadot && \
-	mkdir -p /data /polkadot/.local/share && \
-	chown -R polkadot:polkadot /data && \
-	ln -s /data /polkadot/.local/share/polkadot && \
-# unclutter and minimize the attack surface
-	rm -rf /usr/bin /usr/sbin && \
-# check if executable works in this container
-	/usr/local/bin/cyborg-node --version
+# ---- Final image ----
+FROM debian:bookworm-slim
 
-USER polkadot
+ENV LOG_FILE_PATH=./miner/logs/miner.log
+ENV TASK_FILE_NAME=archive.tar.gz
+ENV TASK_DIR_PATH=./miner/current_task
+ENV IDENTITY_FILE_PATH=./miner/config/miner_identity.json
+ENV TASK_OWNER_FILE_PATH=./miner/config/task_owner.json
 
-EXPOSE 30333 9933 9944 9615
-VOLUME ["/data"]
+WORKDIR /cyborg-miner
 
-ENTRYPOINT ["/usr/local/bin/cyborg-node"]
+# Copy binaries
+COPY --from=builder /build/target/release/cyborg-miner ./cyborg-miner
+COPY cyborg-agent ./cyborg-agent
+
+# Copy the archive
+COPY miner/current_task/archive.tar.gz ./current-task/archive.tar.gz
+
+# Copy config (directory only)
+COPY miner/config ./config
+
+EXPOSE 8080 8081
+
+CMD ["sh", "-c", "./cyborg-agent & exec ./cyborg-miner start-miner --parachain-url ws://127.0.0.1:34989 --account-seed //Dave"]
+
