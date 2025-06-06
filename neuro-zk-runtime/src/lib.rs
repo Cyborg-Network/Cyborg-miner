@@ -156,11 +156,17 @@ impl NeuroZKEngine {
         let targets = [proof_input_file_name, model_file_name, proving_key_file_name, settings_file_name];
 
         for entry_result in archive.entries()? {
+            println!("Extracting entry...");
             let mut entry = entry_result?;
+            println!("Entry name...");
             let path = entry.path()?;
+            println!("Entry path: {:?}...", path);
             if let Some(file_name) = path.file_name().and_then(|f| f.to_str()) {
+                println!("File name: {:?}...", file_name);
                 if targets.contains(&file_name) {
+                    println!("Found target file: {:?}...", file_name);
                     let output_path = Path::new(prefix).join(file_name);
+                    println!("Extracting to: {:?}", output_path);
                     let mut out_file = File::create(output_path)?;
                     copy(&mut entry, &mut out_file)?;
                 }

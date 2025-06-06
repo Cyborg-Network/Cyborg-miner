@@ -43,8 +43,6 @@ async fn main() -> Result<()> {
             parachain_url,
             account_seed,
         }) => {
-            println!("Starting miner. Parachain URL: {}", parachain_url);
-
             run_config(parachain_url).await;
 
             let _log_guard = log::init_logger();

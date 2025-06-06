@@ -59,6 +59,8 @@ pub async fn run_config(parachain_url: &str) {
         parachain_url.to_string()
     };
 
+    println!("Using parachain URL: {}", parachain_url);
+
 
     PATHS
         .set(Paths {

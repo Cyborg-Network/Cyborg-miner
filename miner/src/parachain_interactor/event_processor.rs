@@ -5,13 +5,14 @@ use crate::traits::{InferenceServer, ParachainInteractor};
 use crate::types::{CurrentTask, TaskType};
 use crate::{
     error::{Error, Result},
-    types::Miner,
+    types::{Miner, MinerData},
 };
 use std::sync::Arc;
 use serde::Serialize;
 use subxt::utils::AccountId32;
 use subxt::{events::EventDetails, PolkadotConfig};
 use tracing::info;
+use std::fs;
 
 #[derive(Serialize)]
 struct TaskOwner {
@@ -79,12 +80,19 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
     match event.as_event::<substrate_interface::api::task_management::events::TaskScheduled>() {
         Ok(Some(task_scheduled)) => {
             let assigned_miner = &task_scheduled.assigned_worker;
+            let identity_path = &get_paths()?.identity_path;
+
+            /*
             let identity = &miner
                 .miner_identity
                 .as_ref()
                 .ok_or(Error::identity_not_initialized())?;
+            */
 
-            if &assigned_miner == identity {
+            let file_content = fs::read_to_string(identity_path)?;
+            let miner_data: MinerData = serde_json::from_str(&file_content)?;
+
+            if assigned_miner == &miner_data.miner_identity {
                 //TODO uncomment this and remove the hardcoded cipher after subxt is regen
                 //let storage_encryption_cipher = &task_scheduled.cipher;
                 let storage_encryption_cipher = "password";

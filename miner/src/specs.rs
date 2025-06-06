@@ -23,13 +23,19 @@ pub struct Location {
 }
 
 pub async fn gather_worker_spec() -> Result<MinerConfig> {
-    let response = env::var("CYBORG_WORKER_NODE_TEST_IP").unwrap_or(
-        reqwest::get("https://api.ipify.org?format=json")
-            .await?
-            .json::<IpResponse>()
-            .await?
-            .ip,
-    );
+
+    println!("Using IP: {}", env::var("CYBORG_WORKER_NODE_TEST_IP").unwrap_or("".to_string()));
+
+    let response = match env::var("CYBORG_WORKER_NODE_TEST_IP") {
+        Ok(val) => val,
+        Err(_) => {
+            reqwest::get("https://api.ipify.org?format=json")
+                .await?
+                .json::<IpResponse>()
+                .await?
+                .ip
+        }
+    };
 
     //let response = worker::IpResponse { ip: String::from("127.0.0.1") };
 
@@ -66,15 +72,17 @@ impl Location {
                 coordinates: f64_to_i32_coordinates(lat, lon),
             };
         }
-
-        if let Ok((lat, lon)) = get_ip_location().await {
-            // Fallback to IP-based geolocation
-            println!("Failed to get GPS location. Falling back to IP-based geolocation.");
-            return Location {
-                coordinates: f64_to_i32_coordinates(lat, lon),
-            };
-        } else {
-            panic!("Failed to get the location: Both GPS and IP-based geolocation failed, cannot register worker.");
+        
+        match get_ip_location().await {
+            Ok((lat, lon)) => {
+                println!("Failed to get GPS location. Falling back to IP-based geolocation.");
+                return Location {
+                    coordinates: f64_to_i32_coordinates(lat, lon),
+                };
+            }
+            Err(e) => {
+                panic!("Failed to get the location: {}", e);
+            }
         }
     }
 }

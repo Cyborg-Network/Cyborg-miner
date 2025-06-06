@@ -111,6 +111,8 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     println!("Waiting for tasks...");
 
+
+
     let client = config::get_parachain_client()?;
 
     /* 

@@ -1,8 +1,11 @@
 .DS_Store
 target/
 .env
-miner/current_task/
-miner/config/
-logs/
+miner/current_task/*
+!miner/current_task/.gitkeep
+miner/config/*
+!miner/config/.gitkeep
+miner/logs/*
+!miner/logs/.gitkeep
 witness.json
 proof.json
