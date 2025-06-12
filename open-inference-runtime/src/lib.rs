@@ -1,11 +1,10 @@
+
 pub mod client;
-pub mod error;
 pub mod models;
 
 
-pub use client::TritonClient;
-pub use error::TritonError;
-pub use models::{Model, ModelStatus, ModelExtractor};
+pub use client::{TritonClient,TensorData};
+pub use models::ModelExtractor;
 
 // #[cfg(test)]
 // mod tests;

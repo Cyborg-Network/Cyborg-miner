@@ -58,7 +58,7 @@ pub async fn spawn_inference_server(
     // ));
      let engine = match task.task_type {
         TaskType::OpenInference => {
-            let triton_client = TritonClient::new("http://localhost:8000/v2".to_string() ,&paths.task_file_name,PathBuf::from(&paths.task_dir_path))
+            let triton_client = TritonClient::new("http://localhost:8000/v2",&paths.task_file_name,PathBuf::from(&paths.task_dir_path))
             .await
             .map_err(|e| Error::Custom(format!("Failed to create Triton client: {}", e.to_string())))?;
             InferenceEngine::OpenInference(Arc::new(Mutex::new(triton_client)))
