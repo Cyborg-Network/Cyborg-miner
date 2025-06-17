@@ -13,10 +13,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use serde::Serialize;
 use std::fs;
-use std::sync::Arc;
 use subxt::utils::AccountId32;
 use subxt::{events::EventDetails, PolkadotConfig};
-use std::fs;
 use tracing::info;
 
 #[derive(Serialize)]

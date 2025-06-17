@@ -1,8 +1,6 @@
 use crate::config;
 use crate::error::Result;
 use crate::substrate_interface;
-use crate::traits::ParachainInteractor;
-use crate::types::Miner;
 use crate::utils::tx_builder::register;
 use crate::utils::tx_queue::TxOutput;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
@@ -12,7 +10,6 @@ use serde::Deserialize;
 use std::fs;
 use std::sync::Arc;
 use subxt::utils::AccountId32;
-use std::fs;
 use tracing::info;
 
 #[derive(Deserialize)]
