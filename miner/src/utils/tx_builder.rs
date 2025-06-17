@@ -223,7 +223,7 @@ pub async fn confirm_miner_vacation(keypair: Keypair, task_id: u64) -> Result<()
 }
 
 
-// This expects the pallet and the corresponding error like this: "ExamplePallet::ExampleError", currently not sure if there is a better way to inspect errors in subxt
+// This takes in a generic that implements debug as the errors that will be put in here are different types of errors
 /// Lets acceptable errors pass through so that the transaction queue doesn't repeat them, because the transaction already succeeded. In some cases for example, the parachain
 /// will accept a transaction, but return an error anyway which will cause the transaction queue to re-queue the transaction. Upon trying again, the transaction will be rejected again, 
 /// because the transaction DID already succeed previously. The function is a workaround for this. It checks the returned error and if it is an error of this sort it lets it pass, 
