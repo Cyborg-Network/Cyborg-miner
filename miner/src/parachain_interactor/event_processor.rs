@@ -1,15 +1,18 @@
-use crate::config::get_paths;
+use crate::config::{self, get_paths, get_tx_queue};
 use crate::parachain_interactor::identity::update_identity_file;
 use crate::substrate_interface;
-use crate::traits::{InferenceServer, ParachainInteractor};
+use crate::traits::{InferenceServer};
 use crate::types::{CurrentTask, TaskType};
+use crate::utils::tx_builder::{confirm_miner_vacation, submit_proof};
+use crate::utils::tx_queue::{self, TxOutput, TRANSACTION_QUEUE};
 use crate::{
     error::{Error, Result},
     types::{Miner, MinerData},
 };
+use std::path::PathBuf;
+use std::sync::Arc;
 use serde::Serialize;
 use std::fs;
-use std::sync::Arc;
 use subxt::utils::AccountId32;
 use subxt::{events::EventDetails, PolkadotConfig};
 use tracing::info;
@@ -117,6 +120,7 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
 
                 let parent_runtime_clone = Arc::clone(&miner.parent_runtime);
                 let current_task_clone = miner.current_task.clone();
+                let keypair_clone = miner.keypair.clone();
 
                 if let Some(current_task) = current_task_clone {
                     tokio::spawn(async move {
@@ -132,7 +136,7 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                         if let Err(e) = parent_runtime_clone
                             .read()
                             .await
-                            .spawn_inference_server(&current_task)
+                            .spawn_inference_server(&current_task, &keypair_clone)
                             .await
                         {
                             println!("Error performing inference: {}", e)
@@ -151,13 +155,78 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
     }
 
     if let Some(current_task) = &miner.current_task {
+        match event.as_event::<substrate_interface::api::task_management::events::TaskStopRequested>() {
+            Ok(Some(task_stop_requested)) => {
+                if current_task.id == task_stop_requested.task_id {
+                    let paths = get_paths()?;
+                    let keypair = miner.keypair.clone();
+                    let tx_que = get_tx_queue()?;
+
+                    fs::remove_dir_all(PathBuf::from(&paths.task_dir_path))?;
+                    if let Some(dir) = paths.log_path.parent() {
+                        fs::remove_dir_all(dir)?;
+                    };
+                    if let Some(dir) = PathBuf::from(&paths.task_owner_path).parent() {
+                        fs::remove_dir_all(dir)?; 
+                    };
+
+                    let current_task_id = current_task.id.clone();
+                    miner.current_task = None;
+
+                    let rx = tx_que.enqueue( move || {
+                        let keypair = keypair.clone();
+                        async move {
+                            let _ = confirm_miner_vacation(keypair, current_task_id).await?;
+                            Ok(TxOutput::Success)
+                        }
+                    })
+                    .await?;
+
+                    match rx.await {
+                        Ok(Ok(TxOutput::Message(data))) => {
+                            println!("Unexpected string returned from miner vacation event: {}", data);
+                        },
+                        Ok(Ok(TxOutput::Success)) => println!("Miner vacated."),
+                        Ok(Err(e)) => println!("Error vacating miner: {}", e),
+                        Err(_) => println!("Response channel dropped on miner vacation."),
+                    }
+                }
+            }
+            Err(e) => {
+                println!("Error decoding WorkerStatusUpdated event: {:?}", e);
+                return Err(Error::Subxt(e.into()));
+            }
+            _ => {} // Skip non-matching events
+        }
+    }
+
+    if let Some(current_task) = &miner.current_task {
         match event.as_event::<substrate_interface::api::neuro_zk::events::NzkProofRequested>() {
             Ok(Some(requested_proof)) => {
-                let task_id = &requested_proof.task_id;
+                let task_id = requested_proof.task_id;
+                let tx_queue = config::get_tx_queue()?;
 
-                if *task_id == current_task.id {
+                if task_id == current_task.id {
                     let proof = miner.parent_runtime.read().await.generate_proof().await?;
-                    let _ = miner.submit_zkml_proof(proof).await?;
+                    let keypair = miner.keypair.clone();
+                    let rx = tx_queue.enqueue( move || {
+                        let keypair = keypair.clone();
+                        let proof = proof.clone();
+                        async move {
+                            let _ = submit_proof(proof, keypair, task_id).await?;
+                            Ok(TxOutput::Success)
+                        }
+                    })
+                    .await?;
+
+                    match rx.await {
+                        Ok(Ok(TxOutput::Message(data))) => {
+                            println!("Unexpected string returned from proof submission event: {}", data);
+                        },
+                        Ok(Ok(TxOutput::Success)) => println!("Proof submitted."),
+                        Ok(Err(e)) => println!("Error submitting proof: {}", e),
+                        Err(_) => println!("Response channel dropped on proof submission."),
+                    }
                 }
             }
             Err(e) => {

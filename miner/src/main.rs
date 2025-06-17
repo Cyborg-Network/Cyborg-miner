@@ -23,14 +23,17 @@ mod specs;
 mod substrate_interface;
 mod traits;
 mod types;
-//mod utils;
+mod utils;
 
 use builder::MinerBuilder;
 use clap::Parser;
 use cli::{Cli, Commands};
 use config::run_config;
 use error::Result;
+use subxt_signer::SecretUri;
 use traits::ParachainInteractor;
+use subxt_signer::sr25519::Keypair;
+use std::str::FromStr;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -43,14 +46,17 @@ async fn main() -> Result<()> {
             parachain_url,
             account_seed,
         }) => {
-            run_config(parachain_url).await;
-
             let _log_guard = log::init_logger();
+
+            let uri = SecretUri::from_str(account_seed).expect("Keypair was not set correctly");
+            let keypair = Keypair::from_uri(&uri).expect("Keypair from URI failed");
+
+            run_config(parachain_url, keypair.clone()).await;
 
             // Build the Miner using the provided parachain URL, account seed, and CESS gateway.
             let mut miner = MinerBuilder::default()
                 .parachain_url(parachain_url.to_string())
-                .keypair(account_seed)?
+                .keypair(keypair)
                 .config()?
                 .build()
                 .await?;

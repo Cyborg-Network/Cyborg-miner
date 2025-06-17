@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use crate::{
     error::Result,
     parachain_interactor::{
-        behavior_control, event_processor, identity, registration, task_management,
+        behavior_control, event_processor, identity, registration
     },
     parent_runtime::{cess_interactor, inference, proof},
     types::{CurrentTask, Miner, ParentRuntime},
@@ -11,7 +11,8 @@ use crate::{
 use async_trait::async_trait;
 use subxt::events::EventDetails;
 use subxt::PolkadotConfig;
-use tokio::{sync::watch, task::JoinHandle};
+use subxt_signer::sr25519::Keypair;
+use tokio::task::JoinHandle;
 
 #[async_trait]
 pub trait InferenceServer {
@@ -31,7 +32,7 @@ pub trait InferenceServer {
     ///
     /// # Returns
     /// An `impl Stream<Item = Result<Message, tungstenite::Error>>` representing the output stream of messages.
-    async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>>;
+    async fn spawn_inference_server(&self, current_task: &CurrentTask, keypair: &Keypair) -> Result<JoinHandle<()>>;
 
     /// Generates a zkml proof for the model currently in execution.
     ///
@@ -46,8 +47,8 @@ impl InferenceServer for ParentRuntime {
         cess_interactor::download_model_archive(cess_fid, cipher).await
     }
 
-    async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>> {
-        inference::spawn_inference_server(current_task, self.port).await
+    async fn spawn_inference_server(&self, current_task: &CurrentTask, keypair: &Keypair) -> Result<JoinHandle<()>> {
+        inference::spawn_inference_server(current_task, self.port, keypair).await
     }
 
     async fn generate_proof(&self) -> Result<Vec<u8>> {
@@ -67,12 +68,6 @@ pub trait ParachainInteractor {
     /// A `Result` indicating `Ok(true)` if successful, or an `Error` if confirmation fails.
     async fn confirm_registration(&self) -> Result<bool>;
 
-    /// Registers a worker node on the blockchain.
-    ///
-    /// # Returns
-    /// A `Result` indicating `Ok(())` if successful, or an `Error` if registration fails.
-    async fn register_miner(&self) -> Result<()>;
-
     /// Starts a miner by subscribing to events and listening to finalized blocks.
     ///
     /// # Returns
@@ -87,21 +82,6 @@ pub trait ParachainInteractor {
     /// # Returns
     /// An `Option<String>` containing relevant information derived from the event, or `None` if no information is extracted.
     async fn process_event(&mut self, event: &EventDetails<PolkadotConfig>) -> Result<()>;
-
-    /// Submits a zkml (Zero Knowledge Machine Learning) proof to the blockchain.
-    ///
-    /// # Arguments
-    /// * `proof` - A `Vec<u8>` containing the zkml proof.
-    ///
-    /// # Returns
-    /// A `Result` indicating `Ok(())` if the result is successfully submitted, or an `Error` if it fails.
-    async fn submit_zkml_proof(&self, proof: Vec<u8>) -> Result<()>;
-
-    /// Vacates a miner erasing current user data and resetting the miner state.
-    ///
-    /// # Returns
-    /// A `Result` indicating `Ok(())` if the session vacates successfully, or an `Error` if it fails.
-    async fn stop_task_and_vacate_miner(&self) -> Result<()>;
 
     /// Attempts to update the miner identity file.
     ///
@@ -125,24 +105,12 @@ impl ParachainInteractor for Miner {
         registration::confirm_registration(self).await
     }
 
-    async fn register_miner(&self) -> Result<()> {
-        registration::register_miner(self).await
-    }
-
     async fn start_miner(&mut self) -> Result<()> {
         registration::start_miner(self).await
     }
 
     async fn process_event(&mut self, event: &EventDetails<PolkadotConfig>) -> Result<()> {
         event_processor::process_event(self, event).await
-    }
-
-    async fn stop_task_and_vacate_miner(&self) -> Result<()> {
-        task_management::stop_task_and_vacate_miner().await
-    }
-
-    async fn submit_zkml_proof(&self, proof: Vec<u8>) -> Result<()> {
-        task_management::submit_zkml_proof(self, proof).await
     }
 
     fn update_identity_file(&self, path: &str, content: &str) -> Result<()> {

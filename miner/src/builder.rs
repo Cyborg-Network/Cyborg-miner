@@ -57,17 +57,14 @@ impl<Keypair> MinerBuilder<Keypair> {
     ///
     /// # Returns
     /// A `Result` that, if successful, contains a new `MinerBuilder` instance with an `AccountKeypair`.
-    pub fn keypair(self, seed: &str) -> Result<MinerBuilder<AccountKeypair>> {
-        println!("Keypair: {}", seed);
-        let uri = SecretUri::from_str(seed).expect("Keypair was not set correctly");
-        let keypair = SR25519Keypair::from_uri(&uri).expect("Keypair from URI failed");
+    pub fn keypair(self, keypair: SR25519Keypair) -> MinerBuilder<AccountKeypair> {
 
-        Ok(MinerBuilder {
+        MinerBuilder {
             parachain_url: self.parachain_url,
             keypair: AccountKeypair(keypair),
             identity: self.identity,
             creator: self.creator,
-        })
+        }
     }
 
     /// Sets the identity and the creator of the miner they are kept separate because the way that IDs are generated for the workers is subject to change.
@@ -133,24 +130,29 @@ mod tests {
             Some("ws://127.0.0.1:9988".to_string())
         );
 
+        let uri = SecretUri::from_str("//Alice").unwrap();
+        let keypair = SR25519Keypair::from_uri(&uri).expect("keypair was not set correctly");
+
         // Test setting both node URI and keypair.
         let builder = MinerBuilder::default()
             .parachain_url("ws://127.0.0.1:9988".to_string())
-            .keypair("//Alice");
+            .keypair(keypair);
 
         assert_eq!(
-            builder.unwrap().parachain_url,
+            builder.parachain_url,
             Some("ws://127.0.0.1:9988".to_string())
         );
     }
 
     #[tokio::test]
     async fn test_keypair() {
+        let uri = SecretUri::from_str("//Alice").unwrap();
+        let keypair = SR25519Keypair::from_uri(&uri).expect("keypair was not set correctly");
+
         // Test setting the keypair in the builder.
         let builder = MinerBuilder::default()
             .parachain_url("ws://127.0.0.1:9988".to_string())
-            .keypair("//Alice")
-            .unwrap();
+            .keypair(keypair);
 
         let uri_alice = SecretUri::from_str("//Alice").unwrap();
         let expected_public_key = SR25519Keypair::from_uri(&uri_alice)
@@ -216,10 +218,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_paths() -> Result<()> {
+        let uri = SecretUri::from_str("//Alice").unwrap();
+        let keypair = SR25519Keypair::from_uri(&uri).expect("keypair was not set correctly");
+
         // Test setting the paths in the builder.
         let builder = MinerBuilder::default()
             .parachain_url("ws://127.0.0.1:9944".to_string())
-            .keypair("//Alice")?;
+            .keypair(keypair);
 
         // Test setting the paths without a keypair.
         let builder = MinerBuilder::default().parachain_url("ws://127.0.0.1:9944".to_string());

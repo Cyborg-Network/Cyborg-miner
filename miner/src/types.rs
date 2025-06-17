@@ -46,10 +46,9 @@ pub struct IpResponse {
 
 pub struct AccountKeypair(pub Keypair);
 
-/// Represents a client for interacting with the Cyborg blockchain.
+/// Represents a client for interacting with the Cyborg parachain.
 ///
-/// This struct is used to interact with the Cyborg blockchain, manage key pairs,
-/// and optionally communicate with IPFS or node URIs.
+/// This struct is used to interact with the Cyborg parachain, manage key pairs
 pub struct Miner {
     // Some fields wrapped in an Arc to eg. keep extraction out of an RwLock before await cheap
     pub(crate) keypair: Keypair,

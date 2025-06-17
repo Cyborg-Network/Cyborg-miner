@@ -1,8 +1,8 @@
 use crate::config;
-use crate::error::Error;
 use crate::error::Result;
-use crate::specs;
 use crate::substrate_interface;
+use crate::utils::tx_builder::register;
+use crate::utils::tx_queue::TxOutput;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
 use crate::traits::{InferenceServer, ParachainInteractor};
 use crate::types::{CurrentTask, Miner, MinerData, TaskType};
@@ -30,79 +30,26 @@ pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
 
     println!("identity: {:?}", identity);
 
+    // Since there seems to be a bug in subxt that should have been resolved (and we possibly won't have a separate storage map for querying workers by id)
     let miner_registration_confirmation_query = substrate_interface::api::storage()
         .edge_connect()
-        .executable_workers(&identity.0, &identity.1);
+        .executable_workers_iter();
 
-    let result = client
+    let mut result = client
         .storage()
         .at_latest()
         .await?
-        .fetch(&miner_registration_confirmation_query)
+        .iter(miner_registration_confirmation_query)
         .await?;
 
-    if let Some(miner) = result {
-        println!("Miner registered: {:?}", miner);
-        Ok(true)
-    } else {
-        println!("Miner not registered");
-        Ok(false)
-    }
-}
-
-pub async fn register_miner(miner: &Miner) -> Result<()> {
-    let client = config::get_parachain_client()?;
-    let identity_path = &config::get_paths()?.identity_path;
-    let keypair = &miner.keypair;
-
-    let worker_specs = specs::gather_worker_spec().await?;
-
-    let worker_registration = substrate_interface::api::tx()
-        .edge_connect()
-        .register_worker(
-            WorkerType::Executable,
-            worker_specs.domain,
-            worker_specs.latitude,
-            worker_specs.longitude,
-            worker_specs.ram,
-            worker_specs.storage,
-            worker_specs.cpu,
-        );
-
-    println!("Transaction Details:");
-    println!("Module: {:?}", worker_registration.pallet_name());
-    println!("Call: {:?}", worker_registration.call_name());
-    println!("Parameters: {:?}", worker_registration.call_data());
-
-    let worker_registration_events = client
-        .tx()
-        .sign_and_submit_then_watch_default(&worker_registration, keypair)
-        .await
-        .map(|e| {
-            println!("Miner registration submitted, waiting for transaction to be finalized...");
-            e
-        })?
-        .wait_for_finalized_success()
-        .await?;
-
-    let registration_event = worker_registration_events
-        .find_first::<substrate_interface::api::edge_connect::events::WorkerRegistered>(
-    )?;
-
-    if let Some(event) = registration_event {
-        let worker_identity_json = serde_json::to_string(&MinerData {
-            miner_owner: event.creator.clone().to_string(),
-            miner_identity: event.worker.clone(),
-        })?;
-
-        miner.update_identity_file(identity_path, &worker_identity_json)?;
-
-        println!("Miner registered successfully: {event:?}");
-    } else {
-        println!("Miner registration failed");
+    while let Some(Ok(miner)) = result.next().await {
+        if miner.value.owner == identity.0 && miner.value.id == identity.1 {
+            return Ok(true);
+        }
     }
 
-    Ok(())
+    println!("Miner is not registered");
+    Ok(false)
 }
 
 pub async fn start_miner(miner: &mut Miner) -> Result<()> {
@@ -111,30 +58,52 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
     println!("Waiting for tasks...");
 
     let client = config::get_parachain_client()?;
-
-    /*
+    let tx_queue = config::get_tx_queue()?;
 
     match miner.confirm_registration().await {
-        Ok(true) => println!("Miner already registered"),
-        Ok(false) => miner.register_miner().await.map_err(|e| Error::Custom(format!(
-            "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
-        )))?,
+        Ok(true) => println!("Miner already registered"), 
+        Ok(false) => {
+            let keypair = miner.keypair.clone();
+            let rx = tx_queue.enqueue( move || {
+                let keypair = keypair.clone();
+                async move {
+                    let result = register(keypair).await?;
+                    Ok(TxOutput::Message(result))
+                }
+            })
+            .await?;
+
+            match rx.await {
+                Ok(Ok(TxOutput::Message(data))) => {
+                    miner.update_identity_file(&config::get_paths()?.identity_path, &data)?;
+                },
+                Ok(Ok(TxOutput::Success)) => println!("Missing identity string from registration event"),
+                Ok(Err(e)) => println!("Error registering miner: {}", e),
+                Err(_) => println!("Response channel dropped."),
+            }
+        },
         Err(e) => {
-            println!("Error confirming miner registration: {}", e);
-            miner.register_miner().await.map_err(|e| Error::Custom(format!(
-                "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
-            )))?;
+            println!("Error confirming miner registration: {}, registering...", e);
+            let keypair = miner.keypair.clone();
+            let rx = tx_queue.enqueue( move || {
+                let keypair = keypair.clone();
+                async move {
+                    let result = register(keypair).await?;
+                    Ok(TxOutput::Message(result))
+                }
+            })
+            .await?;
+
+            match rx.await {
+                Ok(Ok(TxOutput::Message(data))) => {
+                    miner.update_identity_file(&config::get_paths()?.identity_path, &data)?;
+                },
+                Ok(Ok(TxOutput::Success)) => println!("Missing identity string from registration event"),
+                Ok(Err(e)) => println!("Error registering miner: {}", e),
+                Err(_) => println!("Response channel dropped."),
+            }
         }
     }
-
-    */
-
-    miner.register_miner().await.map_err(|e| {
-        Error::Custom(format!(
-            "FATAL ERROR: Could not confirm miner registration OR register miner: {}",
-            e.to_string()
-        ))
-    })?;
 
     let mut blocks = client.blocks().subscribe_finalized().await?;
 
