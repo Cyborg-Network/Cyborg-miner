@@ -23,9 +23,7 @@ pub async fn confirm_task_reception(miner: &Miner) -> Result<()> {
 
     let task_confirmation = substrate_interface::api::tx()
         .task_management()
-        .confirm_task_reception(
-            current_task
-        );
+        .confirm_task_reception(current_task);
 
     println!("Transaction Details:");
     println!("Module: {:?}", task_confirmation.pallet_name());
@@ -37,7 +35,9 @@ pub async fn confirm_task_reception(miner: &Miner) -> Result<()> {
         .sign_and_submit_then_watch_default(&task_confirmation, keypair)
         .await
         .map(|e| {
-            println!("Task reception confirmation submitted, waiting for transaction to be finalized...");
+            println!(
+                "Task reception confirmation submitted, waiting for transaction to be finalized..."
+            );
             e
         })?
         .wait_for_finalized_success()

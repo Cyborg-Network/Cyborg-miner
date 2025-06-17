@@ -13,14 +13,14 @@ use axum::{
     serve, Router,
 };
 use futures::{SinkExt, StreamExt};
-use std::collections::HashMap;
 use neuro_zk_runtime::NeuroZKEngine;
+use open_inference_runtime::{client::TensorData, TritonClient};
+use std::collections::HashMap;
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 use tokio::{
     net::TcpListener,
     sync::{watch, Mutex},
 };
-use open_inference_runtime::{TritonClient, client::TensorData};
 
 #[derive(Clone)]
 pub enum InferenceEngine {
@@ -56,11 +56,17 @@ pub async fn spawn_inference_server(
     //     )))
     //     .map_err(|e| Error::Custom(format!("Failed to create engine: {}", e.to_string())))?,
     // ));
-     let engine = match task.task_type {
+    let engine = match task.task_type {
         TaskType::OpenInference => {
-            let triton_client = TritonClient::new("http://localhost:8000/v2",&paths.task_file_name,PathBuf::from(&paths.task_dir_path))
+            let triton_client = TritonClient::new(
+                "http://localhost:8000/v2",
+                &paths.task_file_name,
+                PathBuf::from(&paths.task_dir_path),
+            )
             .await
-            .map_err(|e| Error::Custom(format!("Failed to create Triton client: {}", e.to_string())))?;
+            .map_err(|e| {
+                Error::Custom(format!("Failed to create Triton client: {}", e.to_string()))
+            })?;
             InferenceEngine::OpenInference(Arc::new(Mutex::new(triton_client)))
         }
 
@@ -80,7 +86,6 @@ pub async fn spawn_inference_server(
         *global_sender = Some(shutdown_tx.clone());
     }
 
-    
     {
         let engine = engine.clone();
         let status_tx = status_tx.clone();
@@ -92,21 +97,17 @@ pub async fn spawn_inference_server(
                 InferenceEngine::OpenInference(client) => {
                     let _ = status_tx.send(EngineStatus::Ready);
                 }
-                InferenceEngine::NeuroZk(engine) => {
-                    match engine.lock().await.setup().await {
-                        Ok(()) => {
-                            let _ = status_tx.send(EngineStatus::Ready);
-                        }
-                        Err(e) => {
-                            let _ = status_tx.send(EngineStatus::Failed(e.to_string()));
-                        }
+                InferenceEngine::NeuroZk(engine) => match engine.lock().await.setup().await {
+                    Ok(()) => {
+                        let _ = status_tx.send(EngineStatus::Ready);
                     }
-                }
+                    Err(e) => {
+                        let _ = status_tx.send(EngineStatus::Failed(e.to_string()));
+                    }
+                },
             }
         });
     }
-
-    
 
     let state = AppState {
         task: task.clone(),
@@ -190,22 +191,20 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
     };
 
     match current_status {
-        EngineStatus::Ready => {
-            match &state.engine {
-                InferenceEngine::OpenInference(client) => {
-                    let client = client.lock().await;
-                    if let Err(e)=client.run(request_stream,response_stream).await{
-                        tracing::error!("Error running Nvidia Inference: {}",e);
-                    }
-                }
-                InferenceEngine::NeuroZk(engine) => {
-                    let engine = engine.lock().await;
-                    if let Err(e) = engine.run(request_stream, response_stream).await {
-                        tracing::error!("Error running NeuroZK inference: {}", e);
-                    }
+        EngineStatus::Ready => match &state.engine {
+            InferenceEngine::OpenInference(client) => {
+                let client = client.lock().await;
+                if let Err(e) = client.run(request_stream, response_stream).await {
+                    tracing::error!("Error running Nvidia Inference: {}", e);
                 }
             }
-        }
+            InferenceEngine::NeuroZk(engine) => {
+                let engine = engine.lock().await;
+                if let Err(e) = engine.run(request_stream, response_stream).await {
+                    tracing::error!("Error running NeuroZK inference: {}", e);
+                }
+            }
+        },
         EngineStatus::Initializing => {
             sender
                 .lock()

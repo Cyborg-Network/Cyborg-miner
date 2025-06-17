@@ -7,7 +7,7 @@ use flate2::read::GzDecoder;
 use futures::{stream::StreamExt, Future, Stream};
 use std::io::{copy, BufReader};
 use std::{
-    fs::{File, self},
+    fs::{self, File},
     path::{Path, PathBuf},
 };
 use tar::Archive;
@@ -21,7 +21,7 @@ pub struct NeuroZKEngine {
 const MODEL_PATH: &str = "circuit.ezkl";
 const SETTINGS_PATH: &str = "settings.json";
 const PROVING_KEY_PATH: &str = "pk.key";
-const PROOF_INPUT_PATH : &str = "input.json";
+const PROOF_INPUT_PATH: &str = "input.json";
 const PROOF_WITNESS_PATH: &str = "proof-witness.json";
 const WITNESS_PATH: &str = "witness.json";
 const SRS_PATH: &str = "kzg.srs";
@@ -133,14 +133,19 @@ impl NeuroZKEngine {
         &self,
         model_archive_location: &PathBuf,
         prefix: &str,
-        proof_input_file_name: &str, 
+        proof_input_file_name: &str,
         model_file_name: &str,
         proving_key_file_name: &str,
         settings_file_name: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if self.check_files_exists(
             prefix,
-            [proof_input_file_name, model_file_name, proving_key_file_name, settings_file_name],
+            [
+                proof_input_file_name,
+                model_file_name,
+                proving_key_file_name,
+                settings_file_name,
+            ],
         ) {
             return Ok(());
         };
@@ -153,7 +158,12 @@ impl NeuroZKEngine {
         let decoder = GzDecoder::new(BufReader::new(archive_file));
         let mut archive = Archive::new(decoder);
 
-        let targets = [proof_input_file_name, model_file_name, proving_key_file_name, settings_file_name];
+        let targets = [
+            proof_input_file_name,
+            model_file_name,
+            proving_key_file_name,
+            settings_file_name,
+        ];
 
         for entry_result in archive.entries()? {
             println!("Extracting entry...");
@@ -250,7 +260,7 @@ impl NeuroZKEngine {
         proving_key_path: &str,
         srs_path: &str,
         proof_witness_path: &str,
-        proof_input_path: &str
+        proof_input_path: &str,
     ) -> Result<String, Box<dyn std::error::Error>> {
         let model_path = PathBuf::from(format!("{}/{}", prefix, model_path));
         let proving_key_path = PathBuf::from(format!("{}/{}", prefix, proving_key_path));
@@ -260,13 +270,12 @@ impl NeuroZKEngine {
 
         let input_string = fs::read_to_string(proof_input_path)?;
 
-
         let _ = run(GenWitness {
-             data: Some(ezkl::commands::DataField(input_string)), 
-             compiled_circuit: Some(model_path.clone()), 
-             output: Some(proof_witness_path.clone()), 
-             vk_path: None, 
-             srs_path: Some(srs_path.clone()) 
+            data: Some(ezkl::commands::DataField(input_string)),
+            compiled_circuit: Some(model_path.clone()),
+            output: Some(proof_witness_path.clone()),
+            vk_path: None,
+            srs_path: Some(srs_path.clone()),
         })
         .await?;
 

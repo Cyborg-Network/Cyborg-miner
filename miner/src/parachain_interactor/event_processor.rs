@@ -7,12 +7,12 @@ use crate::{
     error::{Error, Result},
     types::{Miner, MinerData},
 };
-use std::sync::Arc;
 use serde::Serialize;
+use std::fs;
+use std::sync::Arc;
 use subxt::utils::AccountId32;
 use subxt::{events::EventDetails, PolkadotConfig};
 use tracing::info;
-use std::fs;
 
 #[derive(Serialize)]
 struct TaskOwner {
@@ -105,16 +105,13 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     task_type: TaskType::NeuroZk,
                 });
 
-                let task_owner_string = serde_json::to_string(&TaskOwner{
+                let task_owner_string = serde_json::to_string(&TaskOwner {
                     address: task_scheduled.task_owner,
                 })?;
 
                 let task_owner_path = &get_paths()?.task_owner_path;
 
-                update_identity_file(
-                    task_owner_path,
-                    &task_owner_string,
-                )?;
+                update_identity_file(task_owner_path, &task_owner_string)?;
 
                 println!("New task scheduled for worker: {}", task_fid_string);
 

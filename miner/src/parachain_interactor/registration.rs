@@ -6,12 +6,11 @@ use crate::substrate_interface;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
 use crate::traits::{InferenceServer, ParachainInteractor};
 use crate::types::{CurrentTask, Miner, MinerData, TaskType};
-use std::sync::Arc;
 use serde::Deserialize;
+use std::fs;
+use std::sync::Arc;
 use subxt::utils::AccountId32;
 use tracing::info;
-use std::fs;
-
 
 #[derive(Deserialize)]
 struct Identity {
@@ -26,7 +25,7 @@ pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
     let identity_file_content = fs::read_to_string(identity_path)?;
     let identity: Identity = serde_json::from_str(&identity_file_content)?;
     let identity = identity.miner_identity;
-    
+
     println!("Confirming miner registration...");
 
     println!("identity: {:?}", identity);
@@ -111,14 +110,12 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     println!("Waiting for tasks...");
 
-
-
     let client = config::get_parachain_client()?;
 
-    /* 
+    /*
 
     match miner.confirm_registration().await {
-        Ok(true) => println!("Miner already registered"), 
+        Ok(true) => println!("Miner already registered"),
         Ok(false) => miner.register_miner().await.map_err(|e| Error::Custom(format!(
             "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
         )))?,
@@ -132,9 +129,12 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     */
 
-    miner.register_miner().await.map_err(|e| Error::Custom(format!(
-        "FATAL ERROR: Could not confirm miner registration OR register miner: {}", e.to_string()
-    )))?;
+    miner.register_miner().await.map_err(|e| {
+        Error::Custom(format!(
+            "FATAL ERROR: Could not confirm miner registration OR register miner: {}",
+            e.to_string()
+        ))
+    })?;
 
     let mut blocks = client.blocks().subscribe_finalized().await?;
 
@@ -155,7 +155,7 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
         }
     }
 
-    /* 
+    /*
     // -----------------------------------------------DELETE-----------------
 
     //TODO uncomment this and remove the hardcoded cipher after subxt is regen

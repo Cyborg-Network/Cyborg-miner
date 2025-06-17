@@ -1,14 +1,11 @@
-use std::io::{self, BufReader, copy, Read, Write};
+use base64::{engine::general_purpose, Engine as _};
 use flate2::read::GzDecoder;
+use sha2::{Digest, Sha256};
+use std::fs::{remove_file, File};
+use std::io::{self, copy, BufReader, Read, Write};
+use std::path::{Path, PathBuf};
 use tar::Archive;
 use zip::ZipArchive;
-use std::path::{Path, PathBuf};
-use std::fs::{File, remove_file};
-use sha2::{Digest, Sha256};
-use base64::{engine::general_purpose, Engine as _};
-
-
-
 
 /// Handles extraction of model files from a tar.gz or zip archive
 pub struct ModelExtractor {
@@ -17,14 +14,17 @@ pub struct ModelExtractor {
 }
 
 impl ModelExtractor {
-    pub fn new(model_name: &str,base_path:PathBuf) -> io::Result<Self> {
+    pub fn new(model_name: &str, base_path: PathBuf) -> io::Result<Self> {
         let tar_gz_path = Path::new(&base_path).join(format!("{}.tar.gz", model_name));
         let zip_path = Path::new(&base_path).join(format!("{}.zip", model_name));
         let extracted_path = Path::new(&base_path).join(model_name);
 
         // Check if already extracted
         if extracted_path.is_dir() {
-            return Err(io::Error::new(io::ErrorKind::AlreadyExists, "Model already extracted"));
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "Model already extracted",
+            ));
         }
 
         let archive_path = if tar_gz_path.exists() {
@@ -32,7 +32,10 @@ impl ModelExtractor {
         } else if zip_path.exists() {
             zip_path
         } else {
-            return Err(io::Error::new(io::ErrorKind::NotFound, "Model archive not found"));
+            return Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                "Model archive not found",
+            ));
         };
 
         Ok(Self {
@@ -41,45 +44,55 @@ impl ModelExtractor {
         })
     }
 
-
     pub fn extract_model(&self) -> io::Result<()> {
-        let extension = self.archive_path.extension()
+        let extension = self
+            .archive_path
+            .extension()
             .and_then(|ext| ext.to_str())
             .unwrap_or("");
-    
+
         match extension {
             "gz" => self.extract_tar_gz(),
             "zip" => self.extract_zip(),
-            _ => Err(io::Error::new(io::ErrorKind::InvalidInput, "Unsupported archive format")),
+            _ => Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "Unsupported archive format",
+            )),
         }?;
-    
+
         // Delete archive after extraction
         remove_file(&self.archive_path)?;
-    
+
         // 🧠 Compute hash of model.onnx
-        let model_name = self.archive_path
+        let model_name = self
+            .archive_path
             .file_stem()
             .and_then(|s| s.to_str())
             .unwrap_or("unknown_model")
             .to_string();
-    
-            let model_path = self.output_folder.join(&model_name).join("1").join("model.onnx");
-            let output_blob_path = self.output_folder.join(&model_name).join("model_id.wasmhash");
-            
-            if model_path.exists() {
-                match Self::hash_model_file(&model_path, &output_blob_path) {
-                    Ok(_) => println!(),
-                    Err(e) => eprintln!("❌ Failed to hash model file: {}", e),
-                }
-            }
 
-    
+        let model_path = self
+            .output_folder
+            .join(&model_name)
+            .join("1")
+            .join("model.onnx");
+        let output_blob_path = self
+            .output_folder
+            .join(&model_name)
+            .join("model_id.wasmhash");
+
+        if model_path.exists() {
+            match Self::hash_model_file(&model_path, &output_blob_path) {
+                Ok(_) => println!(),
+                Err(e) => eprintln!("❌ Failed to hash model file: {}", e),
+            }
+        }
+
         Ok(())
     }
-    
 
-     /// Extracts all files from the tar.gz archive to the specified output folder
-     fn extract_tar_gz(&self) -> io::Result<()> {
+    /// Extracts all files from the tar.gz archive to the specified output folder
+    fn extract_tar_gz(&self) -> io::Result<()> {
         let archive_file = File::open(&self.archive_path)?;
         let decoder = GzDecoder::new(BufReader::new(archive_file));
         let mut archive = Archive::new(decoder);
@@ -127,9 +140,6 @@ impl ModelExtractor {
         Ok(())
     }
 
-
-
-
     /// Extracts all files from the .zip archive to the specified output folder
     #[allow(deprecated)]
     fn extract_zip(&self) -> io::Result<()> {
@@ -152,5 +162,4 @@ impl ModelExtractor {
         }
         Ok(())
     }
-
 }
