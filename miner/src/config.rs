@@ -64,8 +64,6 @@ pub async fn run_config(parachain_url: &str, account: Keypair) {
 
     println!("Using parachain URL: {}", parachain_url);
 
-
-
     PATHS
         .set(Paths {
             log_path,

@@ -86,7 +86,9 @@ impl<Keypair> MinerBuilder<Keypair> {
                     identity = Some(config.miner_identity.clone());
                     creator = Some(config.miner_identity.0);
                 }
-                Err(e) => warn!("No miner identity present, identity will be set when registering..."),
+                Err(e) => {
+                    warn!("No miner identity present, identity will be set when registering...")
+                }
             }
         } else {
             warn!("No miner identity present, identity will be set when registering...");

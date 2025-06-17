@@ -23,8 +23,10 @@ pub struct Location {
 }
 
 pub async fn gather_worker_spec() -> Result<MinerConfig> {
-
-    println!("Using IP: {}", env::var("CYBORG_WORKER_NODE_TEST_IP").unwrap_or("".to_string()));
+    println!(
+        "Using IP: {}",
+        env::var("CYBORG_WORKER_NODE_TEST_IP").unwrap_or("".to_string())
+    );
 
     let response = match env::var("CYBORG_WORKER_NODE_TEST_IP") {
         Ok(val) => val,
@@ -72,7 +74,7 @@ impl Location {
                 coordinates: f64_to_i32_coordinates(lat, lon),
             };
         }
-        
+
         match get_ip_location().await {
             Ok((lat, lon)) => {
                 println!("Failed to get GPS location. Falling back to IP-based geolocation.");

@@ -5,9 +5,15 @@ use crate::traits::ParachainInteractor;
 use crate::types::Miner;
 use crate::utils::tx_builder::register;
 use crate::utils::tx_queue::TxOutput;
+use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
+use crate::traits::{InferenceServer, ParachainInteractor};
+use crate::types::{CurrentTask, Miner, MinerData, TaskType};
 use serde::Deserialize;
+use std::fs;
+use std::sync::Arc;
 use subxt::utils::AccountId32;
 use std::fs;
+use tracing::info;
 
 #[derive(Deserialize)]
 struct Identity {
@@ -22,7 +28,7 @@ pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
     let identity_file_content = fs::read_to_string(identity_path)?;
     let identity: Identity = serde_json::from_str(&identity_file_content)?;
     let identity = identity.miner_identity;
-    
+
     println!("Confirming miner registration...");
 
     println!("identity: {:?}", identity);
@@ -121,7 +127,7 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
         }
     }
 
-    /* 
+    /*
     // -----------------------------------------------DELETE-----------------
 
     //TODO uncomment this and remove the hardcoded cipher after subxt is regen

@@ -30,6 +30,7 @@ axum = { version = "0.8.4", features = ["ws"] }
 axum-macros = { version = "0.5.0" }
 cess-rust-sdk = { git = 'https://github.com/CESSProject/cess-rust-sdk.git' , branch = 'cess-v0.7.9-venus' }
 chrono = "0.4.38"
+base64 = "0.21"
 clap = { version = "4.5.3", features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "3.6.12", default-features = false }
 color-print = { version = "0.3.4" } 

@@ -1,11 +1,11 @@
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
+use subxt::utils::H256;
 use subxt::{OnlineClient, PolkadotConfig};
 use subxt_signer::sr25519::Keypair;
-use subxt::utils::H256;
 
+use crate::{error::Result, substrate_interface};
 use substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
-use crate::{substrate_interface, error::Result};
 
 #[derive(Debug)]
 pub enum TransactionType {
@@ -109,7 +109,14 @@ impl TransactionQueue {
                     task_id,
                     retry_count,
                 } => {
-                    let result = submit_result_internal(api, signer_keypair, completed_hash, result_cid.clone(), task_id).await;
+                    let result = submit_result_internal(
+                        api,
+                        signer_keypair,
+                        completed_hash,
+                        result_cid.clone(),
+                        task_id,
+                    )
+                    .await;
                     (result, completed_hash, task_id, retry_count)
                 }
                 Transaction::SubmitResultVerification {
@@ -117,7 +124,13 @@ impl TransactionQueue {
                     task_id,
                     retry_count,
                 } => {
-                    let result = submit_result_verification_internal(api, signer_keypair, completed_hash, task_id).await;
+                    let result = submit_result_verification_internal(
+                        api,
+                        signer_keypair,
+                        completed_hash,
+                        task_id,
+                    )
+                    .await;
                     (result, completed_hash, task_id, retry_count)
                 }
                 Transaction::SubmitResultResolution {
@@ -125,49 +138,62 @@ impl TransactionQueue {
                     task_id,
                     retry_count,
                 } => {
-                    let result = submit_result_resolution_internal(api, signer_keypair, completed_hash, task_id).await;
+                    let result = submit_result_resolution_internal(
+                        api,
+                        signer_keypair,
+                        completed_hash,
+                        task_id,
+                    )
+                    .await;
                     (result, completed_hash, task_id, retry_count)
                 }
             };
 
             match result {
                 (Ok(_), _, _, _) => Ok(()),
-                (Err(e), _completed_hash,_task_idd, retry_count) => {
+                (Err(e), _completed_hash, _task_idd, retry_count) => {
                     if Self::is_nonce_error(&e) {
                         let delay_ms = std::cmp::min(
                             10_000,
-                            RETRY_DELAY_MS * 2u64.pow(std::cmp::min(retry_count as u32, 10)), 
+                            RETRY_DELAY_MS * 2u64.pow(std::cmp::min(retry_count as u32, 10)),
                         );
-                        
+
                         println!("Nonce error detected, retrying transaction (attempt {}). Sleeping for {}ms...", 
                             retry_count + 1, delay_ms);
-                        
+
                         tokio::time::sleep(std::time::Duration::from_millis(delay_ms)).await;
-                        
+
                         let mut queue = self.inner.lock().unwrap();
                         let new_transaction = match transaction {
-                            Transaction::SubmitResult { completed_hash, result_cid, task_id, .. } => {
-                                Transaction::SubmitResult {
-                                    completed_hash,
-                                    result_cid,
-                                    task_id,
-                                    retry_count: retry_count + 1,
-                                }
-                            }
-                            Transaction::SubmitResultVerification { completed_hash, task_id, .. } => {
-                                Transaction::SubmitResultVerification {
-                                    completed_hash,
-                                    task_id,
-                                    retry_count: retry_count + 1,
-                                }
-                            }
-                            Transaction::SubmitResultResolution { completed_hash, task_id, .. } => {
-                                Transaction::SubmitResultResolution {
-                                    completed_hash,
-                                    task_id,
-                                    retry_count: retry_count + 1,
-                                }
-                            }
+                            Transaction::SubmitResult {
+                                completed_hash,
+                                result_cid,
+                                task_id,
+                                ..
+                            } => Transaction::SubmitResult {
+                                completed_hash,
+                                result_cid,
+                                task_id,
+                                retry_count: retry_count + 1,
+                            },
+                            Transaction::SubmitResultVerification {
+                                completed_hash,
+                                task_id,
+                                ..
+                            } => Transaction::SubmitResultVerification {
+                                completed_hash,
+                                task_id,
+                                retry_count: retry_count + 1,
+                            },
+                            Transaction::SubmitResultResolution {
+                                completed_hash,
+                                task_id,
+                                ..
+                            } => Transaction::SubmitResultResolution {
+                                completed_hash,
+                                task_id,
+                                retry_count: retry_count + 1,
+                            },
                         };
                         queue.push_front(new_transaction);
                         Ok(())
@@ -185,8 +211,8 @@ impl TransactionQueue {
     }
 
     fn is_nonce_error(error: &crate::error::Error) -> bool {
-        error.to_string().contains("InvalidTransaction") && 
-            (error.to_string().contains("Stale") || error.to_string().contains("nonce"))
+        error.to_string().contains("InvalidTransaction")
+            && (error.to_string().contains("Stale") || error.to_string().contains("nonce"))
     }
 }
 
@@ -195,19 +221,15 @@ lazy_static::lazy_static! {
 }
 
 async fn submit_result_internal(
-    api: &OnlineClient<PolkadotConfig>, 
-    signer_keypair: &Keypair, 
+    api: &OnlineClient<PolkadotConfig>,
+    signer_keypair: &Keypair,
     completed_hash: H256,
     result_cid: BoundedVec<u8>,
     task_id: u64,
 ) -> Result<()> {
     let result_submission_tx = substrate_interface::api::tx()
         .task_management()
-        .submit_completed_task(
-            task_id, 
-            completed_hash, 
-            result_cid.clone(), 
-        );
+        .submit_completed_task(task_id, completed_hash, result_cid.clone());
 
     println!("Transaction Details:");
     println!("Module: {:?}", result_submission_tx.pallet_name());
@@ -236,8 +258,8 @@ async fn submit_result_internal(
 }
 
 async fn submit_result_verification_internal(
-    api: &OnlineClient<PolkadotConfig>, 
-    signer_keypair: &Keypair, 
+    api: &OnlineClient<PolkadotConfig>,
+    signer_keypair: &Keypair,
     completed_hash: H256,
     task_id: u64,
 ) -> Result<()> {
@@ -272,8 +294,8 @@ async fn submit_result_verification_internal(
 }
 
 async fn submit_result_resolution_internal(
-    api: &OnlineClient<PolkadotConfig>, 
-    signer_keypair: &Keypair, 
+    api: &OnlineClient<PolkadotConfig>,
+    signer_keypair: &Keypair,
     completed_hash: H256,
     task_id: u64,
 ) -> Result<()> {
