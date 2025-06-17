@@ -1,4 +1,7 @@
+use crate::config;
 use crate::parent_runtime::server_control::SHUTDOWN_SENDER;
+use crate::utils::tx_builder::confirm_task_reception;
+use crate::utils::tx_queue::TxOutput;
 use crate::{
     config::get_paths,
     error::{Error, Result},
@@ -14,6 +17,7 @@ use axum::{
 };
 use futures::{SinkExt, StreamExt};
 use neuro_zk_runtime::NeuroZKEngine;
+use subxt_signer::sr25519::Keypair;
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 use tokio::{
     net::TcpListener,
@@ -45,6 +49,7 @@ enum EngineStatus {
 pub async fn spawn_inference_server(
     task: &CurrentTask,
     port: Option<u16>,
+    keypair: &Keypair
 ) -> Result<tokio::task::JoinHandle<()>> {
     let (status_tx, status_rx) = watch::channel(EngineStatus::Idle);
     let paths = get_paths()?;
@@ -64,12 +69,35 @@ pub async fn spawn_inference_server(
 
     {
         let engine = Arc::clone(&engine);
+        let tx_queue = config::get_tx_queue()?;
+        let task_id = task.id.clone();
+        let keypair = keypair.clone();
+
+        let rx = tx_queue.enqueue( move || {
+            let keypair = keypair.clone();
+            async move {
+                let _ = confirm_task_reception(keypair, task_id).await?;
+                Ok(TxOutput::Success)
+            }
+        })
+        .await?;
+
+        match rx.await {
+            Ok(Ok(TxOutput::Message(data))) => {
+                println!("Unexpected data from confirm task reception event: {}", data);
+            },
+            Ok(Ok(TxOutput::Success)) => println!("Task reception successfully confirmed"),
+            Ok(Err(e)) => println!("Error confirming task reception: {}", e),
+            Err(_) => println!("Response channel dropped on task reception confirmation."),
+        };
+
         tokio::spawn(async move {
             let _ = status_tx.send(EngineStatus::Initializing);
 
             match engine.lock().await.setup().await {
                 Ok(()) => {
                     let _ = status_tx.send(EngineStatus::Ready);
+
                 }
                 Err(e) => {
                     let _ = status_tx.send(EngineStatus::Failed(e.to_string()));

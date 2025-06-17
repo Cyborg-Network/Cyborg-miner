@@ -1,6 +1,7 @@
 use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
+use subxt_signer::sr25519::Keypair;
 use std::sync::Arc;
 use std::{env, path::PathBuf};
 use subxt::utils::AccountId32;
@@ -9,6 +10,8 @@ use subxt::PolkadotConfig;
 use tokio::sync::RwLock;
 
 use crate::error::{Error, Result};
+use crate::utils::tx_queue::TransactionQueue;
+use crate::utils::tx_queue::TRANSACTION_QUEUE;
 
 //TODO put this in evironment variables
 const LOG_PATH: &str = "/var/lib/cyborg/worker-node/logs/worker_log.txt";
@@ -42,7 +45,7 @@ pub static CESS_GATEWAY: Lazy<Arc<RwLock<String>>> =
 /// # Arguments
 /// * `parachain_url` - A string representing the URL of the parachain node to connect to.
 /// * `account_seed` - A string representing the seed phrase for generating the keypair.
-pub async fn run_config(parachain_url: &str) {
+pub async fn run_config(parachain_url: &str, account: Keypair) {
     dotenv::dotenv().ok();
 
     let log_path = PathBuf::from(env::var("LOG_FILE_PATH").expect("LOG_PATH must be set"));
@@ -62,6 +65,7 @@ pub async fn run_config(parachain_url: &str) {
     println!("Using parachain URL: {}", parachain_url);
 
 
+
     PATHS
         .set(Paths {
             log_path,
@@ -76,6 +80,10 @@ pub async fn run_config(parachain_url: &str) {
         .await
         .expect("Failed to connect to parachain node");
 
+    if let Err(e) = TRANSACTION_QUEUE.set(TransactionQueue::new()) {
+        panic!("Failed to set transaction queue.");
+    }
+
     PARACHAIN_CLIENT
         .set(client)
         .expect("Client is already initialized!");
@@ -85,6 +93,12 @@ pub fn get_parachain_client() -> Result<&'static OnlineClient<PolkadotConfig>> {
     PARACHAIN_CLIENT
         .get()
         .ok_or(Error::parachain_client_not_intitialized())
+}
+
+pub fn get_tx_queue() -> Result<&'static TransactionQueue> {
+    TRANSACTION_QUEUE
+        .get()
+        .ok_or(Error::Custom("Transaction queue not initialized".to_string())) 
 }
 
 pub fn get_paths() -> Result<&'static Paths> {
