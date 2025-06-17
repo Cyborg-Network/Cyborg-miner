@@ -1,0 +1,24 @@
+# Ignore build artifacts
+target/
+**/target/
+**/*.rs.bk
+
+# Ignore other noise
+.dockerignore
+.git
+.gitignore
+.env
+.env.example
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# Allow what we need
+!Cargo.toml
+!Cargo.lock
+!cyborg-agent
+!miner/**
+!logs/
+!neuro-zk-runtime/**
+!open-inference-runtime/**
