@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use crate::{
     error::Result,
     parachain_interactor::{
-        behavior_control, event_processor, identity, registration
+        behavior_control, event_processor, identity, registration::{self, RegistrationStatus}
     },
-    parent_runtime::{cess_interactor, inference, proof},
+    parent_runtime::{storage_interactor, inference, proof},
     types::{CurrentTask, Miner, ParentRuntime},
 };
 use async_trait::async_trait;
@@ -44,7 +44,7 @@ pub trait InferenceServer {
 #[async_trait]
 impl InferenceServer for ParentRuntime {
     async fn download_model_archive(&self, cess_fid: &str, cipher: &str) -> Result<()> {
-        cess_interactor::download_model_archive(cess_fid, cipher).await
+        storage_interactor::download_model_archive(cess_fid, cipher).await
     }
 
     async fn spawn_inference_server(&self, current_task: &CurrentTask, keypair: &Keypair) -> Result<JoinHandle<()>> {
@@ -66,7 +66,7 @@ pub trait ParachainInteractor {
     ///
     /// # Returns
     /// A `Result` indicating `Ok(true)` if successful, or an `Error` if confirmation fails.
-    async fn confirm_registration(&self) -> Result<bool>;
+    async fn confirm_registration(&self) -> Result<RegistrationStatus>;
 
     /// Starts a miner by subscribing to events and listening to finalized blocks.
     ///
@@ -101,7 +101,7 @@ pub trait ParachainInteractor {
 /// Implementation of `ParachainInteractor` trait for `Miner`.
 #[async_trait]
 impl ParachainInteractor for Miner {
-    async fn confirm_registration(&self) -> Result<bool> {
+    async fn confirm_registration(&self) -> Result<RegistrationStatus> {
         registration::confirm_registration(self).await
     }
 

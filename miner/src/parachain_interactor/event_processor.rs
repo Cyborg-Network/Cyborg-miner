@@ -4,7 +4,7 @@ use crate::substrate_interface;
 use crate::traits::{InferenceServer};
 use crate::types::{CurrentTask, TaskType};
 use crate::utils::tx_builder::{confirm_miner_vacation, submit_proof};
-use crate::utils::tx_queue::{self, TxOutput, TRANSACTION_QUEUE};
+use crate::utils::tx_queue::TxOutput;
 use crate::{
     error::{Error, Result},
     types::{Miner, MinerData},
@@ -15,7 +15,6 @@ use serde::Serialize;
 use std::fs;
 use subxt::utils::AccountId32;
 use subxt::{events::EventDetails, PolkadotConfig};
-use tracing::info;
 
 #[derive(Serialize)]
 struct TaskOwner {
@@ -84,13 +83,6 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
         Ok(Some(task_scheduled)) => {
             let assigned_miner = &task_scheduled.assigned_worker;
             let identity_path = &get_paths()?.identity_path;
-
-            /*
-            let identity = &miner
-                .miner_identity
-                .as_ref()
-                .ok_or(Error::identity_not_initialized())?;
-            */
 
             let file_content = fs::read_to_string(identity_path)?;
             let miner_data: MinerData = serde_json::from_str(&file_content)?;
@@ -183,12 +175,10 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     .await?;
 
                     match rx.await {
-                        Ok(Ok(TxOutput::Message(data))) => {
-                            println!("Unexpected string returned from miner vacation event: {}", data);
-                        },
                         Ok(Ok(TxOutput::Success)) => println!("Miner vacated."),
                         Ok(Err(e)) => println!("Error vacating miner: {}", e),
                         Err(_) => println!("Response channel dropped on miner vacation."),
+                        _ => println!("Unexpected response from miner vacation event.")
                     }
                 }
             }
@@ -220,12 +210,10 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     .await?;
 
                     match rx.await {
-                        Ok(Ok(TxOutput::Message(data))) => {
-                            println!("Unexpected string returned from proof submission event: {}", data);
-                        },
                         Ok(Ok(TxOutput::Success)) => println!("Proof submitted."),
                         Ok(Err(e)) => println!("Error submitting proof: {}", e),
                         Err(_) => println!("Response channel dropped on proof submission."),
+                        _ => println!("Unexpected response from proof submission.")
                     }
                 }
             }
@@ -236,26 +224,6 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
             _ => {} // Skip non-matching events
         }
     }
-
-    /*
-    //TODO check if proof was submitted (after parachain update)
-    // Check for SubmittedCompletedTask event to check if worker was assigned to verify task
-    match event.as_event::<substrate_interface::api::neuro_zk::events::ProofSubmitted>() {
-        Ok(Some(submitted_proof)) => {
-            let prover = &submitted_task.prover;
-
-            if *prover == self.identity {
-                //TODO add an proof submission state somewhere that tracks if the proof was submitted or not (wait 60sec otherwise retry)
-                //TODO set the above mentioned state to submitted
-            }
-        }
-        Err(e) => {
-            println!("Error decoding SubmittedCompletedTask event: {:?}", e);
-            return Err(Error::Subxt(e.into()));
-        }
-        _ => {} // Skip non-matching events
-    }
-    */
 
     Ok(())
 }

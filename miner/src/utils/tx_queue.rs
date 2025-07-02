@@ -8,6 +8,7 @@ use std::{
     },
 };
 use once_cell::sync::OnceCell;
+use subxt::utils::AccountId32;
 use tokio::time::{sleep, Duration};
 use tokio::sync::{oneshot, Mutex};
 use crate::error::Result;
@@ -19,7 +20,7 @@ type TxExecutor = Box<dyn Fn() -> Pin<Box<dyn Future<Output = Result<TxOutput>> 
 
 #[derive(Debug)]
 pub enum TxOutput{
-    Message(String),
+    RegistrationInfo((AccountId32, u64)),
     Success
 }
 

@@ -16,10 +16,11 @@ RUN cargo build --release --manifest-path miner/Cargo.toml
 FROM ubuntu:24.04
 
 ENV LOG_FILE_PATH=miner/logs/miner.log
-ENV TASK_FILE_NAME=archive.tar.gz
+ENV TASK_FILE_NAME=archive.tar.zst
 ENV TASK_DIR_PATH=miner/current_task
 ENV IDENTITY_FILE_PATH=miner/config/miner_identity.json
 ENV TASK_OWNER_FILE_PATH=miner/config/task_owner.json
+ENV STORAGE_LOCATION=https://modelstorage0.blob.core.windows.net/models
 
 WORKDIR /cyborg-miner
 
@@ -29,8 +30,6 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=builder /build/target/release/cyborg-miner ./cyborg-miner
 COPY cyborg-agent ./cyborg-agent
-
-COPY miner/current_task/archive.tar.gz ./miner/current_task/archive.tar.gz
 
 EXPOSE 8080 8081 3000
 

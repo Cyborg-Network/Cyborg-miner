@@ -1,21 +1,23 @@
-use std::fmt::Debug;
-
 // Contains all the possible transactions to the parachain, kept out of the `Miner` struct for so that they can contain data that is not the current data (eg. a previous taskId)
+
+use std::fmt::Debug;
 use crate::config;
 use crate::error::Error;
 use crate::specs;
 use crate::substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
+use crate::utils::substrate_queries::get_miner_by_domain;
+use subxt::utils::AccountId32;
 use subxt_signer::sr25519::Keypair;
 use substrate_interface::api::neuro_zk::{Error as NzkError};
+use substrate_interface::api::edge_connect::{Error as EdgeConnectError};
 use crate::error::Result;
 use crate::substrate_interface::{self, api::runtime_types::cyborg_primitives::worker::WorkerType};
-use crate::types::MinerData;
 
 /// Registers a worker node on the blockchain.
 ///
 /// # Returns
 /// A `Result` containing a `String` witht the miner identity if successful, or an `Error` if registration fails.
-pub async fn register(keypair: Keypair) -> Result<String> {
+pub async fn register(keypair: Keypair) -> Result<(AccountId32, u64)> {
     let client = config::get_parachain_client()?;
 
     let worker_specs = specs::gather_worker_spec().await?;
@@ -24,7 +26,7 @@ pub async fn register(keypair: Keypair) -> Result<String> {
         .edge_connect()
         .register_worker(
             WorkerType::Executable,
-            worker_specs.domain,
+            BoundedVec::from(BoundedVec(worker_specs.domain.clone().as_bytes().to_vec())),
             worker_specs.latitude,
             worker_specs.longitude,
             worker_specs.ram,
@@ -55,20 +57,28 @@ pub async fn register(keypair: Keypair) -> Result<String> {
             )?;
 
             if let Some(event) = tx_event {
-                let worker_identity_json = serde_json::to_string(&MinerData {
-                    miner_owner: event.creator.clone().to_string(),
-                    miner_identity: event.worker.clone(),
-                })?;
                 println!("Miner registered successfully: {event:?}");
 
-                return Ok(worker_identity_json)
+                return Ok((event.worker.0, event.worker.1))
             } else {
                 return Err(Error::Custom("Miner registration event not found, cannot bootstrap miner".to_string()))
             }
         },
         Err(e) => {
-            //TODO The parachain should return the required worker data with the `WorkerExists` error, so that the worker can create it's config file from the error in case it encounters it
-            return Err(Error::Custom(format!("Check for acceptable error should occur here, instead this error was returned: {}", e.to_string())))
+            if let Err(e) = check_for_acceptable_error(EdgeConnectError::WorkerExists, e) {
+               return Err(Error::Custom(e.to_string())) 
+            } else {
+                match get_miner_by_domain(client, &worker_specs.domain).await {
+                    Ok((miner_id, miner_owner)) => {
+                        println!("Registered miner found: {miner_id}, {miner_owner}"); 
+
+                        return Ok((miner_id, miner_owner))
+                    },
+                    Err(e) => {
+                        return Err(Error::Custom(format!("UNRECOVERABLE ERROR: Cannot bootstrap miner: {e}")));
+                    }
+                }
+            }; 
         },
     }
 }
@@ -123,8 +133,6 @@ pub async fn submit_proof(proof: Vec<u8>, keypair: Keypair, current_task: u64) -
            check_for_acceptable_error(NzkError::ProofAlreadySubmitted, e)?; 
         },
     }
-    
-    let error = NzkError::ProofAlreadySubmitted;
 
     Ok(())
 }

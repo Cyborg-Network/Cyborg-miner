@@ -36,6 +36,7 @@ struct MinerIdentity {
 
 // We're setting a few global variables here for easy access throughout
 pub static PATHS: OnceCell<Paths> = OnceCell::new();
+pub static STORAGE_LOCATION: OnceCell<String> = OnceCell::new();
 pub static PARACHAIN_CLIENT: OnceCell<OnlineClient<PolkadotConfig>> = OnceCell::new();
 pub static CESS_GATEWAY: Lazy<Arc<RwLock<String>>> =
     Lazy::new(|| Arc::new(RwLock::new(String::from("https://deoss-sgp.cess.network"))));
@@ -48,6 +49,7 @@ pub static CESS_GATEWAY: Lazy<Arc<RwLock<String>>> =
 pub async fn run_config(parachain_url: &str, account: Keypair) {
     dotenv::dotenv().ok();
 
+    let storage_location = String::from(env::var("STORAGE_LOCATION").expect("STORAGE_LOCATION must be set"));
     let log_path = PathBuf::from(env::var("LOG_FILE_PATH").expect("LOG_PATH must be set"));
     let task_file_name =
         String::from(env::var("TASK_FILE_NAME").expect("TASK_FILE_NAME must be set"));
@@ -78,9 +80,13 @@ pub async fn run_config(parachain_url: &str, account: Keypair) {
         .await
         .expect("Failed to connect to parachain node");
 
-    if let Err(e) = TRANSACTION_QUEUE.set(TransactionQueue::new()) {
+    if let Err(_) = TRANSACTION_QUEUE.set(TransactionQueue::new()) {
         panic!("Failed to set transaction queue.");
     }
+
+    STORAGE_LOCATION
+        .set(storage_location)
+        .expect("Storage location is already initialized!");
 
     PARACHAIN_CLIENT
         .set(client)
@@ -91,6 +97,12 @@ pub fn get_parachain_client() -> Result<&'static OnlineClient<PolkadotConfig>> {
     PARACHAIN_CLIENT
         .get()
         .ok_or(Error::parachain_client_not_intitialized())
+}
+
+pub fn get_storage_location() -> Result<&'static String> {
+    STORAGE_LOCATION
+        .get()
+        .ok_or(Error::storage_location_not_initialized())
 }
 
 pub fn get_tx_queue() -> Result<&'static TransactionQueue> {

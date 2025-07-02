@@ -1,9 +1,7 @@
-# Ignore build artifacts
 target/
 **/target/
 **/*.rs.bk
 
-# Ignore other noise
 .dockerignore
 .git
 .gitignore
@@ -14,7 +12,6 @@ target/
 *.swp
 .DS_Store
 
-# Allow what we need
 !Cargo.toml
 !Cargo.lock
 !cyborg-agent

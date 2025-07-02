@@ -107,12 +107,10 @@ pub async fn spawn_inference_server(
         .await?;
 
         match rx.await {
-            Ok(Ok(TxOutput::Message(data))) => {
-                println!("Unexpected data from confirm task reception event: {}", data);
-            },
             Ok(Ok(TxOutput::Success)) => println!("Task reception successfully confirmed"),
             Ok(Err(e)) => println!("Error confirming task reception: {}", e),
             Err(_) => println!("Response channel dropped on task reception confirmation."),
+            _ => println!("Unexpected response on task reception confirmation."),
         };
 
         tokio::spawn(async move {

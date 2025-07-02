@@ -3,7 +3,7 @@ use ezkl::{
     execute::run,
     Commitments,
 };
-use flate2::read::GzDecoder;
+use zstd::stream::read::Decoder;
 use futures::{stream::StreamExt, Future, Stream};
 use std::io::{copy, BufReader};
 use std::{
@@ -18,7 +18,7 @@ pub struct NeuroZKEngine {
     task_dir_string: String,
 }
 
-const MODEL_PATH: &str = "circuit.ezkl";
+const MODEL_PATH: &str = "network.ezkl";
 const SETTINGS_PATH: &str = "settings.json";
 const PROVING_KEY_PATH: &str = "pk.key";
 const PROOF_INPUT_PATH: &str = "input.json";
@@ -102,7 +102,7 @@ impl NeuroZKEngine {
                     response = result;
                 }
                 Err(e) => {
-                    println!("Failed to generate inference result, likely incorrect request format! Error: {}", e);
+                    println!("Failed to generate inference result, likely EZKL version mismatch OR incorrect request format! Error: {}", e);
                     response =
                         "Failed to generate inference result, likely incorrect request format!"
                             .to_string();
@@ -155,7 +155,7 @@ impl NeuroZKEngine {
             return Err("Model archive path does not exist".into());
         }
         let archive_file = File::open(model_archive_location)?;
-        let decoder = GzDecoder::new(BufReader::new(archive_file));
+        let decoder = Decoder::new(BufReader::new(archive_file))?;
         let mut archive = Archive::new(decoder);
 
         let targets = [
