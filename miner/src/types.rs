@@ -31,7 +31,7 @@ pub struct TaskOwner {
 }
 
 pub struct MinerConfig {
-    pub domain: BoundedVec<u8>,
+    pub domain: String,
     pub latitude: i32,
     pub longitude: i32,
     pub ram: u64,

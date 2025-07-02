@@ -35,6 +35,10 @@ impl Error {
         Self::Custom(val.to_string())
     }
 
+    pub fn storage_location_not_initialized() -> Self {
+        Self::Custom("Storage location not initialized".to_string())
+    }
+
     pub fn parachain_client_not_intitialized() -> Self {
         Self::Custom("Parachain client not initialized".to_string())
     }

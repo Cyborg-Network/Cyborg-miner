@@ -3256,6 +3256,7 @@ dependencies = [
  "dotenv",
  "fs2",
  "futures",
+ "futures-util",
  "hex",
  "jsonrpsee 0.22.5",
  "lazy_static",
@@ -6995,6 +6996,7 @@ dependencies = [
  "serde_json",
  "tar",
  "tokio",
+ "zstd 0.13.3",
 ]
 
 [[package]]

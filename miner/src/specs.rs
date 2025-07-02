@@ -50,7 +50,7 @@ pub async fn gather_worker_spec() -> Result<MinerConfig> {
     let storage = return_total_storage();
 
     Ok(MinerConfig {
-        domain: BoundedVec::from(BoundedVec(response.as_bytes().to_vec())),
+        domain: response, 
         latitude: location.coordinates.0,
         longitude: location.coordinates.1,
         ram,

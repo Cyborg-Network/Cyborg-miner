@@ -1,16 +1,13 @@
 use crate::config;
-use crate::error::Result;
+use crate::error::{Error, Result};
 use crate::substrate_interface;
 use crate::utils::tx_builder::register;
 use crate::utils::tx_queue::TxOutput;
-use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
-use crate::traits::{InferenceServer, ParachainInteractor};
-use crate::types::{CurrentTask, Miner, MinerData, TaskType};
+use crate::traits::ParachainInteractor;
+use crate::types::{Miner, MinerData};
 use serde::Deserialize;
 use std::fs;
-use std::sync::Arc;
 use subxt::utils::AccountId32;
-use tracing::info;
 
 #[derive(Deserialize)]
 struct Identity {
@@ -18,7 +15,12 @@ struct Identity {
     miner_identity: (AccountId32, u64),
 }
 
-pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
+pub enum RegistrationStatus{
+    Registered(AccountId32, u64),
+    Unknown,
+}
+
+pub async fn confirm_registration(_: &Miner) -> Result<RegistrationStatus> {
     let client = config::get_parachain_client()?;
 
     let identity_path = &config::get_paths()?.identity_path;
@@ -44,12 +46,12 @@ pub async fn confirm_registration(miner: &Miner) -> Result<bool> {
 
     while let Some(Ok(miner)) = result.next().await {
         if miner.value.owner == identity.0 && miner.value.id == identity.1 {
-            return Ok(true);
+            return Ok(RegistrationStatus::Registered(identity.0, identity.1));
         }
     }
 
     println!("Miner is not registered");
-    Ok(false)
+    Ok(RegistrationStatus::Unknown)
 }
 
 pub async fn start_miner(miner: &mut Miner) -> Result<()> {
@@ -61,25 +63,32 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
     let tx_queue = config::get_tx_queue()?;
 
     match miner.confirm_registration().await {
-        Ok(true) => println!("Miner already registered"), 
-        Ok(false) => {
+        Ok(RegistrationStatus::Registered(owner, id)) => {
+            miner.miner_identity = Some((owner, id));
+        }, 
+        Ok(RegistrationStatus::Unknown) => {
             let keypair = miner.keypair.clone();
             let rx = tx_queue.enqueue( move || {
                 let keypair = keypair.clone();
                 async move {
                     let result = register(keypair).await?;
-                    Ok(TxOutput::Message(result))
+                    Ok(TxOutput::RegistrationInfo(result))
                 }
             })
             .await?;
 
             match rx.await {
-                Ok(Ok(TxOutput::Message(data))) => {
-                    miner.update_identity_file(&config::get_paths()?.identity_path, &data)?;
+                Ok(Ok(TxOutput::RegistrationInfo(data))) => {
+                    miner.miner_identity = Some(data.clone());
+                    let miner_identity_json = serde_json::to_string(&MinerData {
+                        miner_owner: data.0.to_string(),
+                        miner_identity: (data.0, data.1),
+                    })?;
+                    miner.update_identity_file(&config::get_paths()?.identity_path, &miner_identity_json)?;
                 },
-                Ok(Ok(TxOutput::Success)) => println!("Missing identity string from registration event"),
                 Ok(Err(e)) => println!("Error registering miner: {}", e),
                 Err(_) => println!("Response channel dropped."),
+                _ => println!("Missing identity string from registration event"),
             }
         },
         Err(e) => {
@@ -89,18 +98,23 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
                 let keypair = keypair.clone();
                 async move {
                     let result = register(keypair).await?;
-                    Ok(TxOutput::Message(result))
+                    Ok(TxOutput::RegistrationInfo(result))
                 }
             })
             .await?;
 
             match rx.await {
-                Ok(Ok(TxOutput::Message(data))) => {
-                    miner.update_identity_file(&config::get_paths()?.identity_path, &data)?;
+                Ok(Ok(TxOutput::RegistrationInfo(data))) => {
+                    miner.miner_identity = Some(data.clone());
+                    let miner_identity_json = serde_json::to_string(&MinerData {
+                        miner_owner: data.0.to_string(),
+                        miner_identity: (data.0, data.1),
+                    })?;
+                    miner.update_identity_file(&config::get_paths()?.identity_path, &miner_identity_json)?;
                 },
-                Ok(Ok(TxOutput::Success)) => println!("Missing identity string from registration event"),
                 Ok(Err(e)) => println!("Error registering miner: {}", e),
                 Err(_) => println!("Response channel dropped."),
+                _ => println!("Missing identity data from registration event"),
             }
         }
     }
@@ -109,6 +123,9 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     while let Some(Ok(block)) = blocks.next().await {
         println!("New block imported: {:?}", block.hash());
+        let miner_identity = miner.miner_identity.clone()
+            .ok_or(Error::Custom("Miner identity not present!!!".to_string()))?;
+        println!("Active miner identity: {:?}", miner_identity);
 
         let events = block.events().await?;
 
@@ -124,63 +141,5 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
         }
     }
 
-    /*
-    // -----------------------------------------------DELETE-----------------
-
-    //TODO uncomment this and remove the hardcoded cipher after subxt is regen
-    //let storage_encryption_cipher = &task_scheduled.cipher;
-    let storage_encryption_cipher = "password";
-    let task_fid_string = "f".to_string();
-
-    miner.current_task = Some(CurrentTask {
-        id: 0,
-        //TODO uncomment after subxt regen
-        //task_type: task_scheduled.task_type,
-        task_type: TaskType::NeuroZk,
-    });
-
-    info!("New task scheduled for worker: {}", task_fid_string);
-
-    let parent_runtime_clone = Arc::clone(&miner.parent_runtime);
-    let current_task_clone = miner.current_task.clone();
-
-    println!("Current task: {current_task_clone:?}");
-
-    if let Some(current_task) = current_task_clone {
-        let handle_2 = tokio::spawn(async move {
-            if let Err(e) = parent_runtime_clone
-                .read()
-                .await
-                .download_model_archive(&task_fid_string, storage_encryption_cipher)
-                .await
-            {
-                println!("Error downloading model archive: {}", e);
-            };
-
-            let handle = parent_runtime_clone
-                .read()
-                .await
-                .spawn_inference_server(&current_task)
-                .await;
-
-            match handle {
-                Ok(handle) => {
-                    handle.await.ok();
-                    println!("Inference server exited");
-                }
-                Err(e) => {
-                    eprintln!("Error starting inference server: {}", e);
-                }
-            }
-        });
-
-        handle_2.await.map_err(|e| Error::Custom(e.to_string()))?;
-    } else {
-        return Err(Error::Custom("No current task".to_string()));
-    }
-
-    // -----------------------------------------------DELETE TO HERE-----------------
-
-    */
     Ok(())
 }

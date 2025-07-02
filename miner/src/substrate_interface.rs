@@ -245,9 +245,9 @@ pub mod api {
             .hash();
         runtime_metadata_hash
             == [
-                3u8, 204u8, 102u8, 170u8, 202u8, 86u8, 60u8, 42u8, 147u8, 82u8, 241u8, 210u8, 87u8,
-                205u8, 86u8, 229u8, 220u8, 123u8, 194u8, 198u8, 48u8, 45u8, 167u8, 228u8, 108u8,
-                233u8, 95u8, 126u8, 60u8, 40u8, 225u8, 171u8,
+                96u8, 143u8, 144u8, 120u8, 3u8, 192u8, 50u8, 79u8, 146u8, 220u8, 237u8, 117u8,
+                11u8, 207u8, 179u8, 200u8, 50u8, 187u8, 199u8, 201u8, 212u8, 139u8, 11u8, 148u8,
+                175u8, 31u8, 45u8, 99u8, 236u8, 12u8, 137u8, 130u8,
             ]
     }
     pub mod system {
@@ -1406,9 +1406,10 @@ pub mod api {
                         "Events",
                         (),
                         [
-                            191u8, 24u8, 237u8, 222u8, 43u8, 99u8, 95u8, 76u8, 37u8, 12u8, 226u8,
-                            78u8, 60u8, 130u8, 97u8, 182u8, 9u8, 188u8, 92u8, 31u8, 170u8, 203u8,
-                            95u8, 13u8, 212u8, 29u8, 106u8, 112u8, 222u8, 67u8, 164u8, 87u8,
+                            111u8, 73u8, 255u8, 154u8, 221u8, 121u8, 153u8, 108u8, 100u8, 150u8,
+                            34u8, 126u8, 213u8, 183u8, 231u8, 232u8, 3u8, 140u8, 90u8, 189u8,
+                            178u8, 29u8, 221u8, 2u8, 37u8, 219u8, 88u8, 42u8, 199u8, 86u8, 251u8,
+                            132u8,
                         ],
                     )
                 }
@@ -12112,6 +12113,41 @@ pub mod api {
             #[codec(dumb_trait_bound)]
             #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
             #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+            #[doc = "Event emitted when a miner tries to re-register itself."]
+            #[doc = ""]
+            #[doc = "- `creator`: The account ID of the miner's creator."]
+            #[doc = "- `worker`: A tuple containing the account ID of the miner owner and the miner ID."]
+            pub struct WorkerAlreadyRegistered {
+                pub creator: worker_already_registered::Creator,
+                pub worker: worker_already_registered::Worker,
+                pub domain: worker_already_registered::Domain,
+            }
+            pub mod worker_already_registered {
+                use super::runtime_types;
+                pub type Creator = ::subxt::ext::subxt_core::utils::AccountId32;
+                pub type Worker = (
+                    ::subxt::ext::subxt_core::utils::AccountId32,
+                    ::core::primitive::u64,
+                );
+                pub type Domain = runtime_types::bounded_collections::bounded_vec::BoundedVec<
+                    ::core::primitive::u8,
+                >;
+            }
+            impl ::subxt::ext::subxt_core::events::StaticEvent for WorkerAlreadyRegistered {
+                const PALLET: &'static str = "EdgeConnect";
+                const EVENT: &'static str = "WorkerAlreadyRegistered";
+            }
+            #[derive(
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Debug,
+            )]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[codec(dumb_trait_bound)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             #[doc = "Event emitted when a worker is removed from the system."]
             #[doc = ""]
             #[doc = "- `creator`: The account ID of the worker's creator."]
@@ -18592,6 +18628,21 @@ pub mod api {
                         >,
                     },
                     #[codec(index = 1)]
+                    #[doc = "Event emitted when a miner tries to re-register itself."]
+                    #[doc = ""]
+                    #[doc = "- `creator`: The account ID of the miner's creator."]
+                    #[doc = "- `worker`: A tuple containing the account ID of the miner owner and the miner ID."]
+                    WorkerAlreadyRegistered {
+                        creator: ::subxt::ext::subxt_core::utils::AccountId32,
+                        worker: (
+                            ::subxt::ext::subxt_core::utils::AccountId32,
+                            ::core::primitive::u64,
+                        ),
+                        domain: runtime_types::bounded_collections::bounded_vec::BoundedVec<
+                            ::core::primitive::u8,
+                        >,
+                    },
+                    #[codec(index = 2)]
                     #[doc = "Event emitted when a worker is removed from the system."]
                     #[doc = ""]
                     #[doc = "- `creator`: The account ID of the worker's creator."]
@@ -18600,7 +18651,7 @@ pub mod api {
                         creator: ::subxt::ext::subxt_core::utils::AccountId32,
                         worker_id: ::core::primitive::u64,
                     },
-                    #[codec(index = 2)]
+                    #[codec(index = 3)]
                     #[doc = "Event emitted when a worker's status is updated (e.g., toggling visibility)."]
                     #[doc = ""]
                     #[doc = "- `creator`: The account ID of the worker's creator."]
@@ -18611,7 +18662,7 @@ pub mod api {
                         worker_id: ::core::primitive::u64,
                         worker_status: runtime_types::cyborg_primitives::worker::WorkerStatusType,
                     },
-                    #[codec(index = 3)]
+                    #[codec(index = 4)]
                     #[doc = "Event emitted when a worker is penalized"]
                     WorkerPenalized {
                         worker: (
@@ -18621,7 +18672,7 @@ pub mod api {
                         penalty: ::core::primitive::i32,
                         reason: runtime_types::pallet_edge_connect::pallet::PenaltyReason,
                     },
-                    #[codec(index = 4)]
+                    #[codec(index = 5)]
                     #[doc = "Event emitted when a worker is suspended"]
                     WorkerSuspended {
                         worker: (
