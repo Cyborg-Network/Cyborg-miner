@@ -22,7 +22,7 @@ const MODEL_PATH: &str = "network.ezkl";
 const SETTINGS_PATH: &str = "settings.json";
 const PROVING_KEY_PATH: &str = "pk.key";
 const PROOF_INPUT_PATH: &str = "input.json";
-const PROOF_WITNESS_PATH: &str = "proof-witness.json";
+// const PROOF_WITNESS_PATH: &str = "proof-witness.json";
 const WITNESS_PATH: &str = "witness.json";
 const SRS_PATH: &str = "kzg.srs";
 
@@ -314,8 +314,8 @@ impl NeuroZKEngine {
         input_data: String,
     ) -> Result<String, Box<dyn std::error::Error>> {
         let model_path = PathBuf::from(format!("{}/{}", prefix, model_path));
-        let srs_path = PathBuf::from(format!("{}/{}", prefix, srs_path));
-        let witness_path = PathBuf::from(format!("{}/{}", prefix, witness_path));
+        let _srs_path = PathBuf::from(format!("{}/{}", prefix, srs_path));
+        let _witness_path = PathBuf::from(format!("{}/{}", prefix, witness_path));
 
         println!("Generating inference result for: {}", input_data);
 

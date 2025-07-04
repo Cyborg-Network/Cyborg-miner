@@ -30,6 +30,7 @@ pub struct Transaction {
     retry_count: u32,
 }
 
+#[allow(dead_code)]
 impl Transaction {
     fn new(executor: TxExecutor, responder: Option<oneshot::Sender<Result<TxOutput>>>) -> Self {
         Self {

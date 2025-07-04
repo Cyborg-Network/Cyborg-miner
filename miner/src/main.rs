@@ -24,6 +24,7 @@ mod substrate_interface;
 mod traits;
 mod types;
 mod utils;
+mod crypto;
 
 use builder::MinerBuilder;
 use clap::Parser;

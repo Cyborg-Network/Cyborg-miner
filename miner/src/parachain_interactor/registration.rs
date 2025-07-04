@@ -10,6 +10,7 @@ use std::fs;
 use subxt::utils::AccountId32;
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct Identity {
     miner_owner: String,
     miner_identity: (AccountId32, u64),

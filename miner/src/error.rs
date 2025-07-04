@@ -6,6 +6,7 @@ pub type Result<T> = core::result::Result<T, Error>;
 /// The custom error enum for the cyborg worker. This error enum covers all of the error variants that can occur,
 /// enabling all errors to be handled with the `?` operator, but not preventing handling the errors more precisely.
 #[derive(Debug, From)]
+#[allow(dead_code)]
 pub enum Error {
     #[from]
     Custom(String),
@@ -30,6 +31,7 @@ pub enum Error {
     Cess(cess_rust_sdk::core::Error),
 }
 
+#[allow(dead_code)]
 impl Error {
     pub fn custom(val: impl std::fmt::Display) -> Self {
         Self::Custom(val.to_string())

@@ -3,12 +3,14 @@ use subxt::utils::AccountId32;
 use subxt::{OnlineClient, PolkadotConfig};
 
 // Struct that contains the data that the worker needs to execute a task
+#[allow(dead_code)]
 pub struct CyborgTask {
     pub id: u64,
     pub owner: AccountId32,
     pub cid: String,
 }
 
+#[allow(dead_code)]
 pub async fn get_task(api: &OnlineClient<PolkadotConfig>, task_id: u64) -> Result<CyborgTask> {
     let task_address = substrate_interface::api::storage()
         .task_management()
