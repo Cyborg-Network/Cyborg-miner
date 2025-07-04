@@ -21,6 +21,7 @@ pub fn init_logger() {
     *LOG_GUARD.lock().unwrap() = Some(guard);
 }
 
+#[allow(dead_code)]
 fn reset_log_file() -> Result<()> {
     *LOG_GUARD.lock().unwrap() = None;
 

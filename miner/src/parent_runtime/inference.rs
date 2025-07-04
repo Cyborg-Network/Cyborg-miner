@@ -32,6 +32,7 @@ pub enum InferenceEngine {
 }
 
 #[derive(Clone)]
+#[allow(dead_code)]
 struct AppState {
     task: CurrentTask,
     engine: InferenceEngine,
@@ -117,7 +118,7 @@ pub async fn spawn_inference_server(
             let _ = status_tx.send(EngineStatus::Initializing);
 
             match &engine {
-                InferenceEngine::OpenInference(client) => {
+                InferenceEngine::OpenInference(_client) => {
                     let _ = status_tx.send(EngineStatus::Ready);
 
                 }
