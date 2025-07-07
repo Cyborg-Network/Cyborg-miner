@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 
 use crate::{
     error::Result,
@@ -23,7 +22,7 @@ pub trait InferenceServer {
     ///
     /// # Returns
     /// A `Result` containing `Ok(())` if the model archive is successfully downloaded, or an `Error` if it fails.
-    async fn download_model_archive(&self, fid: &str, cipher: &str) -> Result<()>;
+    async fn download_model_archive(&self, fid: &str, cipher: &str, keypair: &Keypair) -> Result<()>;
 
     /// Starts performing inference, selecting the correct inference engine based on the task type
     ///
@@ -39,12 +38,14 @@ pub trait InferenceServer {
     /// # Returns
     /// A `Result` containing a vector of bytes representing the proof.
     async fn generate_proof(&self) -> Result<Vec<u8>>;
+    // async fn download_model_archive(&self, fid: &str, gatekeeper_pubkey: &str) -> Result<()>;
+
 }
 
 #[async_trait]
 impl InferenceServer for ParentRuntime {
-    async fn download_model_archive(&self, cess_fid: &str, cipher: &str) -> Result<()> {
-        storage_interactor::download_model_archive(cess_fid, cipher).await
+    async fn download_model_archive(&self, cess_fid: &str, cipher: &str, keypair: &Keypair) -> Result<()> {
+        storage_interactor::download_model_archive(cess_fid, cipher, keypair).await
     }
 
     async fn spawn_inference_server(&self, current_task: &CurrentTask, keypair: &Keypair) -> Result<JoinHandle<()>> {
@@ -95,6 +96,8 @@ pub trait ParachainInteractor {
     ///
     /// # Returns
     /// A `Result` indicating `Ok(())` if the miner is successfully suspended, or an `Error` if it fails.
+#[allow(dead_code)]
+
     async fn suspend_miner(&self) -> Result<()>;
 }
 
