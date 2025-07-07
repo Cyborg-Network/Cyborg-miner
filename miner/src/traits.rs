@@ -22,7 +22,7 @@ pub trait InferenceServer {
     ///
     /// # Returns
     /// A `Result` containing `Ok(())` if the model archive is successfully downloaded, or an `Error` if it fails.
-    async fn download_model_archive(&self, fid: &str, cipher: &str) -> Result<()>;
+    async fn download_model_archive(&self, fid: &str, cipher: &str, keypair: &Keypair) -> Result<()>;
 
     /// Starts performing inference, selecting the correct inference engine based on the task type
     ///

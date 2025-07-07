@@ -119,7 +119,7 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                         if let Err(e) = parent_runtime_clone
                             .read()
                             .await
-                            .download_model_archive(&task_fid_string, storage_encryption_cipher)
+                            .download_model_archive(&task_fid_string, storage_encryption_cipher, &keypair_clone)
                             .await
                         {
                             println!("Error downloading model archive: {}", e);

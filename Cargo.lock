@@ -3268,6 +3268,7 @@ dependencies = [
  "parity-scale-codec",
  "rand 0.9.1",
  "reqwest 0.12.19",
+ "schnorrkel",
  "serde",
  "serde_json",
  "sp-api 33.0.0",

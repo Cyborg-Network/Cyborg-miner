@@ -9,7 +9,7 @@ pub struct MinerDH {
 impl MinerDH {
     pub fn new(keypair: &Keypair) -> Self {
         // Convert sr25519 secret key to x25519
-        let secret_bytes = keypair.into_raw().secret_key.to_bytes();
+        let secret_bytes = keypair.0.secret.to_bytes();
         let secret = EphemeralSecret::from(secret_bytes);
         let public = PublicKey::from(&secret);
         Self { secret, public }

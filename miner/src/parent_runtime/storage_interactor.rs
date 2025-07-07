@@ -8,7 +8,6 @@ use crate::error::{Error, Result};
 //use cess_rust_sdk::utils::str::get_random_code;
 //use tracing::info;
 use crate::crypto::aes::decrypt;
-use aes_gcm::aead::generic_array::GenericArray;
 use futures_util::StreamExt;
 use reqwest::Client;
 use std::fs;
@@ -112,7 +111,10 @@ pub async fn download_model_archive(
     }
 
     let miner_dh = MinerDH::new(keypair);
-    let gatekeeper_pub = PublicKey::from(*GenericArray::from_slice(cipher.as_bytes()));
+    let cipher_bytes: [u8; 32] = cipher.as_bytes()[..32]
+        .try_into()
+        .expect("Cipher must be 32 bytes");
+    let gatekeeper_pub = PublicKey::from(cipher_bytes);
 
     let shared_secret = miner_dh.derive_shared_secret(gatekeeper_pub);
 
