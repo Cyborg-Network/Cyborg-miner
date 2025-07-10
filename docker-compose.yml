@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  gatekeeper:
+    build: ./gatekeeper-docker
+    volumes:
+      - zk-artifacts:/shared
+    network_mode: "host"
+    environment:
+      - CESS_GATEWAY=https://deoss-sgp.cess.network
+      - CESS_TERRITORY=SOMETHING
+      - PUB_KEY=5Cepa34KmHKM7vbq8P8bz5asVFRYtN1KHk3VKpmkvJindNxy
+      - MNEMONIC=protect reduce slab market blame foster spread toddler lobster escape forest ozone
+      - CYBORG_TEST_KEY=bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice
+      - RPC_URL=wss://testnet-rpc.cess.network/ws/
+      - PARACHAIN_URL=${PARACHAIN_URL}
+
+  miner:
+    build: 
+      context: .
+      dockerfile: miner-docker/Dockerfile
+    volumes:
+      - zk-artifacts:/shared
+    network_mode: "host"
+    environment:
+      - LOG_FILE_PATH=miner/logs/miner.log
+      - TASK_FILE_NAME=archive.tar.zst
+      - TASK_DIR_PATH=/shared
+      - IDENTITY_FILE_PATH=miner/config/miner_identity.json
+      - TASK_OWNER_FILE_PATH=miner/config/task_owner.json
+      - CYBORG_WORKER_NODE_TEST_IP=127.0.0.1
+      - PARACHAIN_URL=${PARACHAIN_URL}
+
+volumes:
+  zk-artifacts:

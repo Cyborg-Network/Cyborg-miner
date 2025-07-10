@@ -14,7 +14,7 @@ pub async fn generate_proof() -> Result<Vec<u8>> {
 
     let proof = engine.prove_inference(
         &paths.task_dir_path, 
-        "circuit.ezkl", 
+        "network.ezkl", 
         "pk.key", 
         "kzg.srs", 
         "proof-witness.json", 

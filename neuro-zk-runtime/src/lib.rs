@@ -3,7 +3,7 @@ use ezkl::{
     execute::run,
     Commitments,
 };
-use flate2::read::GzDecoder;
+use zstd::stream::read::Decoder;
 use futures::{stream::StreamExt, Future, Stream};
 use std::io::{copy, BufReader};
 use std::{
@@ -11,6 +11,7 @@ use std::{
     path::{Path, PathBuf},
 };
 use tar::Archive;
+use sha2::{Digest, Sha256};
 
 #[derive(Debug)]
 pub struct NeuroZKEngine {
@@ -18,7 +19,7 @@ pub struct NeuroZKEngine {
     task_dir_string: String,
 }
 
-const MODEL_PATH: &str = "circuit.ezkl";
+const MODEL_PATH: &str = "network.ezkl";
 const SETTINGS_PATH: &str = "settings.json";
 const PROVING_KEY_PATH: &str = "pk.key";
 const PROOF_INPUT_PATH : &str = "input.json";
@@ -133,27 +134,39 @@ impl NeuroZKEngine {
         &self,
         model_archive_location: &PathBuf,
         prefix: &str,
-        proof_input_file_name: &str, 
+        proof_input_file_name: &str,
         model_file_name: &str,
         proving_key_file_name: &str,
         settings_file_name: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        /* 
         if self.check_files_exists(
             prefix,
-            [proof_input_file_name, model_file_name, proving_key_file_name, settings_file_name],
+            [
+                proof_input_file_name,
+                model_file_name,
+                proving_key_file_name,
+                settings_file_name,
+            ],
         ) {
             return Ok(());
         };
+        */
 
         println!("Opening archive at: {:?}", model_archive_location);
         if !model_archive_location.exists() {
             return Err("Model archive path does not exist".into());
         }
         let archive_file = File::open(model_archive_location)?;
-        let decoder = GzDecoder::new(BufReader::new(archive_file));
+        let decoder = Decoder::new(BufReader::new(archive_file))?;
         let mut archive = Archive::new(decoder);
 
-        let targets = [proof_input_file_name, model_file_name, proving_key_file_name, settings_file_name];
+        let targets = [
+            proof_input_file_name,
+            model_file_name,
+            proving_key_file_name,
+            settings_file_name,
+        ];
 
         for entry_result in archive.entries()? {
             println!("Extracting entry...");
@@ -273,13 +286,25 @@ impl NeuroZKEngine {
         let proof = run(Prove {
             witness: Some(proof_witness_path),
             compiled_circuit: Some(model_path),
-            pk_path: Some(proving_key_path),
+            pk_path: Some(proving_key_path.clone()),
             proof_path: None,
-            srs_path: Some(srs_path),
+            srs_path: Some(srs_path.clone()),
             proof_type: (ezkl::pfsys::ProofType::Single),
             check_mode: None,
         })
         .await?;
+
+        let proof_bytes: Vec<u8> = proof.as_bytes().to_vec();
+        let proof_hash = Sha256::digest(&proof_bytes);
+        println!("Proof hash: {:x}", proof_hash);
+
+        let proving_key = fs::read(proving_key_path)?;
+        let proving_key_hash = Sha256::digest(&proving_key);
+        println!("Proving key hash: {:x}", proving_key_hash);
+
+        let srs_string = fs::read(srs_path)?;
+        let srs_hash = Sha256::digest(&srs_string);
+        println!("SRS hash: {:x}", srs_hash);
 
         Ok(proof)
     }
