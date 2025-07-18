@@ -1,4 +1,4 @@
-use crate::substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
+// use crate::substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec;
 use codec::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -20,6 +20,7 @@ pub struct CurrentTask {
 }
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 pub enum TaskType {
     OpenInference,
     NeuroZk,
@@ -49,6 +50,7 @@ pub struct AccountKeypair(pub Keypair);
 /// Represents a client for interacting with the Cyborg parachain.
 ///
 /// This struct is used to interact with the Cyborg parachain, manage key pairs
+#[allow(dead_code)]
 pub struct Miner {
     // Some fields wrapped in an Arc to eg. keep extraction out of an RwLock before await cheap
     pub(crate) keypair: Keypair,

@@ -14,10 +14,11 @@ use crate::utils::tx_queue::TransactionQueue;
 use crate::utils::tx_queue::TRANSACTION_QUEUE;
 
 //TODO put this in evironment variables
-const LOG_PATH: &str = "/var/lib/cyborg/worker-node/logs/worker_log.txt";
-const TASK_PATH: &str = "/var/lib/cyborg/worker-node/task/current_task";
-const TASK_OWNER_PATH: &str = "/var/lib/cyborg/worker-node/task/task_owner.json";
-const IDENTITY_PATH: &str = "/var/lib/cyborg/worker-node/identity.json";
+#[allow(dead_code)]
+// const LOG_PATH: &str = "/var/lib/cyborg/worker-node/logs/worker_log.txt";
+// const TASK_PATH: &str = "/var/lib/cyborg/worker-node/task/current_task";
+// const TASK_OWNER_PATH: &str = "/var/lib/cyborg/worker-node/task/task_owner.json";
+// const IDENTITY_PATH: &str = "/var/lib/cyborg/worker-node/identity.json";
 
 #[derive(Debug)]
 pub struct Paths {
@@ -29,6 +30,7 @@ pub struct Paths {
 }
 
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 struct MinerIdentity {
     owner: AccountId32,
     id: u32,
@@ -46,7 +48,7 @@ pub static CESS_GATEWAY: Lazy<Arc<RwLock<String>>> =
 /// # Arguments
 /// * `parachain_url` - A string representing the URL of the parachain node to connect to.
 /// * `account_seed` - A string representing the seed phrase for generating the keypair.
-pub async fn run_config(parachain_url: &str, account: Keypair) {
+pub async fn run_config(parachain_url: &str, _account: Keypair) {
     dotenv::dotenv().ok();
 
     let storage_location = String::from(env::var("STORAGE_LOCATION").expect("STORAGE_LOCATION must be set"));
@@ -115,10 +117,12 @@ pub fn get_paths() -> Result<&'static Paths> {
     PATHS.get().ok_or(Error::config_paths_not_initialized())
 }
 
+#[allow(dead_code)]
 pub async fn get_cess_gateway() -> String {
     CESS_GATEWAY.read().await.clone()
 }
 
+#[allow(dead_code)]
 pub async fn set_cess_gateway(url: &str) {
     let mut write_guard = CESS_GATEWAY.write().await;
 

@@ -142,9 +142,7 @@ pub async fn confirm_task_reception(keypair: Keypair, current_task: u64) -> Resu
 
     let tx = substrate_interface::api::tx()
         .task_management()
-        .confirm_task_reception(
-            current_task
-        );
+        .confirm_task_reception(current_task);
 
     println!("Transaction Details:");
     println!("Module: {:?}", tx.pallet_name());
@@ -165,8 +163,7 @@ pub async fn confirm_task_reception(keypair: Keypair, current_task: u64) -> Resu
     match tx_submission {
         Ok(e) => {
             let event = e
-                .find_first::<substrate_interface::api::task_management::events::TaskReceptionConfirmed>(
-            )?;
+                .find_first::<substrate_interface::api::task_management::events::TaskReceptionConfirmed>()?;
 
             if let Some(event) = event {
                 println!("Task reception confirmed: {event:?}");
@@ -175,8 +172,11 @@ pub async fn confirm_task_reception(keypair: Keypair, current_task: u64) -> Resu
             }
         },
         Err(e) => {
-            //TODO add an acceptable error check here - currently miners can infinitely confirm task reception without the parachain throwing an error, so there is no acceptable error that we can check
-            return Err(Error::Subxt(e));
+            // Handle the case where task reception was already confirmed
+            check_for_acceptable_error(
+                substrate_interface::api::task_management::Error::TaskReceptionAlreadyConfirmed,
+                e
+            )?;
         },
     }
 
