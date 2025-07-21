@@ -16,7 +16,7 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1 
         with:
-          rust-version: nightly
+          toolchain: nightly
           target: aarch64-unknown-linux-gnu
           override: true
           components: rust-src
