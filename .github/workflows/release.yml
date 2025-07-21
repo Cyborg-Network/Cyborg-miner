@@ -3,7 +3,7 @@ name: Alpha Patch
 on:
   push:
     tags:
-      - "v0.1.*"
+      - "v0.0.*"
 
 jobs:
   build-aarch64:
@@ -27,10 +27,20 @@ jobs:
       - name: Build for aarch64
         run: cross build --target aarch64-unknown-linux-gnu --release
 
+      - name: Prepare release archive
+        run: |
+          mkdir -p release
+          cp target/aarch64-unknown-linux-gnu/release/cyborg-miner release/
+          cp cyborg-agent release/
+          cp scripts/update-stager.sh release/
+          cp scripts/installer.sh release/
+          chmod +x release/cyborg-miner release/cyborg-agent release/update-stager.sh release/installer.sh
+          tar -czvf cyborg-miner-linux-aarch64.tar.gz -C release .
+
       - name: Create GitHub Release and upload binary
         uses: softprops/action-gh-release@v2
         with:
-          files: target/aarch64-unknown-linux-gnu/release/your_binary_name
+          files: |
+            cyborg-miner-linux-aarch64.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

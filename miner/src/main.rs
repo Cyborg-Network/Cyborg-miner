@@ -23,6 +23,7 @@ mod specs;
 mod substrate_interface;
 mod traits;
 mod types;
+mod self_update;
 //mod utils;
 
 use builder::MinerBuilder;

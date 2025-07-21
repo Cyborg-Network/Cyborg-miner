@@ -1,6 +1,7 @@
 use crate::config;
 use crate::error::Error;
 use crate::error::Result;
+use crate::self_update;
 use crate::specs;
 use crate::substrate_interface;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::WorkerType;
@@ -140,6 +141,10 @@ pub async fn start_miner(miner: &mut Miner) -> Result<()> {
 
     while let Some(Ok(block)) = blocks.next().await {
         println!("New block imported: {:?}", block.hash());
+
+        if miner.current_task.is_none() {
+           self_update::try_apply_update_if_available()?; 
+        }
 
         let events = block.events().await?;
 
