@@ -15,6 +15,7 @@ use serde::Serialize;
 use std::fs;
 use subxt::utils::AccountId32;
 use subxt::{events::EventDetails, PolkadotConfig};
+use crate::utils::tx_builder::confirm_task_reception;
 
 #[derive(Serialize)]
 struct TaskOwner {
@@ -86,6 +87,26 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
 
             let file_content = fs::read_to_string(identity_path)?;
             let miner_data: MinerData = serde_json::from_str(&file_content)?;
+
+             // Immediately confirm task reception
+             let tx_queue = config::get_tx_queue()?;
+             let keypair = miner.keypair.clone();
+             let task_id = task_scheduled.task_id;
+             
+             let rx = tx_queue.enqueue(move || {
+                 let keypair = keypair.clone();
+                 async move {
+                     let _ = confirm_task_reception(keypair, task_id).await?;
+                     Ok(TxOutput::Success)
+                 }
+             }).await?;
+             
+             // Handle response 
+             match rx.await {
+                 Ok(Ok(TxOutput::Success)) => println!("Task reception confirmed immediately"),
+                 Ok(Err(e)) => println!("Error confirming task reception: {}", e),
+                 _ => println!("Unexpected response for task confirmation"),
+             }
 
             if assigned_miner == &miner_data.miner_identity {
                 //TODO uncomment this and remove the hardcoded cipher after subxt is regen
