@@ -8,9 +8,12 @@ use std::{
 
 use std::os::unix::process::CommandExt;
 
-pub fn try_apply_update_if_available() -> io::Result<()> {
+use crate::config;
+use crate::error::{Error, Result};
+
+pub fn try_apply_update_if_available() -> Result<()> {
     let current_exe = env::current_exe()?;
-    let staged_update = current_exe.with_extension("new");
+    let staged_update = config::get_update_path()?;
 
     if staged_update.exists() {
         println!("New version detected. Attempting self-update...");
@@ -18,7 +21,7 @@ pub fn try_apply_update_if_available() -> io::Result<()> {
         let metadata = fs::metadata(&staged_update)?;
         let permissions = metadata.permissions();
         if permissions.mode() & 0o111 == 0 {
-            return Err(io::Error::new(io::ErrorKind::PermissionDenied, "Staged update is not executable"));
+            return Err(Error::Custom("Staged update is not executable".to_string()));
         }
 
         let tmp_copy = current_exe.with_extension("tmp");

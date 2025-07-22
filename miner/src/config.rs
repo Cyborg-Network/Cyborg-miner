@@ -33,6 +33,7 @@ struct MinerIdentity {
 
 // We're setting a few global variables here for easy access throughout
 pub static PATHS: OnceCell<Paths> = OnceCell::new();
+pub static UPDATE_PATH: OnceCell<PathBuf> = OnceCell::new();
 pub static PARACHAIN_CLIENT: OnceCell<OnlineClient<PolkadotConfig>> = OnceCell::new();
 pub static CESS_GATEWAY: Lazy<Arc<RwLock<String>>> =
     Lazy::new(|| Arc::new(RwLock::new(String::from("https://deoss-sgp.cess.network"))));
@@ -46,6 +47,7 @@ pub async fn run_config(parachain_url: &str) {
     dotenv::dotenv().ok();
 
     let log_path = PathBuf::from(env::var("LOG_FILE_PATH").expect("LOG_PATH must be set"));
+    let update_path = PathBuf::from(env::var("UPDATE_STAGER_PATH").expect("UPDATE_STAGER_PATH must be set"));
     let task_file_name =
         String::from(env::var("TASK_FILE_NAME").expect("TASK_FILE_NAME must be set"));
     let task_dir_path = String::from(env::var("TASK_DIR_PATH").expect("TASK_DIR_PATH must be set"));
@@ -79,6 +81,10 @@ pub async fn run_config(parachain_url: &str) {
     PARACHAIN_CLIENT
         .set(client)
         .expect("Client is already initialized!");
+
+    UPDATE_PATH
+        .set(update_path)
+        .expect("Update path is already initialized!");
 }
 
 pub fn get_parachain_client() -> Result<&'static OnlineClient<PolkadotConfig>> {
@@ -93,6 +99,10 @@ pub fn get_paths() -> Result<&'static Paths> {
 
 pub async fn get_cess_gateway() -> String {
     CESS_GATEWAY.read().await.clone()
+}
+
+pub fn get_update_path() -> Result<&'static PathBuf> {
+    UPDATE_PATH.get().ok_or(Error::Custom("Update path not initialized".to_string()))
 }
 
 pub async fn set_cess_gateway(url: &str) {
