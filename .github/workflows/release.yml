@@ -19,6 +19,7 @@ jobs:
           toolchain: nightly
           target: aarch64-unknown-linux-gnu
           override: true
+          rustflags: ""
           components: rust-src
 
       - name: Install cross
