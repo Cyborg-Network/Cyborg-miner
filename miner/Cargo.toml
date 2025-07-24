@@ -42,6 +42,7 @@ fs2 = "0.4.3"
 hex = { version = "0.4.3" } 
 jsonrpsee = { version = "0.22", features = ["server"] }
 reqwest = { version = "0.12.9", features = ["json", "blocking"] }
+nix = { version = "0.30.1", features = ["user"] }
 sp-api = { version = "33.0.0", default-features = false }
 sp-blockchain = { version = "35.0.0" }
 sp-core = { version = "34.0.0", default-features = false }

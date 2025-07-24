@@ -11,7 +11,6 @@ use std::sync::Arc;
 use serde::Serialize;
 use subxt::utils::AccountId32;
 use subxt::{events::EventDetails, PolkadotConfig};
-use tracing::info;
 use std::fs;
 
 #[derive(Serialize)]

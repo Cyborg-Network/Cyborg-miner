@@ -16,8 +16,8 @@ AGENT_FILE_NAME="cyborg-agent"
 SETUP_SCRIPT_FILE_NAME="setup.sh"
 
 # Paths for the files
-BIN_DIR="/usr/local/bin/"
-SCRIPT_DIR="/var/lib/cyborg/miner/scripts/"
+BIN_DIR="/usr/local/bin"
+SCRIPT_DIR="/var/lib/cyborg/miner/scripts"
 
 # Full paths
 MINER_BINARY_PATH="$BIN_DIR/$MINER_FILE_NAME"
@@ -38,6 +38,7 @@ MINER_TASK_DIR="/var/lib/cyborg/miner/task"
 MINER_CONFIG_DIR="/etc/cyborg/miner"
 MINER_LOG_DIR="/var/log/cyborg/miner"
 MINER_UPDATE_PATH="/var/lib/cyborg/miner/update/cyborg-miner.new"
+STAGE_DIR="/var/lib/cyborg/miner/update"
 
 # User
 USER="cyborg-user"
@@ -63,10 +64,43 @@ download_and_extract() {
     chmod +x "$MINER_BIN" "$AGENT_BIN" "$SETUP_SCRIPT"
 }
 
+prepare_environment() {
+    echo "Preparing file system structure..."
+
+    for dir in \
+        "$BIN_DIR" \
+        "$SCRIPT_DIR" \
+        "$MINER_TASK_DIR" \
+        "$MINER_CONFIG_DIR" \
+        "$MINER_LOG_DIR" \
+        "$STAGE_DIR" \
+        "/var/log/cyborg/agent" \
+        "/var/lib/cyborg" \
+        "/var/log/cyborg" \
+        "/etc/cyborg"
+    do
+        if [[ ! -d "$dir" ]]; then
+            echo "Creating directory: $dir"
+            sudo mkdir -p "$dir"
+        fi
+    done
+
+    if ! id "$USER" &>/dev/null; then
+        echo "Creating system user: $USER"
+        sudo useradd -r -s /bin/false "$USER"
+    fi
+
+    # Set ownership and permissions, only if needed
+    echo "Setting ownership and permissions..."
+    sudo chown -R "$USER:$USER" /var/lib/cyborg /var/log/cyborg /etc/cyborg "$STAGE_DIR"
+    sudo chmod -R 700 /var/lib/cyborg /var/log/cyborg /etc/cyborg "$STAGE_DIR"
+}
+
 install() {
     echo "Initiating miner registration..."
 
     download_and_extract
+    prepare_environment
 
     echo "Moving the miner to $BIN_DIR..."
     echo "Moving the agent to $BIN_DIR..."
@@ -88,21 +122,6 @@ install() {
         sudo useradd -r -s /bin/false "$USER"
     fi
 
-    # Create task directory
-    sudo mkdir -p "$MINER_TASK_DIR"
-
-    # Create config directories
-    sudo mkdir -p "$MINER_CONFIG_DIR"
-
-    # Create log directories
-    sudo mkdir -p "$MINER_LOG_DIR"
-    sudo mkdir -p /var/log/cyborg/agent
-
-    # Set ownership and permissions
-    sudo mkdir -p /var/lib/cyborg /var/log/cyborg /etc/cyborg /var/log/cyborg/agent
-    sudo chown -R "$USER":"$USER" /var/lib/cyborg /var/log/cyborg /etc/cyborg
-    sudo chmod -R 700 /var/lib/cyborg /var/log/cyborg /etc/cyborg
-
     echo "Creating systemd service for worker node: $MINER_SERVICE_FILE"
     sudo bash -c "cat > $MINER_SERVICE_FILE" << EOL
     [Unit]
@@ -119,7 +138,7 @@ install() {
     Environment=TASK_DIR_PATH=$MINER_TASK_DIR
     Environment=IDENTITY_FILE_PATH=$MINER_CONFIG_DIR/miner_identity.json
     Environment=TASK_OWNER_FILE_PATH=$MINER_CONFIG_DIR/task_owner.json
-    Environment=UPDATE_PATH=$MINER_UPDATE_PATH
+    Environment=UPDATE_STAGER_PATH=$MINER_UPDATE_PATH
     ExecStart=$MINER_BINARY_PATH start-miner --parachain-url \$PARACHAIN_URL --account-seed "\$ACCOUNT_SEED"
     Restart=always
     SuccessExitStatus=75
@@ -151,11 +170,12 @@ EOL
     echo "Agent service created successfully!"
 
     echo "Reloading systemd, enabling and starting $MINER_FILE_NAME and $AGENT_FILE_NAME services..."
+    sudo systemctl daemon-reexec
     sudo systemctl daemon-reload
     sudo systemctl enable "$MINER_FILE_NAME"
     sudo systemctl enable "$AGENT_FILE_NAME"
-    sudo systemctl start "$MINER_FILE_NAME"
-    sudo systemctl start "$AGENT_FILE_NAME"
+    sudo systemctl restart "$MINER_FILE_NAME"
+    sudo systemctl restart "$AGENT_FILE_NAME"
 
     sudo systemctl status "$MINER_FILE_NAME" --no-pager
     sudo systemctl status "$AGENT_FILE_NAME" --no-pager
@@ -221,10 +241,7 @@ EOL
 
 stage_update() {
     download_and_extract
-
-    STAGE_DIR="/var/lib/cyborg/miner/update"
-    sudo mkdir -p "$STAGE_DIR"
-    sudo chown "$USER" "$STAGE_DIR"
+    prepare_environment
 
     if [[ -z "$MINER_BIN" || -z "$AGENT_BIN" || -z "$SETUP_SCRIPT" ]]; then
     echo "Required files not found in archive."

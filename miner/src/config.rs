@@ -9,6 +9,8 @@ use subxt::PolkadotConfig;
 use tokio::sync::RwLock;
 
 use crate::error::{Error, Result};
+use crate::utils::tx_queue::TransactionQueue;
+use crate::utils::tx_queue::TRANSACTION_QUEUE;
 
 //TODO put this in evironment variables
 const LOG_PATH: &str = "/var/lib/cyborg/worker-node/logs/worker_log.txt";
@@ -78,6 +80,10 @@ pub async fn run_config(parachain_url: &str) {
         .await
         .expect("Failed to connect to parachain node");
 
+    if let Err(_) = TRANSACTION_QUEUE.set(TransactionQueue::new()) {
+        panic!("Failed to set transaction queue.");
+    }
+
     PARACHAIN_CLIENT
         .set(client)
         .expect("Client is already initialized!");
@@ -91,6 +97,12 @@ pub fn get_parachain_client() -> Result<&'static OnlineClient<PolkadotConfig>> {
     PARACHAIN_CLIENT
         .get()
         .ok_or(Error::parachain_client_not_intitialized())
+}
+
+pub fn get_tx_queue() -> Result<&'static TransactionQueue> {
+    TRANSACTION_QUEUE
+        .get()
+        .ok_or(Error::Custom("Transaction queue not initialized".to_string())) 
 }
 
 pub fn get_paths() -> Result<&'static Paths> {

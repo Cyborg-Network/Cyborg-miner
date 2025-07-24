@@ -1,9 +1,7 @@
-use std::path::PathBuf;
-
 use crate::{
     error::Result,
     parachain_interactor::{
-        behavior_control, event_processor, identity, registration, task_management,
+        behavior_control, event_processor, identity, registration::{self, RegistrationStatus}, task_management,
     },
     parent_runtime::{cess_interactor, inference, proof},
     types::{CurrentTask, Miner, ParentRuntime},
@@ -11,7 +9,7 @@ use crate::{
 use async_trait::async_trait;
 use subxt::events::EventDetails;
 use subxt::PolkadotConfig;
-use tokio::{sync::watch, task::JoinHandle};
+use tokio::task::JoinHandle;
 
 #[async_trait]
 pub trait InferenceServer {
@@ -65,13 +63,7 @@ pub trait ParachainInteractor {
     ///
     /// # Returns
     /// A `Result` indicating `Ok(true)` if successful, or an `Error` if confirmation fails.
-    async fn confirm_registration(&self) -> Result<bool>;
-
-    /// Registers a worker node on the blockchain.
-    ///
-    /// # Returns
-    /// A `Result` indicating `Ok(())` if successful, or an `Error` if registration fails.
-    async fn register_miner(&self) -> Result<()>;
+    async fn confirm_registration(&self) -> Result<RegistrationStatus>;
 
     /// Starts a miner by subscribing to events and listening to finalized blocks.
     ///
@@ -121,12 +113,8 @@ pub trait ParachainInteractor {
 /// Implementation of `ParachainInteractor` trait for `Miner`.
 #[async_trait]
 impl ParachainInteractor for Miner {
-    async fn confirm_registration(&self) -> Result<bool> {
+    async fn confirm_registration(&self) -> Result<RegistrationStatus> {
         registration::confirm_registration(self).await
-    }
-
-    async fn register_miner(&self) -> Result<()> {
-        registration::register_miner(self).await
     }
 
     async fn start_miner(&mut self) -> Result<()> {
