@@ -47,71 +47,117 @@ impl TritonClient {
     pub fn new(TRITON_URL:String) -> Self {
         Self {
             client: Client::new(),
-            url:TRITON_URL
-        }
-    }
+            url: triton_url.to_string(),
+            model_name: model_name.to_string(),
+            model_path: model_path.clone(),
+        };
 
-    // Check if the server is live
-    pub async fn is_server_live(&self,) -> Result<bool, TritonError> {
-        let url = format!("{}/health/live", self.url);
-        let response = self.client.get(&url).send().await?;
-        Ok(response.status().is_success())
-    }
-
-    
-
-    // Check if the server is ready
-    pub async fn is_server_ready(&self ) -> Result<bool, TritonError> {
-        let url = format!("{}/health/ready", self.url);
-        let response = self.client.get(&url).send().await?;
-        Ok(response.status().is_success())
-    }
-
-    // List all models currently loaded
-    pub async fn list_models(&self) -> Result<(), TritonError> {
-        let url = format!("{}/repository/index", self.url);
-        let response = self.client.post(&url).json(&serde_json::json!({})).send().await?;
-
-        if response.status().is_success() {
-            let models: Value = response.json().await?;
-            
-            println!("+---------------------------------+---------+---------+");
-            println!("| Model                           | Version |");
-            println!("+---------------------------------+---------+---------+");
-
-            if let Some(model_list) = models.as_array() {
-                for model in model_list {
-                    let name = model["name"].as_str().unwrap_or("N/A");
-                    let version = model["version"].as_str().unwrap_or("N/A");
-                    // let status = model["state"].as_str().unwrap_or("UNKNOWN");
-
-                    println!(
-                        "| {:<31} | {:<7} | ",
-                        name,
-                        version,
-                        // status
-                    );
+        match ModelExtractor::new(&client.model_name, model_path.clone()) {
+            Ok(extractor) => {
+                if let Err(e) = extractor.extract_model() {
+                    println!("❌ Extraction failed: {:?}", e);
+                } else {
                 }
             }
-
-            println!("+---------------------------------+---------+---------+");
-            Ok(())
-        } else {
-            Err(TritonError::Http(response.status()))
+            Err(e) => {
+                println!("❌ Initialization of ModelExtractor failed: {:?}", e);
+            }
         }
-    }
 
-    // Load a model into Triton
-    pub async fn load_model(&self, model_name: &str) -> Result<(), TritonError> {
-        let url = format!("{}/repository/models/{}/load", self.url, model_name);
-        let response = self.client.post(&url).json(&serde_json::json!({})).send().await?;
+          println!("⏳ Checking if the server is live...");
+
+        let mut url = format!("{}/health/live", &client.url);
+        let mut response = client.client.get(&url).send().await?;
+        if !response.status().is_success() {
+            println!("✅ Server is not live: {}", response.status());
+        }
+        println!("✅ Server is live!");
+        println!("⏳ Checking if the server is ready...");
+
+        url = format!("{}/health/ready", &client.url);
+        response = client.client.get(&url).send().await?;
+        if !response.status().is_success() {
+            println!("✅ Server is not ready: {}", response.status());
+        }
+        println!("✅ Server is ready!");
+
+        println!("⏳ Loading model: {}", client.model_name);
+
+        url = format!(
+            "{}/repository/models/{}/load",
+            &client.url, &client.model_name
+        );
+        response = client
+            .client
+            .post(&url)
+            .json(&serde_json::json!({}))
+            .send()
+            .await?;
         if response.status().is_success() {
-            println!("Successfully loaded model: {}", model_name);
-            Ok(())
-        } else {
-            Err(TritonError::Http(response.status()))
+            println!("✅ Successfully loaded model: {}", &client.model_name);
         }
+
+
+        // Check if the server is live
+        // let mut url = format!("{}/health/ready", &client.url);
+        // let mut response = client.client.get(&url).send().await?;
+        // if !response.status().is_success() {
+        //     println!("✅ Server is not live: {}", response.status());
+        // }
+        // // Check if the server is ready
+        // url = format!("{}/health/ready", &client.url);
+        // response = client.client.get(&url).send().await?;
+        // if !response.status().is_success() {
+        //     println!("✅ Server is not ready: {}", response.status());
+        // }
+
+        Ok(client)
     }
+
+    // pub async fn load_model(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    //     let url = format!("{}/repository/models/{}/load", self.url, self.model_name);
+    //     let response = self
+    //         .client
+    //         .post(&url)
+    //         .json(&serde_json::json!({}))
+    //         .send()
+    //         .await?;
+    //     if response.status().is_success() {
+    //         Ok(())
+    //     } else {
+    //         Err(format!(
+    //             "Failed to load model '{}'. HTTP Status: {:?}",
+    //             self.model_name,
+    //             response.status()
+    //         )
+    //         .into())
+    //     }
+    // }
+
+    // pub fn verify_model_blob(&self, expected_hash_hex: &str) -> io::Result<()> {
+    //     let extracted_path = self.model_path.join(&self.model_name);
+    //     let model_path = extracted_path.join("1").join("model.onnx");
+
+    //     // Read model file into bytes
+    //     let mut model_file = File::open(model_path)?;
+    //     let mut model_data = Vec::new();
+    //     model_file.read_to_end(&mut model_data)?;
+
+    //     // Compute actual SHA-256 of model
+    //     let model_sha256 = Sha256::digest(&model_data);
+    //     let computed_hash_hex = hex::encode(&model_sha256);
+
+    //     // Compare with provided hash
+    //     if computed_hash_hex == expected_hash_hex.to_lowercase() {
+    //         println!("✅ Hash verification passed");
+    //         Ok(())
+    //     } else {
+    //         eprintln!("❌ Hash mismatch:");
+    //         eprintln!("  Computed : {}", computed_hash_hex);
+    //         eprintln!("  Expected : {}", expected_hash_hex.to_lowercase());
+    //         std::process::exit(1);
+    //     }
+    // }
 
     // Unload a model from Triton
     pub async fn unload_model(&self, model_name: &str ) -> Result<(), TritonError> {
@@ -311,64 +357,13 @@ impl TritonClient {
     
     pub async fn run_inference(
         &self,
-        model_name: &str,   // Give me exact name of the model
-        archive_path: &str, // Where you downloaded the model 
-        extract_to: &str, // The model path where you extract every archive model in your local machine
-        file_path: &str, // Input file path
-    ) -> Result<Value, TritonError> {
-      //  Extract Model Archive
-      //  Define the model extraction path
-        let model_path = format!("{}/{}", extract_to, model_name);
-
-        // Check if the model is already extracted
-        if Path::new(&model_path).exists() {
-            println!("Model already extracted at: {}", model_path);
-        } else {
-            // Extract Model Archive
-            println!("Extracting model archive from {}", archive_path);
-            let extractor = ModelExtractor::new(archive_path, extract_to);
-            if let Err(e) = extractor.extract_model() {
-                println!("Failed to extract model archive: {:?}", e);
-                return Err(TritonError::InvalidResponse("Model extraction failed"));
-            }
-            println!("Model extraction complete!");
-        }
-
-        println!("-------------------------------------------");
-
-
-        // Check if the Triton Server is live
-        println!("Checking if the server is live...");
-        if !self.is_server_live().await? {
-            return Err(TritonError::InvalidResponse("Server is not live"));
-        }
-        println!("Server is live!");
-        println!("-------------------------------------------");
-    
-        // Check if the Triton Server is ready
-        println!("Checking if the server is ready...");
-        if !self.is_server_ready().await? {
-            return Err(TritonError::InvalidResponse("Server is not ready"));
-        }
-        println!("Server is ready!");
-        println!("-------------------------------------------");
-    
-        // Load the Model
-        println!("Loading model: {}", model_name);
-        match self.load_model(model_name).await {
-            Ok(_) => println!("Model loaded successfully!"),
-            Err(e) => {
-                println!("Failed to load model: {:?}", e);
-                return Err(e);
-            }
-        }
-        println!("-------------------------------------------");
-        println!("-------------------------------------------");
-    
-        // Fetch Model Metadata (just for confirmation and debugging)
-        println!("Fetching model metadata...");
-        match self.get_model_metadata(model_name).await {
-            Ok(metadata) => println!("Model Metadata: {:#?}", metadata),
+        inputs: HashMap<String, TensorData>,
+    ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync>> {
+        //  Load the Model
+        // println!("⏳ Loading model: {}", self.model_name);
+        // self.load_model().await.unwrap();
+        match self.get_model_metadata().await {
+            Ok(_) => println!(),
             Err(e) => {
                 println!("Failed to fetch model metadata: {:?}", e);
                 return Err(e);
