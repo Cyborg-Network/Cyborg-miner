@@ -65,66 +65,101 @@ impl TritonClient {
                 println!("❌ Initialization of ModelExtractor failed: {:?}", e);
             }
         }
-        // Check if the server is live
-        let mut url = format!("{}/health/ready", &client.url);
+
+          println!("⏳ Checking if the server is live...");
+
+        let mut url = format!("{}/health/live", &client.url);
         let mut response = client.client.get(&url).send().await?;
         if !response.status().is_success() {
             println!("✅ Server is not live: {}", response.status());
         }
-        // Check if the server is ready
+        println!("✅ Server is live!");
+        println!("⏳ Checking if the server is ready...");
+
         url = format!("{}/health/ready", &client.url);
         response = client.client.get(&url).send().await?;
         if !response.status().is_success() {
             println!("✅ Server is not ready: {}", response.status());
         }
+        println!("✅ Server is ready!");
 
-        Ok(client)
-    }
+        println!("⏳ Loading model: {}", client.model_name);
 
-    pub async fn load_model(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let url = format!("{}/repository/models/{}/load", self.url, self.model_name);
-        let response = self
+        url = format!(
+            "{}/repository/models/{}/load",
+            &client.url, &client.model_name
+        );
+        response = client
             .client
             .post(&url)
             .json(&serde_json::json!({}))
             .send()
             .await?;
         if response.status().is_success() {
-            Ok(())
-        } else {
-            Err(format!(
-                "Failed to load model '{}'. HTTP Status: {:?}",
-                self.model_name,
-                response.status()
-            )
-            .into())
+            println!("✅ Successfully loaded model: {}", &client.model_name);
         }
+
+
+        // Check if the server is live
+        // let mut url = format!("{}/health/ready", &client.url);
+        // let mut response = client.client.get(&url).send().await?;
+        // if !response.status().is_success() {
+        //     println!("✅ Server is not live: {}", response.status());
+        // }
+        // // Check if the server is ready
+        // url = format!("{}/health/ready", &client.url);
+        // response = client.client.get(&url).send().await?;
+        // if !response.status().is_success() {
+        //     println!("✅ Server is not ready: {}", response.status());
+        // }
+
+        Ok(client)
     }
 
-    pub fn verify_model_blob(&self, expected_hash_hex: &str) -> io::Result<()> {
-        let extracted_path = self.model_path.join(&self.model_name);
-        let model_path = extracted_path.join("1").join("model.onnx");
+    // pub async fn load_model(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    //     let url = format!("{}/repository/models/{}/load", self.url, self.model_name);
+    //     let response = self
+    //         .client
+    //         .post(&url)
+    //         .json(&serde_json::json!({}))
+    //         .send()
+    //         .await?;
+    //     if response.status().is_success() {
+    //         Ok(())
+    //     } else {
+    //         Err(format!(
+    //             "Failed to load model '{}'. HTTP Status: {:?}",
+    //             self.model_name,
+    //             response.status()
+    //         )
+    //         .into())
+    //     }
+    // }
 
-        // Read model file into bytes
-        let mut model_file = File::open(model_path)?;
-        let mut model_data = Vec::new();
-        model_file.read_to_end(&mut model_data)?;
+    // pub fn verify_model_blob(&self, expected_hash_hex: &str) -> io::Result<()> {
+    //     let extracted_path = self.model_path.join(&self.model_name);
+    //     let model_path = extracted_path.join("1").join("model.onnx");
 
-        // Compute actual SHA-256 of model
-        let model_sha256 = Sha256::digest(&model_data);
-        let computed_hash_hex = hex::encode(&model_sha256);
+    //     // Read model file into bytes
+    //     let mut model_file = File::open(model_path)?;
+    //     let mut model_data = Vec::new();
+    //     model_file.read_to_end(&mut model_data)?;
 
-        // Compare with provided hash
-        if computed_hash_hex == expected_hash_hex.to_lowercase() {
-            println!("✅ Hash verification passed");
-            Ok(())
-        } else {
-            eprintln!("❌ Hash mismatch:");
-            eprintln!("  Computed : {}", computed_hash_hex);
-            eprintln!("  Expected : {}", expected_hash_hex.to_lowercase());
-            std::process::exit(1);
-        }
-    }
+    //     // Compute actual SHA-256 of model
+    //     let model_sha256 = Sha256::digest(&model_data);
+    //     let computed_hash_hex = hex::encode(&model_sha256);
+
+    //     // Compare with provided hash
+    //     if computed_hash_hex == expected_hash_hex.to_lowercase() {
+    //         println!("✅ Hash verification passed");
+    //         Ok(())
+    //     } else {
+    //         eprintln!("❌ Hash mismatch:");
+    //         eprintln!("  Computed : {}", computed_hash_hex);
+    //         eprintln!("  Expected : {}", expected_hash_hex.to_lowercase());
+    //         std::process::exit(1);
+    //     }
+    // }
 
     // Unload a model from Triton
     pub async fn unload_model(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -315,8 +350,8 @@ impl TritonClient {
         inputs: HashMap<String, TensorData>,
     ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync>> {
         //  Load the Model
-        println!("⏳ Loading model: {}", self.model_name);
-        self.load_model().await.unwrap();
+        // println!("⏳ Loading model: {}", self.model_name);
+        // self.load_model().await.unwrap();
         match self.get_model_metadata().await {
             Ok(_) => println!(),
             Err(e) => {

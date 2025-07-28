@@ -64,29 +64,29 @@ impl ModelExtractor {
         remove_file(&self.archive_path)?;
 
         // 🧠 Compute hash of model.onnx
-        let model_name = self
-            .archive_path
-            .file_stem()
-            .and_then(|s| s.to_str())
-            .unwrap_or("unknown_model")
-            .to_string();
+        // let model_name = self
+        //     .archive_path
+        //     .file_stem()
+        //     .and_then(|s| s.to_str())
+        //     .unwrap_or("unknown_model")
+        //     .to_string();
 
-        let model_path = self
-            .output_folder
-            .join(&model_name)
-            .join("1")
-            .join("model.onnx");
-        let output_blob_path = self
-            .output_folder
-            .join(&model_name)
-            .join("model_id.wasmhash");
+        // let model_path = self
+        //     .output_folder
+        //     .join(&model_name)
+        //     .join("1")
+        //     .join("model.onnx");
+        // let output_blob_path = self
+        //     .output_folder
+        //     .join(&model_name)
+        //     .join("model_id.wasmhash");
 
-        if model_path.exists() {
-            match Self::hash_model_file(&model_path, &output_blob_path) {
-                Ok(_) => println!(),
-                Err(e) => eprintln!("❌ Failed to hash model file: {}", e),
-            }
-        }
+        // if model_path.exists() {
+        //     match Self::hash_model_file(&model_path, &output_blob_path) {
+        //         Ok(_) => println!(),
+        //         Err(e) => eprintln!("❌ Failed to hash model file: {}", e),
+        //     }
+        // }
 
         Ok(())
     }
@@ -116,29 +116,29 @@ impl ModelExtractor {
         }
         Ok(())
     }
-    pub fn hash_model_file(model_path: &Path, output_blob_path: &Path) -> io::Result<()> {
-        // Read model bytes
-        let mut file = File::open(model_path)?;
-        let mut buffer = Vec::new();
-        file.read_to_end(&mut buffer)?;
+    // pub fn hash_model_file(model_path: &Path, output_blob_path: &Path) -> io::Result<()> {
+    //     // Read model bytes
+    //     let mut file = File::open(model_path)?;
+    //     let mut buffer = Vec::new();
+    //     file.read_to_end(&mut buffer)?;
 
-        // Compute SHA-256
-        let sha256 = Sha256::digest(&buffer);
-        let model_id = sha256.to_vec();
-        let base64_hash = general_purpose::STANDARD.encode(&sha256);
-        let hex_model_id = hex::encode(&model_id);
+    //     // Compute SHA-256
+    //     let sha256 = Sha256::digest(&buffer);
+    //     let model_id = sha256.to_vec();
+    //     let base64_hash = general_purpose::STANDARD.encode(&sha256);
+    //     let hex_model_id = hex::encode(&model_id);
 
-        // Print to stdout
-        println!("Model ID (hex): {}", hex_model_id);
-        println!("Base64 Hash: {}", base64_hash);
+    //     // Print to stdout
+    //     println!("Model ID (hex): {}", hex_model_id);
+    //     println!("Base64 Hash: {}", base64_hash);
 
-        // Write hex model ID to the output path
-        let mut output_file = File::create(output_blob_path)?;
-        output_file.write_all(hex_model_id.as_bytes())?;
-        output_file.sync_all()?;
+    //     // Write hex model ID to the output path
+    //     let mut output_file = File::create(output_blob_path)?;
+    //     output_file.write_all(hex_model_id.as_bytes())?;
+    //     output_file.sync_all()?;
 
-        Ok(())
-    }
+    //     Ok(())
+    // }
 
     /// Extracts all files from the .zip archive to the specified output folder
     #[allow(deprecated)]
