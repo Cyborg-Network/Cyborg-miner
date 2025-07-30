@@ -96,6 +96,48 @@ prepare_environment() {
     sudo chmod -R 700 /var/lib/cyborg /var/log/cyborg /etc/cyborg "$STAGE_DIR"
 }
 
+prepare_triton() {
+    echo "[*] Triton model repository directory: $MINER_TASK_DIR"
+
+    # Ensure the extract directory exists
+    if [ ! -d "$MINER_TASK_DIR" ]; then
+        echo "[!]Triton Model repository folder '$MINER_TASK_DIR' does not exist. Creating it..."
+        mkdir -p "$MINER_TASK_DIR"
+        echo "[✓] Created empty model directory."
+    fi
+
+    # Check for Docker
+    if ! command -v docker &> /dev/null; then
+        echo "[!] Docker is not installed. Installing Docker..."
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+        echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+        https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+        echo "[✓] Docker installed."
+    else
+        echo "[✓] Docker is already installed."
+    fi
+
+    # Pull Triton image
+    echo "[*] Pulling Triton server image..."
+    sudo docker pull nvcr.io/nvidia/tritonserver:25.06-py3
+
+    # Run Triton Inference Server
+    echo "[🚀] Starting Triton server..."
+    sudo docker run --rm -p8000:8000 -p8001:8001 -p8002:8002 \
+        -v "$MINER_TASK_DIR":/models \
+        nvcr.io/nvidia/tritonserver:25.06-py3 \
+        tritonserver --model-repository=/models --model-control-mode=explicit
+}
+
 install() {
     echo "Initiating miner registration..."
 
