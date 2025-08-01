@@ -41,7 +41,7 @@ MINER_UPDATE_PATH="/var/lib/cyborg/miner/update/cyborg-miner.new"
 STAGE_DIR="/var/lib/cyborg/miner/update"
 
 # User
-USER="cyborg-user"
+CYBORG_USER="cyborg-user"
 
 # ======================================= UTIL ===============================================================
 download_and_extract() {
@@ -85,14 +85,14 @@ prepare_environment() {
         fi
     done
 
-    if ! id "$USER" &>/dev/null; then
-        echo "Creating system user: $USER"
-        sudo useradd -r -s /bin/false "$USER"
+    if ! id "$CYBORG_USER" &>/dev/null; then
+        echo "Creating system user: $CYBORG_USER"
+        sudo useradd -r -s /bin/false "$CYBORG_USER"
     fi
 
     # Set ownership and permissions, only if needed
     echo "Setting ownership and permissions..."
-    sudo chown -R "$USER:$USER" /var/lib/cyborg /var/log/cyborg /etc/cyborg "$STAGE_DIR"
+    sudo chown -R "$CYBORG_USER:$CYBORG_USER" /var/lib/cyborg /var/log/cyborg /etc/cyborg "$STAGE_DIR"
     sudo chmod -R 700 /var/lib/cyborg /var/log/cyborg /etc/cyborg "$STAGE_DIR"
 }
 
@@ -162,8 +162,8 @@ install() {
     read -p "Please enter the seed phrase of the account that will be managing the worker node: " ACCOUNT_SEED
     fi
 
-    if ! id "$USER" &>/dev/null; then
-        sudo useradd -r -s /bin/false "$USER"
+    if ! id "$CYBORG_USER" &>/dev/null; then
+        sudo useradd -r -s /bin/false "$CYBORG_USER"
     fi
 
     echo "Creating systemd service for worker node: $MINER_SERVICE_FILE"
@@ -173,8 +173,8 @@ install() {
     After=network.target
 
     [Service]
-    User=$USER
-    Group=$USER
+    User=$CYBORG_USER
+    Group=$CYBORG_USER
     Environment=PARACHAIN_URL=$PARACHAIN_URL
     Environment="ACCOUNT_SEED=\"$ACCOUNT_SEED\""
     Environment=LOG_FILE_PATH=$MINER_LOG_DIR/miner.log
@@ -201,8 +201,11 @@ EOL
     After=network.target
 
     [Service]
-    User=$USER
-    Group=$USER
+    User=$CYBORG_USER
+    Group=$CYBORG_USER
+    Environment=LOG_FILE_PATH=$MINER_LOG_DIR/miner.log
+    Environment=TASK_OWNER_FILE_PATH=$MINER_CONFIG_DIR/task_owner.json
+    Environment=IDENTITY_FILE_PATH=$MINER_CONFIG_DIR/miner_identity.json
     ExecStart=$AGENT_BINARY_PATH run
     Restart=always
     RestartSec=3

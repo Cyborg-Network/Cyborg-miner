@@ -56,6 +56,8 @@ pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
         return Ok(());
     }
 
+    println!("Saving file to path: {:?}", path);
+
     let mut file = OpenOptions::new()
         .create(true)
         .write(true)
