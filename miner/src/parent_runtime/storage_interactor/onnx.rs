@@ -11,11 +11,17 @@ use crate::substrate_interface::api::runtime_types::cyborg_primitives::task::Onn
 const CHUNK_SIZE: u64 = 100 * 1024 * 1024;
 
 pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
-    let save_path = &config::PATHS
+    let task_file_name = &config::PATHS
         .get()
         .ok_or(Error::config_paths_not_initialized())?
         .task_file_name;
 
+    let task_dir = &config::PATHS
+        .get()
+        .ok_or(Error::config_paths_not_initialized())?
+        .task_dir_path;
+
+    let save_path = format!("{}/{}", task_dir, task_file_name);
     let model_url = String::from_utf8(onnx_task.storage_location_identifier.0)?;
 
     let client = Client::builder()
@@ -36,7 +42,7 @@ pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
 
     println!("Total file size: {} bytes", total_size);
 
-    let path = Path::new(save_path);
+    let path = Path::new(&save_path);
     let mut downloaded: u64 = if path.exists() {
         std::fs::metadata(path)?.len()
     } else {

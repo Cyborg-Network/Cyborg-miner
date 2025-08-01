@@ -132,7 +132,8 @@ prepare_triton() {
 
     # Run Triton Inference Server
     echo "[🚀] Starting Triton server..."
-    sudo docker run --rm -p8000:8000 -p8001:8001 -p8002:8002 \
+    sudo docker run -d --name triton_server --restart unless-stopped \
+        -p8000:8000 -p8001:8001 -p8002:8002 \
         -v "$MINER_TASK_DIR":/models \
         nvcr.io/nvidia/tritonserver:25.06-py3 \
         tritonserver --model-repository=/models --model-control-mode=explicit
