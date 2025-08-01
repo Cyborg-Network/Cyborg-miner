@@ -1,37 +1,11 @@
-// models.rs
-use serde::{Deserialize, Serialize};
-use std::fs::{File, metadata};
-use std::io::{self, BufReader, copy};
+use base64::{engine::general_purpose, Engine as _};
 use flate2::read::GzDecoder;
+use sha2::{Digest, Sha256};
+use std::fs::{remove_file, File};
+use std::io::{self, copy, BufReader, Read, Write};
+use std::path::{Path, PathBuf};
 use tar::Archive;
 use zip::ZipArchive;
-use std::path::{Path, PathBuf};
-
-/// Represents a model available in Triton
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Model {
-    pub name: String,
-    pub version: Option<String>,
-    pub platform: Option<String>,
-}
-
-/// Represents the status of a model in Triton
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ModelStatus {
-    pub name: String,
-    pub version: String,
-    pub last_inference: u64,
-    pub inference_count: u64,
-    pub execution_count: u64,
-    pub memory_usage: Vec<MemoryUsage>,
-}
-
-/// Represents memory usage statistics for a model
-#[derive(Debug, Serialize, Deserialize)]
-pub struct MemoryUsage {
-    pub kind: String,
-    pub bytes: u64,
-}
 
 /// Handles extraction of model files from a tar.gz or zip archive
 pub struct ModelExtractor {
@@ -40,16 +14,40 @@ pub struct ModelExtractor {
 }
 
 impl ModelExtractor {
-    pub fn new(archive_path: &str, output_folder: &str) -> Self {
-        Self {
-            archive_path: PathBuf::from(archive_path),
-            output_folder: PathBuf::from(output_folder),
+    pub fn new(model_name: &str, base_path: PathBuf) -> io::Result<Self> {
+        let tar_gz_path = Path::new(&base_path).join(format!("{}.tar.gz", model_name));
+        let zip_path = Path::new(&base_path).join(format!("{}.zip", model_name));
+        let extracted_path = Path::new(&base_path).join(model_name);
+
+        // Check if already extracted
+        if extracted_path.is_dir() {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "Model already extracted",
+            ));
         }
+
+        let archive_path = if tar_gz_path.exists() {
+            tar_gz_path
+        } else if zip_path.exists() {
+            zip_path
+        } else {
+            return Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                "Model archive not found",
+            ));
+        };
+
+        Ok(Self {
+            archive_path,
+            output_folder: PathBuf::from(base_path),
+        })
     }
 
-    /// Main extraction handler that chooses the right method
     pub fn extract_model(&self) -> io::Result<()> {
-        let extension = self.archive_path.extension()
+        let extension = self
+            .archive_path
+            .extension()
             .and_then(|ext| ext.to_str())
             .unwrap_or("");
 
@@ -95,7 +93,6 @@ impl ModelExtractor {
 
     /// Extracts all files from the tar.gz archive to the specified output folder
     fn extract_tar_gz(&self) -> io::Result<()> {
-        println!("🔍 Detected .tar.gz format. Extracting...");
         let archive_file = File::open(&self.archive_path)?;
         let decoder = GzDecoder::new(BufReader::new(archive_file));
         let mut archive = Archive::new(decoder);
@@ -106,7 +103,6 @@ impl ModelExtractor {
             let output_path = self.output_folder.join(&path);
 
             if entry.header().entry_type().is_dir() {
-                println!("📂 Creating directory {:?}", output_path);
                 std::fs::create_dir_all(&output_path)?;
                 continue;
             }
@@ -117,7 +113,6 @@ impl ModelExtractor {
 
             let mut out_file = File::create(&output_path)?;
             copy(&mut entry, &mut out_file)?;
-            println!("Extracted {:?} to {:?}", path, &self.output_folder);
         }
         Ok(())
     }
@@ -146,8 +141,8 @@ impl ModelExtractor {
     // }
 
     /// Extracts all files from the .zip archive to the specified output folder
+    #[allow(deprecated)]
     fn extract_zip(&self) -> io::Result<()> {
-        println!("🔍 Detected .zip format. Extracting...");
         let archive_file = File::open(&self.archive_path)?;
         let mut archive = ZipArchive::new(archive_file)?;
 
@@ -156,7 +151,6 @@ impl ModelExtractor {
             let out_path = self.output_folder.join(file.sanitized_name());
 
             if file.is_dir() {
-                println!("📂 Creating directory {:?}", out_path);
                 std::fs::create_dir_all(&out_path)?;
             } else {
                 if let Some(parent) = out_path.parent() {
@@ -164,7 +158,6 @@ impl ModelExtractor {
                 }
                 let mut out_file = File::create(&out_path)?;
                 copy(&mut file, &mut out_file)?;
-                println!("Extracted {:?} to {:?}", file.name(), &self.output_folder);
             }
         }
         Ok(())

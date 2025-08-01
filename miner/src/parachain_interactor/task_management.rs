@@ -1,11 +1,8 @@
 use crate::{
-    config,
-    error::{Error, Result},
-    substrate_interface::{
+    config, error::{Error, Result}, parent_runtime::storage_interactor, substrate_interface::{
         self,
-        api::{neuro_zk, runtime_types::bounded_collections::bounded_vec::BoundedVec},
-    },
-    types::Miner,
+        api::{neuro_zk, runtime_types::{bounded_collections::bounded_vec::BoundedVec, cyborg_primitives::task::OpenInferenceTask}, task_management::events::task_scheduled::TaskKind},
+    }, types::{Miner, TaskType}
 };
 use std::sync::Arc;
 use tokio::sync::RwLock;

@@ -2,27 +2,27 @@ use std::fs::OpenOptions;
 use std::io::{Seek, SeekFrom};
 use reqwest::blocking::Client;
 use reqwest::header::{RANGE, CONTENT_LENGTH};
-use std::error::Error;
 use std::path::Path;
+
+use crate::config;
+use crate::error::{Result, Error};
+use crate::substrate_interface::api::runtime_types::cyborg_primitives::task::OnnxTask;
 
 const CHUNK_SIZE: u64 = 100 * 1024 * 1024;
 
-pub fn download_hf_model(
-    model_id: &str,
-    filename: &str,
-    revision: &str,
-    save_path: &str,
-) -> Result<(), Box<dyn Error>> {
-    let url = format!(
-        "https://huggingface.co/{}/resolve/{}/{}",
-        model_id, revision, filename
-    );
+pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
+    let save_path = &config::PATHS
+        .get()
+        .ok_or(Error::config_paths_not_initialized())?
+        .task_file_name;
+
+    let model_url = String::from_utf8(onnx_task.storage_location_identifier.0)?;
 
     let client = Client::builder()
         .user_agent("cyborg-miner")
         .build()?;
 
-    let head_resp = client.head(&url).send()?;
+    let head_resp = client.head(&model_url).send()?;
     if !head_resp.status().is_success() {
         return Err(format!("HEAD request failed with status {}", head_resp.status()).into());
     }
@@ -65,7 +65,7 @@ pub fn download_hf_model(
         println!("Requesting range: {}", range_header);
 
         let mut resp = client
-            .get(&url)
+            .get(&model_url)
             .header(RANGE, range_header)
             .send()?;
 
@@ -82,7 +82,7 @@ pub fn download_hf_model(
         println!("Downloaded {} / {} bytes", downloaded, total_size);
     }
 
-    println!("Download complete!");
+    println!("Model Download complete!");
 
     Ok(())
 }

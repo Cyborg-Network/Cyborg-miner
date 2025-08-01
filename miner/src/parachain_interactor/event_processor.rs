@@ -1,6 +1,7 @@
 use crate::config::get_paths;
 use crate::parachain_interactor::identity::update_identity_file;
 use crate::substrate_interface;
+use crate::substrate_interface::api::runtime_types::cyborg_primitives::task::TaskKind;
 use crate::traits::{InferenceServer, ParachainInteractor};
 use crate::types::{CurrentTask, TaskType};
 use crate::{
@@ -81,28 +82,11 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
             let assigned_miner = &task_scheduled.assigned_worker;
             let identity_path = &get_paths()?.identity_path;
 
-            /*
-            let identity = &miner
-                .miner_identity
-                .as_ref()
-                .ok_or(Error::identity_not_initialized())?;
-            */
-
             let file_content = fs::read_to_string(identity_path)?;
             let miner_data: MinerData = serde_json::from_str(&file_content)?;
 
             if assigned_miner == &miner_data.miner_identity {
-                //TODO uncomment this and remove the hardcoded cipher after subxt is regen
-                //let storage_encryption_cipher = &task_scheduled.cipher;
-                let storage_encryption_cipher = "password";
-                let task_fid_string = String::from_utf8(task_scheduled.task.0)?;
-
-                miner.current_task = Some(CurrentTask {
-                    id: task_scheduled.task_id,
-                    //TODO uncomment after subxt regen
-                    //task_type: task_scheduled.task_type,
-                    task_type: TaskType::NeuroZk,
-                });
+                println!("New task scheduled: {:?}", task_scheduled.task_id);
 
                 let task_owner_string = serde_json::to_string(&TaskOwner{
                     address: task_scheduled.task_owner,
@@ -115,7 +99,21 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     &task_owner_string,
                 )?;
 
-                println!("New task scheduled for worker: {}", task_fid_string);
+                let task_data = task_scheduled.task_kind;
+                match task_data {
+                    TaskKind::OpenInference(_) => {
+                        miner.current_task = Some(CurrentTask {
+                            id: task_scheduled.task_id,
+                            task_type: TaskType::OpenInference,
+                        });
+                    }
+                    TaskKind::NeuroZK(_) => {
+                        miner.current_task = Some(CurrentTask {
+                            id: task_scheduled.task_id,
+                            task_type: TaskType::NeuroZk,
+                        });
+                    }
+                }
 
                 let parent_runtime_clone = Arc::clone(&miner.parent_runtime);
                 let current_task_clone = miner.current_task.clone();
@@ -125,7 +123,7 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                         if let Err(e) = parent_runtime_clone
                             .read()
                             .await
-                            .download_model_archive(&task_fid_string, storage_encryption_cipher)
+                            .process_task(task_data)
                             .await
                         {
                             println!("Error downloading model archive: {}", e);

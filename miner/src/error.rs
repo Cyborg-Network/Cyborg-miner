@@ -28,6 +28,12 @@ pub enum Error {
 
     #[from]
     Cess(cess_rust_sdk::core::Error),
+
+    #[from]
+    ReqwestToStr(reqwest::header::ToStrError),
+    
+    #[from]
+    ReqwestParseInt(std::num::ParseIntError), 
 }
 
 impl Error {

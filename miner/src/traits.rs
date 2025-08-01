@@ -1,10 +1,7 @@
 use crate::{
-    error::Result,
-    parachain_interactor::{
+    error::Result, parachain_interactor::{
         behavior_control, event_processor, identity, registration::{self, RegistrationStatus}, task_management,
-    },
-    parent_runtime::{cess_interactor, inference, proof},
-    types::{CurrentTask, Miner, ParentRuntime},
+    }, parent_runtime::{inference, proof, setup}, substrate_interface::api::{task_management::events::task_scheduled::TaskKind}, types::{CurrentTask, Miner, ParentRuntime}
 };
 use async_trait::async_trait;
 use subxt::events::EventDetails;
@@ -16,11 +13,11 @@ pub trait InferenceServer {
     /// Downloads a model archive (containing the model and potential additional data eg. proving key) from CESS
     ///
     /// # Arguments
-    /// * `fid` - A `&str` representing the CESS fid (fiile ID) of the model archive
+    /// * `task` - A `TaskKind` which the function processes in the appropriate manner
     ///
     /// # Returns
-    /// A `Result` containing `Ok(())` if the model archive is successfully downloaded, or an `Error` if it fails.
-    async fn download_model_archive(&self, fid: &str, cipher: &str) -> Result<()>;
+    /// A `Result` containing `Ok(())` if the task is successfully processed, or an `Error` if it fails.
+    async fn process_task(&self, task: TaskKind) -> Result<()>;
 
     /// Starts performing inference, selecting the correct inference engine based on the task type
     ///
@@ -40,8 +37,8 @@ pub trait InferenceServer {
 
 #[async_trait]
 impl InferenceServer for ParentRuntime {
-    async fn download_model_archive(&self, cess_fid: &str, cipher: &str) -> Result<()> {
-        cess_interactor::download_model_archive(cess_fid, cipher).await
+    async fn process_task(&self, task: TaskKind) -> Result<()> {
+        setup::process_task(task).await
     }
 
     async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>> {
