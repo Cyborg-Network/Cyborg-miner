@@ -94,7 +94,7 @@ pub async fn spawn_inference_server(
         .route(&format!("/inference/{}", &task.id), get(ws_handler))
         .with_state(state);
 
-    let listener = TcpListener::bind(format!("127.0.0.1:{}", default_port)).await?;
+    let listener = TcpListener::bind(format!("0.0.0.0:{}", default_port)).await?;
 
     println!("listening on {}", listener.local_addr().unwrap());
 
