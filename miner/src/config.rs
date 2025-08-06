@@ -35,6 +35,7 @@ struct MinerIdentity {
 
 // We're setting a few global variables here for easy access throughout
 pub static PATHS: OnceCell<Paths> = OnceCell::new();
+pub static TAILSCALE_NET: OnceCell<String> = OnceCell::new();
 pub static UPDATE_PATH: OnceCell<PathBuf> = OnceCell::new();
 pub static PARACHAIN_CLIENT: OnceCell<OnlineClient<PolkadotConfig>> = OnceCell::new();
 pub static CESS_GATEWAY: Lazy<Arc<RwLock<String>>> =
@@ -62,6 +63,10 @@ pub async fn run_config(parachain_url: &str) {
     } else {
         parachain_url.to_string()
     };
+    let tailscale_net = env::var("TAILSCALE_NET").expect("TAILSCALE_NET must be set");
+
+    TAILSCALE_NET.set(tailscale_net)
+        .expect("TAILSCALE_NET is already initialized!");
 
     println!("Using parachain URL: {}", parachain_url);
 
@@ -121,4 +126,8 @@ pub async fn set_cess_gateway(url: &str) {
     let mut write_guard = CESS_GATEWAY.write().await;
 
     *write_guard = url.to_string();
+}
+
+pub fn get_tailscale_net() -> Result<&'static String> {
+    TAILSCALE_NET.get().ok_or(Error::Custom("TAILSCALE_NET not initialized".to_string()))
 }

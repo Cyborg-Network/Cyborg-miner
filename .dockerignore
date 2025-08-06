@@ -3,6 +3,9 @@ target/
 **/target/
 **/*.rs.bk
 
+# Ignore the rust toolchain file, as we don't want to build for aarch64 when testing
+rust-toolchain.toml
+
 # Ignore other noise
 .dockerignore
 .git

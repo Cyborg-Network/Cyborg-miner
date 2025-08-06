@@ -28,8 +28,9 @@ services:
       - TASK_DIR_PATH=/shared
       - IDENTITY_FILE_PATH=miner/config/miner_identity.json
       - TASK_OWNER_FILE_PATH=miner/config/task_owner.json
-      - CYBORG_WORKER_NODE_TEST_IP=127.0.0.1
       - PARACHAIN_URL=${PARACHAIN_URL}
+      - UPDATE_STAGER_PATH=/var/lib/cyborg/miner/update
+      - TAILSCALE_NET=tail78ea2b.ts.net
 
 volumes:
   zk-artifacts:

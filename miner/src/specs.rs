@@ -5,9 +5,9 @@ use std::{env, str};
 use sysinfo::{MemoryRefreshKind, RefreshKind, System};
 
 use crate::{
+    config,
     error::Result,
-    substrate_interface::api::runtime_types::bounded_collections::bounded_vec::BoundedVec,
-    types::{IpResponse, MinerConfig},
+    types::MinerConfig,
 };
 
 #[derive(Deserialize, Debug)]
@@ -28,8 +28,21 @@ pub async fn gather_worker_spec() -> Result<MinerConfig> {
         env::var("CYBORG_WORKER_NODE_TEST_IP").unwrap_or("".to_string())
     );
 
-    let response = match env::var("CYBORG_WORKER_NODE_TEST_IP") {
+    let tailscale_net = config::get_tailscale_net()?;
+
+    let domain = match env::var("CYBORG_WORKER_NODE_TEST_IP") {
         Ok(val) => val,
+        Err(_) => {
+            let output = Command::new("hostname")
+                .output()?
+                .stdout;
+            
+            let hostname = String::from_utf8(output)?
+                .trim().to_string();
+
+            format!("https://{hostname}.{tailscale_net}")
+        }
+        /* 
         Err(_) => {
             reqwest::get("https://api.ipify.org?format=json")
                 .await?
@@ -37,6 +50,7 @@ pub async fn gather_worker_spec() -> Result<MinerConfig> {
                 .await?
                 .ip
         }
+        */
     };
 
     //let response = worker::IpResponse { ip: String::from("127.0.0.1") };
@@ -50,7 +64,7 @@ pub async fn gather_worker_spec() -> Result<MinerConfig> {
     let storage = return_total_storage();
 
     Ok(MinerConfig {
-        domain: response, 
+        domain, 
         latitude: location.coordinates.0,
         longitude: location.coordinates.1,
         ram,

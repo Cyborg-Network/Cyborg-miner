@@ -32,5 +32,6 @@ COPY cyborg-agent ./cyborg-agent
 
 EXPOSE 8080 8081 3000
 
-CMD ["sh", "-c", "./cyborg-agent run & exec ./cyborg-miner start-miner --parachain-url ws://127.0.0.1:34989 --account-seed //Dave"]
+# CMD ["sh", "-c", "./cyborg-agent run & exec ./cyborg-miner start-miner --parachain-url ws://127.0.0.1:34989 --account-seed //Dave"]
+CMD ["sh", "-c", "./cyborg-miner start-miner --parachain-url ws://127.0.0.1:34989 --account-seed //Dave"]
 

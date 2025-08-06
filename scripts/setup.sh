@@ -40,6 +40,9 @@ MINER_LOG_DIR="/var/log/cyborg/miner"
 MINER_UPDATE_PATH="/var/lib/cyborg/miner/update/cyborg-miner.new"
 STAGE_DIR="/var/lib/cyborg/miner/update"
 
+# The tailscale network (only for testnet) on which the miner will be reachable
+TAILSCALE_NET="tail78ea2b.ts.net"
+
 # User
 CYBORG_USER="cyborg-user"
 
@@ -183,6 +186,7 @@ install() {
     Environment=IDENTITY_FILE_PATH=$MINER_CONFIG_DIR/miner_identity.json
     Environment=TASK_OWNER_FILE_PATH=$MINER_CONFIG_DIR/task_owner.json
     Environment=UPDATE_STAGER_PATH=$MINER_UPDATE_PATH
+    Environment=TAILSCALE_NET=$TAILSCALE_NET
     ExecStart=$MINER_BINARY_PATH start-miner --parachain-url \$PARACHAIN_URL --account-seed "\$ACCOUNT_SEED"
     Restart=always
     SuccessExitStatus=75
