@@ -102,14 +102,12 @@ prepare_environment() {
 prepare_triton() {
     echo "[*] Triton model repository directory: $MINER_TASK_DIR"
 
-    # Ensure the extract directory exists
     if [ ! -d "$MINER_TASK_DIR" ]; then
-        echo "[!]Triton Model repository folder '$MINER_TASK_DIR' does not exist. Creating it..."
+        echo "[!] Triton Model repository folder '$MINER_TASK_DIR' does not exist. Creating it..."
         mkdir -p "$MINER_TASK_DIR"
         echo "[✓] Created empty model directory."
     fi
 
-    # Check for Docker
     if ! command -v docker &> /dev/null; then
         echo "[!] Docker is not installed. Installing Docker..."
         sudo apt-get update
@@ -129,17 +127,27 @@ prepare_triton() {
         echo "[✓] Docker is already installed."
     fi
 
-    # Pull Triton image
-    echo "[*] Pulling Triton server image..."
-    sudo docker pull nvcr.io/nvidia/tritonserver:25.06-py3
+    TRITON_IMAGE="nvcr.io/nvidia/tritonserver:25.06-py3"
+    TRITON_CONTAINER_NAME="triton_server"
 
-    # Run Triton Inference Server
-    echo "[🚀] Starting Triton server..."
-    sudo docker run -d --name triton_server --restart unless-stopped \
-        -p8000:8000 -p8001:8001 -p8002:8002 \
-        -v "$MINER_TASK_DIR":/models \
-        nvcr.io/nvidia/tritonserver:25.06-py3 \
-        tritonserver --model-repository=/models --model-control-mode=explicit
+    if sudo docker ps -a --format '{{.Names}}' | grep -q "^$TRITON_CONTAINER_NAME\$"; then
+        if sudo docker inspect -f '{{.State.Running}}' "$TRITON_CONTAINER_NAME" | grep -q "true"; then
+            echo "[✓] Triton container '$TRITON_CONTAINER_NAME' is already running."
+        else
+            echo "[~] Triton container exists but is not running. Restarting..."
+            sudo docker start "$TRITON_CONTAINER_NAME"
+        fi
+    else
+        echo "[*] Pulling Triton server image..."
+        sudo docker pull "$TRITON_IMAGE"
+
+        echo "[🚀] Starting Triton server..."
+        sudo docker run -d --name "$TRITON_CONTAINER_NAME" --restart unless-stopped \
+            -p8000:8000 -p8001:8001 -p8002:8002 \
+            -v "$MINER_TASK_DIR":/models \
+            "$TRITON_IMAGE" \
+            tritonserver --model-repository=/models --model-control-mode=explicit
+    fi
 }
 
 install() {
