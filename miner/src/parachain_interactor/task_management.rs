@@ -1,11 +1,14 @@
 use crate::{
-    config, error::{Error, Result}, parent_runtime::storage_interactor, substrate_interface::{
+    config, error::{Error, Result}, substrate_interface::{
         self,
-        api::{neuro_zk, runtime_types::{bounded_collections::bounded_vec::BoundedVec, cyborg_primitives::task::OpenInferenceTask}, task_management::events::task_scheduled::TaskKind},
+        api::{
+            runtime_types::{
+                bounded_collections::bounded_vec::BoundedVec, 
+                cyborg_primitives::task::OpenInferenceTask
+            }, 
+            task_management::events::task_scheduled::TaskKind},
     }, types::{Miner, TaskType}
 };
-use std::sync::Arc;
-use tokio::sync::RwLock;
 
 pub async fn confirm_task_reception(miner: &Miner) -> Result<()> {
     let client = config::get_parachain_client()?;

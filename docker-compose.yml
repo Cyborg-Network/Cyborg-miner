@@ -31,6 +31,7 @@ services:
       - PARACHAIN_URL=${PARACHAIN_URL}
       - UPDATE_STAGER_PATH=/var/lib/cyborg/miner/update
       - TAILSCALE_NET=tail78ea2b.ts.net
+      - CYBORG_MINER_TEST_IP=127.0.0.1
 
 volumes:
   zk-artifacts:

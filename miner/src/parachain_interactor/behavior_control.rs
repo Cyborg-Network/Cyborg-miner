@@ -3,7 +3,7 @@ use crate::substrate_interface::api::runtime_types::cyborg_primitives::worker::W
 use crate::types::Miner;
 use crate::{config, substrate_interface};
 
-pub async fn suspend_miner(miner: &Miner) -> Result<()> {
+pub async fn _miner_self_suspend(miner: &Miner) -> Result<()> {
     let client = config::get_parachain_client()?;
     let miner_id = miner
         .miner_identity

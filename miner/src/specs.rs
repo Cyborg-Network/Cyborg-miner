@@ -25,12 +25,12 @@ pub struct Location {
 pub async fn gather_worker_spec() -> Result<MinerConfig> {
     println!(
         "Using IP: {}",
-        env::var("CYBORG_WORKER_NODE_TEST_IP").unwrap_or("".to_string())
+        env::var("CYBORG_MINER_TEST_IP").unwrap_or("".to_string())
     );
 
     let tailscale_net = config::get_tailscale_net()?;
 
-    let domain = match env::var("CYBORG_WORKER_NODE_TEST_IP") {
+    let domain = match env::var("CYBORG_MINER_TEST_IP") {
         Ok(val) => val,
         Err(_) => {
             let output = Command::new("hostname")

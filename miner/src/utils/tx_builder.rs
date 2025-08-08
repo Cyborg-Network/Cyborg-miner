@@ -175,8 +175,7 @@ pub async fn confirm_task_reception(keypair: Keypair, current_task: u64) -> Resu
             }
         },
         Err(e) => {
-            //TODO add an acceptable error check here - currently miners can infinitely confirm task reception without the parachain throwing an error, so there is no acceptable error that we can check
-            return Err(Error::Subxt(e));
+            check_for_acceptable_error("TaskManagement::RequireAssignedTask", e)?;
         },
     }
 

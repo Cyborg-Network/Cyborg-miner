@@ -60,7 +60,6 @@ pub async fn spawn_inference_server(
             .map_err(|e| Error::Custom(format!("Failed to create Triton client: {}", e.to_string())))?;
             InferenceEngine::OpenInference(Arc::new(Mutex::new(triton_client)))
         }
-
         TaskType::NeuroZk => {
             let neurozk_engine = NeuroZKEngine::new(PathBuf::from(format!(
                 "{}/{}",
@@ -161,7 +160,6 @@ pub async fn spawn_inference_server(
             }
         };
 
-        println!("Starting inference server...");
         tracing::info!("Inference engine ready, miner is reachable at https://{}.{}/{}", hostname, tailnet, route_path);
 
         if let Err(e) = axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())

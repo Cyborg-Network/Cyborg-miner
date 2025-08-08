@@ -31,14 +31,6 @@ pub struct Transaction {
 }
 
 impl Transaction {
-    fn new(executor: TxExecutor, responder: Option<oneshot::Sender<Result<TxOutput>>>) -> Self {
-        Self {
-            executor,
-            retry_count: 0,
-            responder,
-        }
-    }
-
     async fn execute(&self) -> Result<TxOutput> {
         (self.executor)().await
     }

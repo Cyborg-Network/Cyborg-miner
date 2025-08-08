@@ -1,13 +1,16 @@
-use crate::config::get_paths;
+use crate::config::{self, get_paths};
 use crate::parachain_interactor::identity::update_identity_file;
 use crate::substrate_interface;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::task::TaskKind;
 use crate::traits::{InferenceServer, ParachainInteractor};
 use crate::types::{CurrentTask, TaskType};
+use crate::utils::tx_builder::{confirm_miner_vacation, confirm_task_reception};
+use crate::utils::tx_queue::TxOutput;
 use crate::{
     error::{Error, Result},
     types::{Miner, MinerData},
 };
+use std::path::Path;
 use std::sync::Arc;
 use serde::Serialize;
 use subxt::utils::AccountId32;
@@ -141,10 +144,29 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                 } else {
                     return Err(Error::Custom("No current task".to_string()));
                 }
+
+                let tx_queue = config::get_tx_queue()?;
+                let keypair = miner.keypair.clone();
+                let task_id = task_scheduled.task_id;
+
+                let rx = tx_queue.enqueue(move || {
+                    let keypair = keypair.clone();
+                    async move {
+                        let _ = confirm_task_reception(keypair, task_id).await?;
+                        Ok(TxOutput::Success)
+                    }
+                }).await?;
+
+                // Handle response 
+                match rx.await {
+                    Ok(Ok(TxOutput::Success)) => println!("Task reception confirmed"),
+                    Ok(Err(e)) => println!("Error confirming task reception: {}", e),
+                    _ => println!("Unexpected response for task confirmation"),
+                }
             }
         }
         Err(e) => {
-            println!("Error decoding WorkerStatusUpdated event: {:?}", e);
+            println!("Error decoding TaskScheduled event: {:?}", e);
             return Err(Error::Subxt(e.into()));
         }
         _ => {} // Skip non-matching events
@@ -158,6 +180,53 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                 if *task_id == current_task.id {
                     let proof = miner.parent_runtime.read().await.generate_proof().await?;
                     let _ = miner.submit_zkml_proof(proof).await?;
+                }
+            }
+            Err(e) => {
+                println!("Error decoding SubmittedCompletedTask event: {:?}", e);
+                return Err(Error::Subxt(e.into()));
+            }
+            _ => {} // Skip non-matching events
+        }
+    }
+
+    if let Some(current_task) = &miner.current_task {
+        match event.as_event::<substrate_interface::api::task_management::events::TaskStopRequested>() {
+            Ok(Some(requested_task_stop)) => {
+                let task_id = &requested_task_stop.task_id;
+
+                if *task_id == current_task.id {
+                    let task_dir = &config::PATHS
+                        .get()
+                        .ok_or(Error::config_paths_not_initialized())?
+                        .task_dir_path;
+
+                    let dir_path = Path::new(task_dir);
+
+                    if dir_path.exists() {
+                        fs::remove_dir_all(dir_path)?;
+                        println!("Task directory {:?} deleted successfully.", dir_path);
+                    } else {
+                        println!("Cannot delete task directory. Directory {:?} does not exist.", dir_path);
+                    }
+
+                    let tx_queue = config::get_tx_queue()?;
+                    let keypair = miner.keypair.clone();
+                    let current_task_id_copy = current_task.id;
+
+                    let rx = tx_queue.enqueue(move || {
+                        let keypair = keypair.clone();
+                        async move {
+                            let _ = confirm_miner_vacation(keypair, current_task_id_copy).await?;
+                            Ok(TxOutput::Success)
+                        }
+                    }).await?;
+
+                    match rx.await {
+                        Ok(Ok(TxOutput::Success)) => println!("Task reception confirmed immediately"),
+                        Ok(Err(e)) => println!("Error confirming task reception: {}", e),
+                        _ => println!("Unexpected response for task confirmation"),
+                    }
                 }
             }
             Err(e) => {

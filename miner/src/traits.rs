@@ -135,6 +135,6 @@ impl ParachainInteractor for Miner {
     }
 
     async fn suspend_miner(&self) -> Result<()> {
-        behavior_control::suspend_miner(self).await
+        behavior_control::_miner_self_suspend(self).await
     }
 }
