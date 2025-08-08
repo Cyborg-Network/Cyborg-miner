@@ -11,6 +11,10 @@ use crate::substrate_interface::api::runtime_types::cyborg_primitives::task::Onn
 const CHUNK_SIZE: u64 = 100 * 1024 * 1024;
 
 pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
+    let model_url = String::from_utf8(onnx_task.storage_location_identifier.0)?;
+
+    tracing::info!("Downloading onnx model from: {}", &model_url);
+
     let task_file_name = &config::PATHS
         .get()
         .ok_or(Error::config_paths_not_initialized())?
@@ -22,7 +26,6 @@ pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
         .task_dir_path;
 
     let save_path = format!("{}/{}", task_dir, task_file_name);
-    let model_url = String::from_utf8(onnx_task.storage_location_identifier.0)?;
 
     let client = Client::builder()
         .user_agent("cyborg-miner")
@@ -87,10 +90,10 @@ pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
         }
 
         downloaded += chunk_size;
-        println!("Downloaded {} / {} bytes", downloaded, total_size);
+
+        tracing::info!("Downloaded {} / {} bytes", downloaded, total_size);
     }
 
-    println!("Model Download complete!");
-
+    tracing::info!("Download complete! Total size: {} bytes.", total_size);
     Ok(())
 }

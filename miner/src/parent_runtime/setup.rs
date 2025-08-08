@@ -17,7 +17,7 @@ pub async fn process_task(task_kind: TaskKind) -> Result<()> {
                 },
                 _ => {
                     tracing::error!("Unsupported task type! Only a direct link to a .onnx model is supported.");
-                   return Err("Unsupported task type! Only a direct link to a .onnx model is supported.".into());
+                    return Err("Unsupported task type! Only a direct link to a .onnx model is supported.".into());
                 }
             }
         }

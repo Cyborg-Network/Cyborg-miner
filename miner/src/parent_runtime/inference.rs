@@ -1,3 +1,4 @@
+use crate::config;
 use crate::parent_runtime::server_control::SHUTDOWN_SENDER;
 use crate::{
     config::get_paths,
@@ -47,8 +48,11 @@ pub async fn spawn_inference_server(
     task: &CurrentTask,
     port: Option<u16>,
 ) -> Result<tokio::task::JoinHandle<()>> {
+    tracing::info!("Spawning inference server for task {}", task.id);
+
     let (status_tx, status_rx) = watch::channel(EngineStatus::Idle);
     let paths = get_paths()?;
+    
     let engine = match task.task_type {
         TaskType::OpenInference => {
             let triton_client = TritonClient::new("http://localhost:8000/v2",PathBuf::from(&paths.task_dir_path))
@@ -74,19 +78,18 @@ pub async fn spawn_inference_server(
     }
 
     
-    {
-        let engine = engine.clone();
+        let engine_clone = engine.clone();
         let status_tx = status_tx.clone();
 
         tokio::spawn(async move {
             let _ = status_tx.send(EngineStatus::Initializing);
 
-            match &engine {
+            match &engine_clone {
                 InferenceEngine::OpenInference(client) => {
                     let _ = status_tx.send(EngineStatus::Ready);
                 }
-                InferenceEngine::NeuroZk(engine) => {
-                    match engine.lock().await.setup().await {
+                InferenceEngine::NeuroZk(engine_clone) => {
+                    match engine_clone.lock().await.setup().await {
                         Ok(()) => {
                             let _ = status_tx.send(EngineStatus::Ready);
                         }
@@ -97,9 +100,6 @@ pub async fn spawn_inference_server(
                 }
             }
         });
-    }
-
-    
 
     let state = AppState {
         task: task.clone(),
@@ -108,31 +108,72 @@ pub async fn spawn_inference_server(
     };
 
     let mut default_port: u16 = 3000;
-
     if let Some(port) = port {
         default_port = port
     }
 
-    let app = Router::new()
-        .route(&format!("/inference/{}", &task.id), get(ws_handler))
-        .with_state(state);
-
-    let listener = TcpListener::bind(format!("0.0.0.0:{}", default_port)).await?;
-
-    println!("listening on {}", listener.local_addr().unwrap());
+    let route_path = format!("/{}", &task.id);
+    let state_clone = state.clone();
 
     let handle = tokio::spawn(async move {
+        let mut rx = Arc::clone(&state_clone.status).as_ref().clone();
+
+        loop {
+            if let EngineStatus::Ready = *rx.borrow() {
+                break;
+            }
+
+            if let Err(e) = rx.changed().await {
+                tracing::error!("Error while setting up inference engine, please contact support.");
+                println!("Error setting up inference engine: {}", e);
+                break;
+            }
+        }
+
+        let app = Router::new()
+            .route(&route_path, get(ws_handler))
+            .with_state(state);
+
+        let listener = match TcpListener::bind(format!("0.0.0.0:{}", default_port)).await {
+            Ok(listener) => listener,
+            Err(e) => {
+                tracing::error!("Error while setting up inference engine, please contact support.");
+                println!("Failed to bind to port {}: {}", default_port, e);
+                return;
+            }
+        };
+
+        let tailnet = match config::get_tailscale_net() {
+            Ok(net) => net,
+            Err(e) => {
+                tracing::error!("Error while setting up inference engine, please contact support.");
+                println!("Failed to get tailscale net: {}", e);
+                return;
+            }
+        };
+
+        let hostname = match std::process::Command::new("hostname").output() {
+            Ok(output) => String::from_utf8_lossy(&output.stdout).to_string(),
+            Err(e) => {
+                tracing::error!("Error while setting up inference engine, please contact support.");
+                println!("Failed to get hostname: {}", e);
+                return;
+            }
+        };
+
         println!("Starting inference server...");
-        axum::serve(
-            listener,
-            app.into_make_service_with_connect_info::<SocketAddr>(),
-        )
-        .with_graceful_shutdown(async move {
-            shutdown_rx.changed().await.ok();
-            println!("Shutdown signal received, stopping inference server!");
-        })
-        .await
-        .expect("Server failed to start...");
+        tracing::info!("Inference engine ready, miner is reachable at https://{}.{}/{}", hostname, tailnet, route_path);
+
+        if let Err(e) = axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
+            .with_graceful_shutdown(async move {
+                shutdown_rx.changed().await.ok();
+                println!("Shutdown signal received, stopping inference server!");
+            })
+            .await
+        {
+            tracing::error!("Server failed to start: {}", e);
+            return;
+        };
     });
 
     Ok(handle)
@@ -188,13 +229,13 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
                 InferenceEngine::OpenInference(client) => {
                     let client = client.lock().await;
                     if let Err(e)=client.run(request_stream,response_stream).await{
-                        tracing::error!("Error running Nvidia Inference: {}",e);
+                        tracing::error!("Error running inference ingine: {}",e);
                     }
                 }
                 InferenceEngine::NeuroZk(engine) => {
                     let engine = engine.lock().await;
                     if let Err(e) = engine.run(request_stream, response_stream).await {
-                        tracing::error!("Error running NeuroZK inference: {}", e);
+                        tracing::error!("Error running NeuroZK inference engine: {}", e);
                     }
                 }
             }

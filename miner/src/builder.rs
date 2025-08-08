@@ -7,7 +7,6 @@ use std::{fs, str::FromStr, sync::Arc};
 use subxt::utils::AccountId32;
 use subxt_signer::{sr25519::Keypair as SR25519Keypair, SecretUri};
 use tokio::sync::RwLock;
-use tracing::warn;
 
 /// A builder pattern for constructing a `Miner` instance.
 ///
@@ -89,10 +88,10 @@ impl<Keypair> MinerBuilder<Keypair> {
                     identity = Some(config.miner_identity.clone());
                     creator = Some(config.miner_identity.0);
                 }
-                Err(e) => warn!("No miner identity present, identity will be set when registering..."),
+                Err(e) => println!("No miner identity present, identity will be set when registering..."),
             }
         } else {
-            warn!("No miner identity present, identity will be set when registering...");
+            println!("No miner identity present, identity will be set when registering...");
         }
 
         self.identity = identity;
