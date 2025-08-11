@@ -14,6 +14,7 @@ use crate::utils::tx_queue::TransactionQueue;
 use crate::utils::tx_queue::TRANSACTION_QUEUE;
 
 //TODO put this in evironment variables
+#[allow(dead_code)]
 // const LOG_PATH: &str = "/var/lib/cyborg/worker-node/logs/worker_log.txt";
 // const TASK_PATH: &str = "/var/lib/cyborg/worker-node/task/current_task";
 // const TASK_OWNER_PATH: &str = "/var/lib/cyborg/worker-node/task/task_owner.json";
