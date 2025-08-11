@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+// use std::path::PathBuf;
 
 use crate::{
     error::Result,
@@ -95,6 +95,7 @@ pub trait ParachainInteractor {
     ///
     /// # Returns
     /// A `Result` indicating `Ok(())` if the miner is successfully suspended, or an `Error` if it fails.
+#[allow(dead_code)]
     async fn suspend_miner(&self) -> Result<()>;
 }
 
