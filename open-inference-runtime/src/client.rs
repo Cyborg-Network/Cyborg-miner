@@ -1,17 +1,13 @@
 use crate::models::ModelExtractor;
 use futures::{stream::StreamExt, Future, Stream};
-use serde::de::Error as DeError;
 
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use serde_json::Value;
-use sha2::{Digest, Sha256};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{self, Read};
+use std::io::{self};
 use std::path::PathBuf;
-use std::pin::Pin;
 
 #[derive(Clone, Debug)]
 pub struct TritonClient {
@@ -98,60 +94,97 @@ impl TritonClient {
             Err(format!("Server is not live. HTTP Status: {:?}", response.status()).into())
         }
     }
-
+    // Load the model 
     pub async fn load_model(
-        &self,
-        model_name: &str,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        match ModelExtractor::new(model_name, self.model_path.clone()) {
-            Ok(extractor) => {
-                extractor.extract_model()?;
-            }
-            Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
-                println!("✅ Model '{}' already extracted, continuing.", model_name);
-            }
-            Err(e) => {
-                return Err(Box::new(e));
-            }
+    &self,
+    model_name: &str,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let status_url = format!("{}/models/{}", self.url, model_name);
+    let status_response = self.client.get(&status_url).send().await?;
+
+    if status_response.status() == reqwest::StatusCode::OK {
+        println!("⚠️ Model '{}' is already loaded on Triton.", model_name);
+        return Ok(()); // Model is already loaded, no need to load again
+    } else if status_response.status() != reqwest::StatusCode::NOT_FOUND {
+        return Err(format!(
+            "Failed to check model status '{}'. HTTP: {:?}",
+            model_name,
+            status_response.status()
+        )
+        .into());
+    }
+
+    match ModelExtractor::new(model_name, self.model_path.clone()) {
+        Ok(extractor) => {
+            extractor.extract_model()?;
         }
-
-        let url = format!("{}/repository/models/{}/load", self.url, model_name);
-        let response = self.client.post(&url).json(&json!({})).send().await?;
-
-        if response.status().is_success() {
-            println!("✅ Model '{}' loaded successfully.", model_name);
-            Ok(())
-        } else {
-            Err(format!(
-                "Failed to load model '{}'. HTTP: {:?}",
-                model_name,
-                response.status()
-            )
-            .into())
+        Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+            println!("✅ Model '{}' already extracted, continuing.", model_name);
+        }
+        Err(e) => {
+            return Err(Box::new(e));
         }
     }
+
+    // 3. Load the model
+    let url = format!("{}/repository/models/{}/load", self.url, model_name);
+    let response = self.client.post(&url).json(&json!({})).send().await?;
+
+    if response.status().is_success() {
+        println!("✅ Model '{}' loaded successfully.", model_name);
+        Ok(())
+    } else {
+        Err(format!(
+            "Failed to load model '{}'. HTTP: {:?}",
+            model_name,
+            response.status()
+        )
+        .into())
+    }
+}
+
 
     // Unload a model from Triton
     pub async fn unload_model(
-        &self,
-        model_name: &str,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let url = format!("{}/repository/models/{}/unload", self.url, model_name);
-        let response = self.client.post(&url).json(&json!({})).send().await?;
+    &self,
+    model_name: &str,
+) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
+    let status_url = format!("{}/models/{}", self.url, model_name);
+    let status_response = self.client.get(&status_url).send().await?;
 
-        if response.status().is_success() {
-            println!("✅ Model '{}' unloaded successfully.", model_name);
-            Ok(())
-        } else {
-            Err(format!(
-                "Failed to unload model '{}'. HTTP: {:?}",
-                model_name,
-                response.status()
-            )
-            .into())
-        }
+    if status_response.status() == reqwest::StatusCode::NOT_FOUND {
+        println!("⚠️ Model '{}' is not loaded on Triton.", model_name);
+        return Ok(false);  
+    } else if !status_response.status().is_success() {
+        return Err(format!(
+            "Failed to check model status '{}'. HTTP: {:?}",
+            model_name,
+            status_response.status()
+        ).into());
     }
 
+    let url = format!("{}/repository/models/{}/unload", self.url, model_name);
+    let response = self.client.post(&url).json(&json!({})).send().await?;
+
+    if response.status().is_success() {
+        let text = response.text().await.unwrap_or_default();
+        if text.to_lowercase().contains("error") {
+            return Err(format!("Unload failed with message: {}", text).into());
+        }
+        println!("✅ Model '{}' unloaded successfully.", model_name);
+        Ok(true)
+    } else {
+        Err(format!(
+            "Failed to unload model '{}'. HTTP: {:?}",
+            model_name,
+            response.status()
+        )
+        .into())
+    }
+}
+
+
+    // Fetch the list of availabe models in repository
     pub async fn list_models(
         &self,
     ) -> Result<Vec<String>, Box<dyn std::error::Error + Send + Sync>> {
@@ -234,50 +267,60 @@ impl TritonClient {
         Ok(json)
     }
 
-    pub async fn generate_dummy_inputs(
-        &self,
-        model_name: &str,
-    ) -> Result<HashMap<String, (TensorData, Vec<usize>)>, Box<dyn std::error::Error + Send + Sync>>
-    {
-        let metadata = self.get_model_metadata(model_name).await?;
-        let model_inputs = metadata["inputs"]
+    pub async fn generate_inputs(
+    &self,
+    model_name: &str,
+) -> Result<HashMap<String, (TensorData, Vec<usize>)>, Box<dyn std::error::Error + Send + Sync>> {
+    let metadata = self.get_model_metadata(model_name).await?;
+    let model_inputs = metadata["inputs"]
+        .as_array()
+        .ok_or("Invalid model metadata format: 'inputs' not found")?;
+
+    let mut inputs = HashMap::new();
+
+    for input in model_inputs {
+        let name = input["name"]
+            .as_str()
+            .ok_or("Input name missing")?
+            .to_string();
+
+        let shape = input["shape"]
             .as_array()
-            .ok_or("Invalid model metadata format: 'inputs' not found")?;
-
-        let mut inputs = HashMap::new();
-
-        for input in model_inputs {
-            let name = input["name"]
-                .as_str()
-                .ok_or("Input name missing")?
-                .to_string();
-            let shape = input["shape"]
-                .as_array()
-                .ok_or("Shape missing")?
-                .iter()
-                .map(|v| v.as_u64().unwrap() as usize)
-                .collect::<Vec<usize>>();
-
-            let total_elements = shape.iter().product::<usize>();
-            let datatype = input["datatype"].as_str().ok_or("Datatype missing")?;
-
-            let tensor_data = match datatype {
-                "FP32" => TensorData::F32(vec![0.0; total_elements]),
-                "INT32" => TensorData::I32(vec![0; total_elements]),
-                "INT64" => TensorData::I64(vec![0; total_elements]),
-                "UINT8" => TensorData::U8(vec![0; total_elements]),
-                "BOOL" => TensorData::Bool(vec![false; total_elements]),
-                "BYTES" => TensorData::Str(vec!["".to_string(); total_elements]),
-                _ => {
-                    return Err(format!("Unsupported datatype: {}", datatype).into());
+            .ok_or("Shape missing")?
+            .iter()
+            .map(|v| {
+                if let Some(signed) = v.as_i64() {
+                    if signed < 0 {
+                        Ok(1usize)
+                    } else {
+                        Ok(signed as usize)
+                    }
+                } else {
+                    Err("Invalid shape element: expected i64")
                 }
-            };
+            })
+            .collect::<Result<Vec<_>, _>>()?;
 
-            inputs.insert(name, (tensor_data, shape));
-        }
+        let total_elements = shape.iter().product::<usize>();
+        let datatype = input["datatype"].as_str().ok_or("Datatype missing")?;
 
-        Ok(inputs)
+        let tensor_data = match datatype {
+            "FP32" => TensorData::F32(vec![0.0; total_elements]),
+            "INT32" => TensorData::I32(vec![0; total_elements]),
+            "INT64" => TensorData::I64(vec![0; total_elements]),
+            "UINT8" => TensorData::U8(vec![0; total_elements]),
+            "BOOL" => TensorData::Bool(vec![false; total_elements]),
+            "BYTES" => TensorData::Str(vec!["".to_string(); total_elements]),
+            _ => {
+                return Err(format!("Unsupported datatype: {}", datatype).into());
+            }
+        };
+
+        inputs.insert(name, (tensor_data, shape));
     }
+
+    Ok(inputs)
+}
 
     pub async fn infer(
         &self,
@@ -332,77 +375,58 @@ impl TritonClient {
         CFut: Future<Output = ()> + Send + 'static,
     {
         while let Some(request) = request_stream.next().await {
-            let (command, model_name_opt, inputs_opt) =
-                if let Ok(Value::Object(map)) = serde_json::from_str::<Value>(&request) {
-                    // JSON input case
-                    let cmd = map
-                        .get("command")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("infer")
-                        .to_string();
-                    let model_name = map
-                        .get("model_name")
-                        .and_then(|v| v.as_str())
-                        .map(|s| s.to_string());
-                    let inputs = map.get("inputs").cloned();
-                    (cmd, model_name, inputs)
-                } else {
-                    // Plain text case: infer resnet50 true
-                    let parts: Vec<&str> = request.trim().split_whitespace().collect();
-                    let cmd = parts.get(0).unwrap_or(&"").to_string();
-                    let model_name = parts.get(1).map(|s| s.to_string());
-                    let inputs = None;
-
-                    (cmd, model_name, inputs)
-                };
+        let (command, model_name_opt, inputs_opt) = if let Ok(Value::Object(map)) = serde_json::from_str::<Value>(&request) {
+        let cmd = map.get("command").and_then(|v| v.as_str()).unwrap_or("infer").to_string();
+        let model_name = map.get("model_name").and_then(|v| v.as_str()).map(|s| s.to_string());
+        let inputs = map.get("inputs").cloned(); 
+        (cmd, model_name, inputs)
+    } else {
+        let parts: Vec<&str> = request.trim().split_whitespace().collect();
+        let cmd = parts.get(0).unwrap_or(&"").to_string();
+        let model_name = parts.get(1).map(|s| s.to_string());
+        (cmd, model_name, None)
+    };
 
             let response_json = match command.as_str() {
-                "infer" => {
-                    let generate_dummy = true;
-
-                    let parsed_inputs: Result<HashMap<String, (TensorData, Vec<usize>)>, _> =
-                        if generate_dummy {
-                            match model_name_opt {
-                                Some(ref model_name) => {
-                                    self.generate_dummy_inputs(model_name).await.map_err(|e| {
-                                        serde_json::Error::custom(format!(
-                                            "Dummy input generation failed: {}",
-                                            e
-                                        ))
-                                    })
-                                }
-                                None => Err(serde_json::Error::custom("model_name is required")),
-                            }
-                        } else {
-                            inputs_opt
-                                .ok_or_else(|| {
-                                    serde_json::Error::custom("'inputs' field is required")
-                                })
-                                .and_then(|inputs_val| serde_json::from_value(inputs_val.clone()))
-                        };
-
-                    match parsed_inputs {
-                        Ok(inputs) => match model_name_opt {
+               "infer" => {
+                        match model_name_opt {
                             Some(ref model_name) => {
+                                let inputs = if let Some(inputs_val) = inputs_opt {
+                                    match serde_json::from_value::<HashMap<String, (TensorData, Vec<usize>)>>(inputs_val) {
+                                        Ok(user_inputs) => user_inputs,
+                                        Err(e) => {
+                                            println!("⚠️ Failed to parse user inputs: {}", e);
+                                            match self.generate_inputs(model_name).await {
+                                                Ok(dummy) => dummy,
+                                                Err(e) => {
+                                                    println!("{}", json!({ "error": format!("Failed to generate inputs: {}", e) }));
+                                                    return Ok(()); 
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    
+                                    match self.generate_inputs(model_name).await {
+                                        Ok(dummy) => dummy,
+                                        Err(e) => {
+                                            println!("{}", json!({ "error": format!("Failed to generate inputs: {}", e) }));
+                                            return Ok(()); 
+                                        }
+                                    }
+                                };
+
                                 match self.run_inference(model_name, inputs).await {
                                     Ok(output) => {
-                                        println!("🧠 Inference Output:\n{}", output);
+                                        println!("🧠 Inference Output:\n{}", serde_json::to_string_pretty(&output)?);
                                         output
                                     }
-                                    Err(e) => {
-                                        json!({ "error": format!("Inference error: {}", e) })
-                                    }
+                                    Err(e) => json!({ "error": format!("Inference error: {}", e) }),
                                 }
                             }
-                            None => {
-                                json!({ "error": "'model_name' is required for inference." })
-                            }
-                        },
-                        Err(e) => {
-                            json!({ "error": format!("Failed to parse 'inputs': {}", e) })
+                            None => json!({ "error": "'model_name' is required for inference." }),
                         }
                     }
-                }
 
                 "metadata" => match model_name_opt {
                     Some(model_name) => match self.get_model_metadata(&model_name).await {
@@ -414,7 +438,7 @@ impl TritonClient {
 
                 "load" => match model_name_opt {
                     Some(model_name) => match self.load_model(&model_name).await {
-                        Ok(_) => json!({ "load": "ok" }),
+                        Ok(_) => json!({ "load": "Success" }),
                         Err(e) => json!({ "error": format!("Failed to load model: {}", e) }),
                     },
                     None => json!({ "error": "'model_name' is required for load command." }),
@@ -428,7 +452,13 @@ impl TritonClient {
                 },
                 "unload" => match model_name_opt {
                     Some(model_name) => match self.unload_model(&model_name).await {
-                        Ok(_) => json!({ "unload": "ok" }),
+                        Ok(unloaded) => {
+                            if unloaded {
+                                json!({ "unload": "Success" })
+                            } else {
+                                json!({ "unload": "Model was not loaded" })
+                            }
+                        }
                         Err(e) => json!({ "error": format!("Failed to unload model: {}", e) }),
                     },
                     None => json!({ "error": "'model_name' is required for unload command." }),
@@ -471,6 +501,7 @@ impl TritonClient {
         Ok(())
     }
 
+
     pub async fn run_inference(
         &self,
         model_name: &str,
@@ -481,13 +512,11 @@ impl TritonClient {
             .await
             .map_err(|e| format!("Failed to load model: {}", e))?;
 
-        // Convert aligned inputs into &str keys and (TensorData, shape) values
         let aligned_refs: HashMap<&str, (TensorData, Vec<usize>)> = inputs
             .iter()
             .map(|(k, v)| (k.as_str(), v.clone()))
             .collect();
 
-        // Run inference
         match self.infer(model_name, aligned_refs).await {
             Ok(result) => {
                 self.unload_model(model_name).await?;
@@ -500,7 +529,7 @@ impl TritonClient {
 
 fn get_help_message() -> &'static str {
     r#"Available commands:
-    infer <model_name>       - Run inference. Requires 'inputs' field in JSON format.
+    infer <model_name>       - Run inference. Requires 'inputs' field in JSON format. 
     metadata <model_name>    - Get model metadata.
     load <model_name>        - Load the model into memory.
     unload <model_name>      - Unload the model from memory.
@@ -511,6 +540,7 @@ fn get_help_message() -> &'static str {
     ready                    - Check if the Triton server is ready.
 
     Usage note:
-    Use plain text like: 'load my_model' or use JSON for 'infer' with inputs."#
+    Use plain text like: 'load my_model' or use JSON for 'infer' with inputs.
+    Example : {"command":"infer","model_name":"densenet_onnx","inputs":{"INPUT0":[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],"INPUT1":[1,2,3,4]}}
+    "#
 }
-

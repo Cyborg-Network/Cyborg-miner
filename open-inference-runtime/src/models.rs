@@ -1,13 +1,10 @@
-use base64::{engine::general_purpose, Engine as _};
 use flate2::read::GzDecoder;
-use sha2::{Digest, Sha256};
 use std::fs::{remove_file, File};
-use std::io::{self, copy, BufReader, Read, Write};
-use std::path::{Path, PathBuf};
+use std::io::{self, copy, BufReader};
+use std::path::{ PathBuf};
 use tar::Archive;
 use zip::ZipArchive;
 
-/// Handles extraction of model files from a tar.gz or zip archive
 pub struct ModelExtractor {
     archive_path: PathBuf,
     output_folder: PathBuf,
@@ -17,7 +14,6 @@ impl ModelExtractor {
     pub fn new(model_name: &str, base_path: PathBuf) -> io::Result<Self> {
         let extracted_path = base_path.join(model_name);
 
-        // ✅ If already extracted, return early
         if extracted_path.is_dir() {
             println!("✅ Model already extracted at: {:?}", extracted_path);
             return Err(io::Error::new(
@@ -26,7 +22,6 @@ impl ModelExtractor {
             ));
         }
 
-        // 📦 Determine archive path
         let tar_gz_path = base_path.join(format!("{}.tar.gz", model_name));
         let zip_path = base_path.join(format!("{}.zip", model_name));
 
@@ -41,7 +36,6 @@ impl ModelExtractor {
             ));
         };
 
-        // 🛠️ Construct instance first
         let extractor = Self {
             archive_path: archive_path.clone(),
             output_folder: base_path,
@@ -68,14 +62,12 @@ impl ModelExtractor {
             )),
         }?;
 
-        // Delete archive after extraction
         println!("🗑️ Deleting archive {:?}", self.archive_path);
         remove_file(&self.archive_path)?;
 
         Ok(())
     }
 
-    /// Extracts all files from the tar.gz archive to the specified output folder
     fn extract_tar_gz(&self) -> io::Result<()> {
         println!("🔍 Detected .tar.gz format. Extracting...");
         let archive_file = File::open(&self.archive_path)?;
@@ -104,10 +96,8 @@ impl ModelExtractor {
         Ok(())
     }
 
-    /// Extracts all files from the .zip archive to the specified output folder
     #[allow(deprecated)]
     fn extract_zip(&self) -> io::Result<()> {
-        // println!("🔍 Detected .zip format. Extracting...");
         let archive_file = File::open(&self.archive_path)?;
         let mut archive = ZipArchive::new(archive_file)?;
 
@@ -116,7 +106,6 @@ impl ModelExtractor {
             let out_path = self.output_folder.join(file.sanitized_name());
 
             if file.is_dir() {
-                // println!("📂 Creating directory {:?}", out_path);
                 std::fs::create_dir_all(&out_path)?;
             } else {
                 if let Some(parent) = out_path.parent() {
@@ -124,10 +113,8 @@ impl ModelExtractor {
                 }
                 let mut out_file = File::create(&out_path)?;
                 copy(&mut file, &mut out_file)?;
-                //  println!("✅ Extracted {:?} to {:?}", file.name(), &self.output_folder);
             }
         }
         Ok(())
     }
 }
-
