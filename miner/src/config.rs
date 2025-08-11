@@ -40,6 +40,7 @@ struct MinerIdentity {
 pub static PATHS: OnceCell<Paths> = OnceCell::new();
 pub static STORAGE_LOCATION: OnceCell<String> = OnceCell::new();
 pub static PARACHAIN_CLIENT: OnceCell<OnlineClient<PolkadotConfig>> = OnceCell::new();
+#[allow(dead_code)]
 pub static CESS_GATEWAY: Lazy<Arc<RwLock<String>>> =
     Lazy::new(|| Arc::new(RwLock::new(String::from("https://deoss-sgp.cess.network"))));
 
