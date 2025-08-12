@@ -1,5 +1,4 @@
 use crate::config;
-use crate::parent_runtime::server_control::SHUTDOWN_SENDER;
 use crate::{
     config::get_paths,
     error::{Error, Result},
@@ -15,8 +14,10 @@ use axum::{
 };
 use futures::{SinkExt, StreamExt};
 use neuro_zk_runtime::NeuroZKEngine;
+use once_cell::sync::Lazy;
+use tokio::sync::oneshot;
+use std::path::Path;
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
-
 use tokio::{
     net::TcpListener,
     sync::{watch, Mutex},
@@ -27,6 +28,34 @@ use open_inference_runtime::{TritonClient,TensorData};
 pub enum InferenceEngine {
     OpenInference(Arc<Mutex<TritonClient>>),
     NeuroZk(Arc<Mutex<NeuroZKEngine>>),
+}
+
+impl InferenceEngine {
+    pub async fn kill_engine(&self, model_name: &str, task_dir: &str) -> Result<()> {
+        match self {
+            InferenceEngine::OpenInference(client) => {
+                /* 
+                client.lock().await.unload_model(model_name).await.map_err(|e| {
+                    Error::Custom(format!("Failed to unload model: {}", e.to_string()))
+                })?;
+                */
+
+                let dir_path = Path::new(task_dir);
+
+                if dir_path.exists() {
+                    std::fs::remove_dir_all(dir_path)?;
+                    println!("Task directory {:?} deleted successfully.", dir_path);
+                } else {
+                    println!("Cannot delete task directory. Directory {:?} does not exist.", dir_path);
+                }
+
+                Ok(())
+            }
+            InferenceEngine::NeuroZk(_engine) => {
+                todo!("Implement kill_engine for NeuroZk")
+            }
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -44,11 +73,35 @@ enum EngineStatus {
     Failed(String),
 }
 
+pub struct RunningInferenceServer {
+    pub handle: tokio::task::JoinHandle<()>,
+    pub shutdown_sender: watch::Sender<bool>,
+    pub shutdown_done_rx: oneshot::Receiver<()>,
+    pub engine: InferenceEngine,
+    pub model_name: String,
+}
+
+impl RunningInferenceServer {
+    pub async fn shutdown(self, task_dir: &str) -> Result<()> {
+        let _ = self.shutdown_sender.send(true);
+        let _ = self.shutdown_done_rx.await;
+        let _ = self.handle.await;
+        self.engine.kill_engine(&self.model_name, task_dir).await?;
+
+        Ok(())
+    }
+}
+
+pub static CURRENT_SERVER: Lazy<Mutex<Option<RunningInferenceServer>>> = Lazy::new(|| Mutex::new(None));
+
 pub async fn spawn_inference_server(
     task: &CurrentTask,
     port: Option<u16>,
-) -> Result<tokio::task::JoinHandle<()>> {
+) -> Result</*tokio::task::JoinHandle<()>*/()> {
     tracing::info!("Spawning inference server for task {}", task.id);
+
+    let (shutdown_tx, mut shutdown_rx) = watch::channel(false);
+    let (shutdown_done_tx, shutdown_done_rx) = oneshot::channel::<()>();
 
     let (status_tx, status_rx) = watch::channel(EngineStatus::Idle);
     let paths = get_paths()?;
@@ -69,40 +122,33 @@ pub async fn spawn_inference_server(
             InferenceEngine::NeuroZk(Arc::new(Mutex::new(neurozk_engine)))
         }
     };
-
-    let (shutdown_tx, mut shutdown_rx) = watch::channel(false);
-    {
-        let mut global_sender = SHUTDOWN_SENDER.lock().unwrap();
-        *global_sender = Some(shutdown_tx.clone());
-    }
-
     
-        let engine_clone = engine.clone();
-        let status_tx = status_tx.clone();
+    let engine_clone = engine.clone();
+    let status_tx = status_tx.clone();
 
-        tokio::spawn(async move {
-            let _ = status_tx.send(EngineStatus::Initializing);
+    tokio::spawn(async move {
+        let _ = status_tx.send(EngineStatus::Initializing);
 
-            match &engine_clone {
-                InferenceEngine::OpenInference(client) => {
-                    let _ = status_tx.send(EngineStatus::Ready);
-                }
-                InferenceEngine::NeuroZk(engine_clone) => {
-                    match engine_clone.lock().await.setup().await {
-                        Ok(()) => {
-                            let _ = status_tx.send(EngineStatus::Ready);
-                        }
-                        Err(e) => {
-                            let _ = status_tx.send(EngineStatus::Failed(e.to_string()));
-                        }
+        match &engine_clone {
+            InferenceEngine::OpenInference(_) => {
+                let _ = status_tx.send(EngineStatus::Ready);
+            }
+            InferenceEngine::NeuroZk(engine_clone) => {
+                match engine_clone.lock().await.setup().await {
+                    Ok(()) => {
+                        let _ = status_tx.send(EngineStatus::Ready);
+                    }
+                    Err(e) => {
+                        let _ = status_tx.send(EngineStatus::Failed(e.to_string()));
                     }
                 }
             }
-        });
+        }
+    });
 
     let state = AppState {
         task: task.clone(),
-        engine: engine,
+        engine: engine.clone(),
         status: Arc::new(status_rx),
     };
 
@@ -160,7 +206,7 @@ pub async fn spawn_inference_server(
             }
         };
 
-        tracing::info!("Inference engine ready, miner is reachable at https://{}.{}/{}", hostname, tailnet, route_path);
+        tracing::info!("Inference engine ready, miner is reachable at https://{}.{}{}", hostname, tailnet, route_path);
 
         if let Err(e) = axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
             .with_graceful_shutdown(async move {
@@ -172,9 +218,19 @@ pub async fn spawn_inference_server(
             tracing::error!("Server failed to start: {}", e);
             return;
         };
+
+        let _ = shutdown_done_tx.send(());
     });
 
-    Ok(handle)
+    *CURRENT_SERVER.lock().await = Some(RunningInferenceServer {
+        handle,
+        shutdown_sender: shutdown_tx,
+        shutdown_done_rx: shutdown_done_rx,
+        engine: engine.clone(),
+        model_name: "model".to_string().clone(),
+    });
+
+    Ok(())
 }
 
 #[axum_macros::debug_handler]

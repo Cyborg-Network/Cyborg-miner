@@ -26,7 +26,7 @@ pub trait InferenceServer {
     ///
     /// # Returns
     /// An `impl Stream<Item = Result<Message, tungstenite::Error>>` representing the output stream of messages.
-    async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>>;
+    async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result</*JoinHandle<()>*/()>;
 
     /// Generates a zkml proof for the model currently in execution.
     ///
@@ -41,7 +41,7 @@ impl InferenceServer for ParentRuntime {
         setup::process_task(task).await
     }
 
-    async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result<JoinHandle<()>> {
+    async fn spawn_inference_server(&self, current_task: &CurrentTask) -> Result</*JoinHandle<()>*/()> {
         inference::spawn_inference_server(current_task, self.port).await
     }
 

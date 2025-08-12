@@ -10,6 +10,7 @@ use subxt::utils::AccountId32;
 use subxt_signer::sr25519::Keypair;
 use substrate_interface::api::neuro_zk::{Error as NzkError};
 use substrate_interface::api::edge_connect::{Error as EdgeConnectError};
+use substrate_interface::api::task_management::{Error as TaskManagementError};
 use crate::error::Result;
 use crate::substrate_interface::{self, api::runtime_types::cyborg_primitives::worker::WorkerType};
 
@@ -175,7 +176,7 @@ pub async fn confirm_task_reception(keypair: Keypair, current_task: u64) -> Resu
             }
         },
         Err(e) => {
-            check_for_acceptable_error("TaskManagement::RequireAssignedTask", e)?;
+            check_for_acceptable_error(TaskManagementError::RequireAssignedTask, e)?;
         },
     }
 
@@ -222,7 +223,7 @@ pub async fn confirm_miner_vacation(keypair: Keypair, task_id: u64) -> Result<()
             }
         },
         Err(e) => {
-           check_for_acceptable_error("TaskManagement::InvalidTaskState", e)?; 
+           check_for_acceptable_error(TaskManagementError::InvalidTaskState, e)?; 
         },
     }
 

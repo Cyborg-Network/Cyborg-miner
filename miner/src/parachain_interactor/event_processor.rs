@@ -1,5 +1,6 @@
 use crate::config::{self, get_paths};
 use crate::parachain_interactor::identity::update_identity_file;
+use crate::parent_runtime::inference::CURRENT_SERVER;
 use crate::substrate_interface;
 use crate::substrate_interface::api::runtime_types::cyborg_primitives::task::TaskKind;
 use crate::traits::{InferenceServer, ParachainInteractor};
@@ -173,42 +174,23 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
     }
 
     if let Some(current_task) = &miner.current_task {
-        match event.as_event::<substrate_interface::api::neuro_zk::events::NzkProofRequested>() {
-            Ok(Some(requested_proof)) => {
-                let task_id = &requested_proof.task_id;
-
-                if *task_id == current_task.id {
-                    let proof = miner.parent_runtime.read().await.generate_proof().await?;
-                    let _ = miner.submit_zkml_proof(proof).await?;
-                }
-            }
-            Err(e) => {
-                println!("Error decoding SubmittedCompletedTask event: {:?}", e);
-                return Err(Error::Subxt(e.into()));
-            }
-            _ => {} // Skip non-matching events
-        }
-    }
-
-    if let Some(current_task) = &miner.current_task {
         match event.as_event::<substrate_interface::api::task_management::events::TaskStopRequested>() {
             Ok(Some(requested_task_stop)) => {
                 let task_id = &requested_task_stop.task_id;
 
                 if *task_id == current_task.id {
+                    let server_control = CURRENT_SERVER
+                        .lock()
+                        .await
+                        .take()
+                        .ok_or(Error::Custom("There is no inference server initialized in CURRENT_SERVER!".to_string()))?;
+
                     let task_dir = &config::PATHS
                         .get()
                         .ok_or(Error::config_paths_not_initialized())?
                         .task_dir_path;
-
-                    let dir_path = Path::new(task_dir);
-
-                    if dir_path.exists() {
-                        fs::remove_dir_all(dir_path)?;
-                        println!("Task directory {:?} deleted successfully.", dir_path);
-                    } else {
-                        println!("Cannot delete task directory. Directory {:?} does not exist.", dir_path);
-                    }
+                    
+                    server_control.shutdown(task_dir).await?;
 
                     let tx_queue = config::get_tx_queue()?;
                     let keypair = miner.keypair.clone();
@@ -223,10 +205,28 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     }).await?;
 
                     match rx.await {
-                        Ok(Ok(TxOutput::Success)) => println!("Task reception confirmed immediately"),
-                        Ok(Err(e)) => println!("Error confirming task reception: {}", e),
-                        _ => println!("Unexpected response for task confirmation"),
+                        Ok(Ok(TxOutput::Success)) => println!("Miner vacation confirmed!"),
+                        Ok(Err(e)) => println!("Error confirming miner vacation: {}", e),
+                        _ => println!("Unexpected response for miner vacation confirmation"),
                     }
+                }
+            }
+            Err(e) => {
+                println!("Error decoding TaskStopRequested event: {:?}", e);
+                return Err(Error::Subxt(e.into()));
+            }
+            _ => {} // Skip non-matching events
+        }
+    }
+
+    if let Some(current_task) = &miner.current_task {
+        match event.as_event::<substrate_interface::api::neuro_zk::events::NzkProofRequested>() {
+            Ok(Some(requested_proof)) => {
+                let task_id = &requested_proof.task_id;
+
+                if *task_id == current_task.id {
+                    let proof = miner.parent_runtime.read().await.generate_proof().await?;
+                    let _ = miner.submit_zkml_proof(proof).await?;
                 }
             }
             Err(e) => {

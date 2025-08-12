@@ -12,12 +12,6 @@ use crate::error::{Error, Result};
 use crate::utils::tx_queue::TransactionQueue;
 use crate::utils::tx_queue::TRANSACTION_QUEUE;
 
-//TODO put this in evironment variables
-const LOG_PATH: &str = "/var/lib/cyborg/worker-node/logs/worker_log.txt";
-const TASK_PATH: &str = "/var/lib/cyborg/worker-node/task/current_task";
-const TASK_OWNER_PATH: &str = "/var/lib/cyborg/worker-node/task/task_owner.json";
-const IDENTITY_PATH: &str = "/var/lib/cyborg/worker-node/identity.json";
-
 #[derive(Debug)]
 pub struct Paths {
     pub log_path: PathBuf,
