@@ -11,7 +11,6 @@ use crate::{
     error::{Error, Result},
     types::{Miner, MinerData},
 };
-use std::path::Path;
 use std::sync::Arc;
 use serde::Serialize;
 use subxt::utils::AccountId32;
@@ -174,11 +173,13 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
     }
 
     if let Some(current_task) = &miner.current_task {
+        let current_task_id = current_task.id;
+
         match event.as_event::<substrate_interface::api::task_management::events::TaskStopRequested>() {
             Ok(Some(requested_task_stop)) => {
                 let task_id = &requested_task_stop.task_id;
 
-                if *task_id == current_task.id {
+                if *task_id == current_task_id {
                     let server_control = CURRENT_SERVER
                         .lock()
                         .await
@@ -192,9 +193,14 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     
                     server_control.shutdown(task_dir).await?;
 
+                    let task_owner_path = &get_paths()?.task_owner_path;
+                    update_identity_file(task_owner_path, "")?;
+
+                    miner.current_task = None;
+
                     let tx_queue = config::get_tx_queue()?;
                     let keypair = miner.keypair.clone();
-                    let current_task_id_copy = current_task.id;
+                    let current_task_id_copy = current_task_id;
 
                     let rx = tx_queue.enqueue(move || {
                         let keypair = keypair.clone();
