@@ -206,7 +206,7 @@ pub async fn spawn_inference_server(
             }
         };
 
-        tracing::info!("Inference engine ready, miner is reachable at https://{}.{}{}", hostname, tailnet, route_path);
+        tracing::info!("Inference engine ready, miner is reachable at wss://{}.{}/inference{}", hostname, tailnet, route_path);
 
         if let Err(e) = axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
             .with_graceful_shutdown(async move {

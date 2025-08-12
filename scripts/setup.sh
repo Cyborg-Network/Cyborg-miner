@@ -189,7 +189,7 @@ install() {
     Environment=PARACHAIN_URL=$PARACHAIN_URL
     Environment="ACCOUNT_SEED=\"$ACCOUNT_SEED\""
     Environment=LOG_FILE_PATH=$MINER_LOG_DIR/miner.log
-    Environment=TASK_FILE_NAME=archive.tar.zst
+    Environment=TASK_FILE_NAME=model.onnx
     Environment=TASK_DIR_PATH=$MINER_TASK_DIR
     Environment=IDENTITY_FILE_PATH=$MINER_CONFIG_DIR/miner_identity.json
     Environment=TASK_OWNER_FILE_PATH=$MINER_CONFIG_DIR/task_owner.json
