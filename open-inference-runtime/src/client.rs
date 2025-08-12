@@ -79,6 +79,8 @@ impl TritonClient {
 
     println!("✅ Detected model: {}", model_name);
 
+    println!("✅ Triton Client created.");
+
     Ok(Self {
         client,
         url: triton_url.to_string(),

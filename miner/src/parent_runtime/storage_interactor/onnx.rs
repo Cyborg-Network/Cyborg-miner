@@ -25,7 +25,8 @@ pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
         .ok_or(Error::config_paths_not_initialized())?
         .task_dir_path;
 
-    let save_path = format!("{}/{}", task_dir, task_file_name);
+    // Required to make model repository structure as nvidia triton server expects
+    let save_path = format!("{}/1/{}", task_dir, task_file_name);
 
     let client = Client::builder()
         .user_agent("cyborg-miner")
@@ -60,6 +61,11 @@ pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
     }
 
     println!("Saving file to path: {:?}", path);
+
+    // Required to make model repository structure as nvidia triton server expects
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
 
     let mut file = OpenOptions::new()
         .create(true)
