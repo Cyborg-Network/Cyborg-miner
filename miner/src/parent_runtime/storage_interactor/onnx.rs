@@ -131,14 +131,18 @@ pub fn extract_triton_model(archive_path: &Path, output_dir: &Path) -> Result<()
             let dest = version_dir.join("model.onnx");
             let mut out = File::create(dest)?;
             copy(&mut entry, &mut out)?;
+        } else if file_name.ends_with(".onnx_data") {
+            let dest = version_dir.join(file_name);
+            let mut out = File::create(dest)?;
+            copy(&mut entry, &mut out)?;
         } else if file_name == "config.pbtxt" {
             let mut content = String::new();
             entry.read_to_string(&mut content)?;
-            content = Regex::new(r#"name\s*:\s*".*""#)
+            content = Regex::new(r#"(?m)^name\s*:\s*".*""#)
                 .unwrap()
                 .replace(&content, r#"name: "model""#)
                 .to_string();
-            std::fs::write(model_dir.join("config.pbtxt"), content)?; 
+            std::fs::write(model_dir.join("config.pbtxt"), content)?;
         }
     }
 
