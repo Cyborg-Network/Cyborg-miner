@@ -3276,6 +3276,7 @@ dependencies = [
  "subxt-signer",
  "sys-info",
  "sysinfo",
+ "tar",
  "tokio",
  "tracing",
  "tracing-appender",
@@ -3284,6 +3285,7 @@ dependencies = [
  "zbus",
  "zbus_names",
  "zip 2.4.2",
+ "zstd 0.13.3",
 ]
 
 [[package]]

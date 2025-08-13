@@ -1,5 +1,5 @@
-use std::fs::OpenOptions;
-use std::io::{Seek, SeekFrom};
+use std::fs::{OpenOptions, File, create_dir_all};
+use std::io::{Seek, SeekFrom, copy};
 use reqwest::blocking::Client;
 use reqwest::header::{RANGE, CONTENT_LENGTH};
 use std::path::Path;
@@ -100,6 +100,42 @@ pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
         tracing::info!("Downloaded {} / {} bytes", downloaded, total_size);
     }
 
+    extract_triton_model(
+        &path, 
+        path.parent().ok_or("Failed to get parent directory")?
+    )?;
+
     tracing::info!("Download complete! Total size: {} bytes.", total_size);
+    Ok(())
+}
+
+pub fn extract_triton_model(archive_path: &Path, output_dir: &Path) -> Result<()> {
+    let model_dir = output_dir.join("model");
+    let version_dir = model_dir.join("1");
+    create_dir_all(&version_dir)?;
+
+    let file = File::open(archive_path)?;
+    let decoder = zstd::stream::read::Decoder::new(file)?;
+    let mut archive = tar::Archive::new(decoder);
+
+    for entry_result in archive.entries()? {
+        let mut entry = entry_result?;
+        let file_name = entry
+            .path()?
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_default();
+
+        if file_name.ends_with(".onnx") {
+            let dest = version_dir.join("model.onnx");
+            let mut out = File::create(dest)?;
+            copy(&mut entry, &mut out)?;
+        } else if file_name == "config.pbtxt" {
+            let dest = model_dir.join("config.pbtxt");
+            let mut out = std::fs::File::create(dest)?;
+            copy(&mut entry, &mut out)?;
+        }
+    }
+
     Ok(())
 }
