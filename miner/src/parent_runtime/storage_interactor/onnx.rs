@@ -26,7 +26,7 @@ pub async fn download_onnx_model(onnx_task: OnnxTask) -> Result<()> {
         .task_dir_path;
 
     // Required to make model repository structure as nvidia triton server expects
-    let save_path = format!("{}/1/{}", task_dir, task_file_name);
+    let save_path = format!("{}/{}", task_dir, task_file_name);
 
     let client = Client::builder()
         .user_agent("cyborg-miner")
