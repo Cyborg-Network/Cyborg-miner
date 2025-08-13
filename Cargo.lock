@@ -3265,6 +3265,7 @@ dependencies = [
  "once_cell",
  "open-inference-runtime",
  "parity-scale-codec",
+ "regex",
  "reqwest 0.12.22",
  "serde",
  "serde_json",

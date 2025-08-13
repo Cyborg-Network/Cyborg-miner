@@ -1,8 +1,9 @@
 use std::fs::{OpenOptions, File, create_dir_all};
-use std::io::{Seek, SeekFrom, copy};
+use std::io::{Seek, SeekFrom, copy, Read};
 use reqwest::blocking::Client;
 use reqwest::header::{RANGE, CONTENT_LENGTH};
 use std::path::Path;
+use regex::Regex;
 
 use crate::config;
 use crate::error::{Result, Error};
@@ -131,9 +132,13 @@ pub fn extract_triton_model(archive_path: &Path, output_dir: &Path) -> Result<()
             let mut out = File::create(dest)?;
             copy(&mut entry, &mut out)?;
         } else if file_name == "config.pbtxt" {
-            let dest = model_dir.join("config.pbtxt");
-            let mut out = std::fs::File::create(dest)?;
-            copy(&mut entry, &mut out)?;
+            let mut content = String::new();
+            entry.read_to_string(&mut content)?;
+            content = Regex::new(r#"name\s*:\s*".*""#)
+                .unwrap()
+                .replace(&content, r#"name: "model""#)
+                .to_string();
+            std::fs::write(model_dir.join("config.pbtxt"), content)?; 
         }
     }
 
