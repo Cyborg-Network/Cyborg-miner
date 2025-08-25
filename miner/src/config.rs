@@ -30,6 +30,7 @@ struct MinerIdentity {
 // We're setting a few global variables here for easy access throughout
 pub static PATHS: OnceCell<Paths> = OnceCell::new();
 pub static TAILSCALE_NET: OnceCell<String> = OnceCell::new();
+pub static FLASH_INFER_PORT: OnceCell<u16> = OnceCell::new();
 pub static UPDATE_PATH: OnceCell<PathBuf> = OnceCell::new();
 pub static PARACHAIN_CLIENT: OnceCell<OnlineClient<PolkadotConfig>> = OnceCell::new();
 pub static CESS_GATEWAY: Lazy<Arc<RwLock<String>>> =
@@ -59,8 +60,15 @@ pub async fn run_config(parachain_url: &str) {
     };
     let tailscale_net = env::var("TAILSCALE_NET").expect("TAILSCALE_NET must be set");
 
-    TAILSCALE_NET.set(tailscale_net)
+    TAILSCALE_NET
+        .set(tailscale_net)
         .expect("TAILSCALE_NET is already initialized!");
+
+    let flash_infer_port = env::var("FLASH_INFER_PORT").expect("FLASH_INFER_PORT must be set");
+
+    FLASH_INFER_PORT
+        .set(flash_infer_port.parse().unwrap())
+        .expect("FLASH_INFER_PORT is already initialized!");
 
     println!("Using parachain URL: {}", parachain_url);
 
@@ -124,4 +132,8 @@ pub async fn set_cess_gateway(url: &str) {
 
 pub fn get_tailscale_net() -> Result<&'static String> {
     TAILSCALE_NET.get().ok_or(Error::Custom("TAILSCALE_NET not initialized".to_string()))
+}
+
+pub fn get_flash_infer_port() -> Result<&'static u16> {
+    FLASH_INFER_PORT.get().ok_or(Error::Custom("FLASH_INFER_PORT not initialized".to_string()))
 }

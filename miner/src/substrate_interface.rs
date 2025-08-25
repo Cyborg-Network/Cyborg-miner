@@ -187,6 +187,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -212,6 +213,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -293,6 +295,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -386,6 +389,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -410,6 +414,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -437,6 +442,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -535,6 +541,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -560,6 +567,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -586,6 +594,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -702,6 +711,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -729,6 +739,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -753,6 +764,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -780,6 +792,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -855,6 +868,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -914,6 +928,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1001,6 +1016,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1033,6 +1049,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1090,6 +1107,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1207,6 +1225,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1238,6 +1257,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1265,6 +1285,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1291,6 +1312,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1325,10 +1347,9 @@ pub mod api {
                         "query_call_info",
                         types::QueryCallInfo { call, len },
                         [
-                            195u8, 210u8, 5u8, 132u8, 151u8, 74u8, 120u8, 138u8, 181u8, 223u8,
-                            19u8, 176u8, 150u8, 101u8, 249u8, 168u8, 195u8, 195u8, 7u8, 248u8,
-                            191u8, 69u8, 167u8, 202u8, 186u8, 74u8, 153u8, 104u8, 204u8, 167u8,
-                            97u8, 222u8,
+                            58u8, 165u8, 16u8, 204u8, 49u8, 69u8, 164u8, 217u8, 179u8, 155u8,
+                            167u8, 118u8, 39u8, 128u8, 147u8, 6u8, 102u8, 42u8, 84u8, 124u8, 34u8,
+                            122u8, 203u8, 212u8, 58u8, 91u8, 187u8, 35u8, 69u8, 155u8, 228u8, 45u8,
                         ],
                     )
                 }
@@ -1346,9 +1367,9 @@ pub mod api {
                         "query_call_fee_details",
                         types::QueryCallFeeDetails { call, len },
                         [
-                            241u8, 223u8, 137u8, 91u8, 83u8, 41u8, 162u8, 175u8, 74u8, 127u8, 70u8,
-                            49u8, 234u8, 242u8, 60u8, 139u8, 237u8, 218u8, 216u8, 52u8, 11u8,
-                            254u8, 145u8, 60u8, 54u8, 71u8, 148u8, 88u8, 5u8, 28u8, 3u8, 202u8,
+                            104u8, 46u8, 161u8, 49u8, 187u8, 171u8, 61u8, 176u8, 156u8, 198u8,
+                            45u8, 240u8, 172u8, 218u8, 87u8, 81u8, 57u8, 89u8, 42u8, 101u8, 23u8,
+                            199u8, 18u8, 4u8, 251u8, 121u8, 231u8, 57u8, 246u8, 186u8, 8u8, 85u8,
                         ],
                     )
                 }
@@ -1411,6 +1432,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1442,6 +1464,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1469,6 +1492,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1495,6 +1519,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1555,6 +1580,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1679,6 +1705,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1708,6 +1735,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1735,6 +1763,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1764,10 +1793,10 @@ pub mod api {
                         "get_recent_events",
                         types::GetRecentEvents {},
                         [
-                            205u8, 87u8, 196u8, 138u8, 115u8, 122u8, 82u8, 185u8, 124u8, 28u8,
-                            222u8, 48u8, 43u8, 30u8, 188u8, 78u8, 39u8, 56u8, 154u8, 205u8, 116u8,
-                            206u8, 128u8, 239u8, 92u8, 147u8, 1u8, 234u8, 112u8, 168u8, 165u8,
-                            132u8,
+                            152u8, 161u8, 71u8, 104u8, 232u8, 80u8, 94u8, 221u8, 135u8, 102u8,
+                            78u8, 168u8, 171u8, 145u8, 225u8, 212u8, 204u8, 39u8, 120u8, 230u8,
+                            91u8, 164u8, 29u8, 174u8, 70u8, 198u8, 37u8, 77u8, 210u8, 248u8, 40u8,
+                            51u8,
                         ],
                     )
                 }
@@ -1788,6 +1817,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -1996,9 +2026,9 @@ pub mod api {
             .hash();
         runtime_metadata_hash
             == [
-                61u8, 213u8, 195u8, 34u8, 93u8, 19u8, 89u8, 209u8, 195u8, 60u8, 55u8, 20u8, 239u8,
-                123u8, 149u8, 9u8, 77u8, 153u8, 203u8, 64u8, 55u8, 131u8, 207u8, 255u8, 219u8,
-                184u8, 86u8, 149u8, 63u8, 237u8, 137u8, 69u8,
+                88u8, 161u8, 98u8, 199u8, 97u8, 172u8, 47u8, 204u8, 193u8, 227u8, 15u8, 65u8,
+                146u8, 64u8, 74u8, 9u8, 147u8, 118u8, 160u8, 104u8, 78u8, 59u8, 22u8, 208u8, 237u8,
+                11u8, 179u8, 80u8, 211u8, 97u8, 227u8, 19u8,
             ]
     }
     pub mod system {
@@ -2019,6 +2049,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2049,6 +2080,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2076,6 +2108,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2104,6 +2137,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2135,6 +2169,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2165,6 +2200,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2194,6 +2230,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2227,6 +2264,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2255,6 +2293,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2285,6 +2324,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2319,6 +2359,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2588,6 +2629,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2611,6 +2653,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2636,6 +2679,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2653,6 +2697,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2676,6 +2721,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2699,6 +2745,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2724,6 +2771,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -2749,6 +2797,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -3187,10 +3236,10 @@ pub mod api {
                         "Events",
                         (),
                         [
-                            197u8, 142u8, 11u8, 60u8, 57u8, 121u8, 176u8, 24u8, 141u8, 195u8,
-                            223u8, 110u8, 121u8, 69u8, 87u8, 136u8, 155u8, 251u8, 21u8, 163u8,
-                            181u8, 252u8, 159u8, 179u8, 248u8, 201u8, 65u8, 151u8, 203u8, 93u8,
-                            145u8, 9u8,
+                            13u8, 121u8, 77u8, 24u8, 42u8, 220u8, 162u8, 165u8, 236u8, 229u8,
+                            104u8, 207u8, 40u8, 71u8, 146u8, 144u8, 171u8, 84u8, 224u8, 255u8,
+                            97u8, 26u8, 28u8, 178u8, 83u8, 110u8, 241u8, 208u8, 104u8, 235u8, 1u8,
+                            40u8,
                         ],
                     )
                 }
@@ -3546,6 +3595,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -3582,6 +3632,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -3661,6 +3712,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -3678,6 +3730,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -3701,6 +3754,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -3718,6 +3772,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -3741,6 +3796,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -3766,6 +3822,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -4534,6 +4591,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -4776,6 +4834,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -4815,6 +4874,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -4854,6 +4914,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -4892,6 +4953,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -4938,6 +5000,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -4972,6 +5035,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5008,6 +5072,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5043,6 +5108,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5077,6 +5143,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5339,6 +5406,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5364,6 +5432,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5390,6 +5459,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5417,6 +5487,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5442,6 +5513,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5467,6 +5539,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5492,6 +5565,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5523,6 +5597,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5548,6 +5623,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5573,6 +5649,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5598,6 +5675,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5623,6 +5701,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5648,6 +5727,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5673,6 +5753,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5698,6 +5779,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5721,6 +5803,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5744,6 +5827,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5767,6 +5851,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5792,6 +5877,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5817,6 +5903,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5842,6 +5929,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -5867,6 +5955,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6385,6 +6474,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6531,6 +6621,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6558,6 +6649,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6592,6 +6684,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6623,6 +6716,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6658,6 +6752,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6692,9 +6787,10 @@ pub mod api {
                             call: ::subxt::ext::subxt_core::alloc::boxed::Box::new(call),
                         },
                         [
-                            153u8, 64u8, 50u8, 3u8, 186u8, 61u8, 64u8, 244u8, 17u8, 13u8, 26u8,
-                            115u8, 155u8, 43u8, 118u8, 218u8, 112u8, 127u8, 223u8, 200u8, 219u8,
-                            216u8, 191u8, 17u8, 56u8, 166u8, 99u8, 224u8, 46u8, 23u8, 148u8, 180u8,
+                            165u8, 105u8, 104u8, 183u8, 156u8, 224u8, 191u8, 84u8, 59u8, 158u8,
+                            14u8, 203u8, 77u8, 106u8, 202u8, 82u8, 83u8, 102u8, 207u8, 203u8,
+                            229u8, 115u8, 134u8, 71u8, 122u8, 20u8, 244u8, 112u8, 71u8, 59u8,
+                            161u8, 134u8,
                         ],
                     )
                 }
@@ -6717,9 +6813,9 @@ pub mod api {
                             weight,
                         },
                         [
-                            120u8, 18u8, 253u8, 218u8, 243u8, 69u8, 82u8, 41u8, 51u8, 127u8, 158u8,
-                            130u8, 54u8, 193u8, 131u8, 224u8, 163u8, 16u8, 36u8, 8u8, 134u8, 106u8,
-                            153u8, 202u8, 49u8, 52u8, 237u8, 123u8, 69u8, 254u8, 128u8, 166u8,
+                            103u8, 106u8, 68u8, 112u8, 132u8, 135u8, 200u8, 1u8, 207u8, 211u8,
+                            179u8, 92u8, 113u8, 45u8, 78u8, 192u8, 193u8, 44u8, 243u8, 0u8, 20u8,
+                            49u8, 254u8, 27u8, 2u8, 171u8, 83u8, 0u8, 127u8, 179u8, 161u8, 248u8,
                         ],
                     )
                 }
@@ -6759,9 +6855,9 @@ pub mod api {
                             call: ::subxt::ext::subxt_core::alloc::boxed::Box::new(call),
                         },
                         [
-                            95u8, 229u8, 189u8, 151u8, 45u8, 168u8, 3u8, 129u8, 229u8, 60u8, 117u8,
-                            13u8, 8u8, 142u8, 179u8, 204u8, 35u8, 200u8, 191u8, 183u8, 223u8, 38u8,
-                            56u8, 216u8, 112u8, 75u8, 12u8, 150u8, 105u8, 178u8, 235u8, 120u8,
+                            116u8, 150u8, 108u8, 114u8, 67u8, 4u8, 181u8, 60u8, 139u8, 25u8, 220u8,
+                            244u8, 148u8, 167u8, 39u8, 224u8, 127u8, 90u8, 138u8, 8u8, 76u8, 59u8,
+                            78u8, 157u8, 78u8, 213u8, 39u8, 63u8, 188u8, 7u8, 59u8, 165u8,
                         ],
                     )
                 }
@@ -6795,6 +6891,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6819,6 +6916,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6844,6 +6942,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6861,6 +6960,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -6973,6 +7073,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7014,6 +7115,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7045,6 +7147,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7078,6 +7181,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7102,6 +7206,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7127,6 +7232,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7157,6 +7263,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7187,6 +7294,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7220,6 +7328,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7465,6 +7574,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7490,6 +7600,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7513,6 +7624,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7536,6 +7648,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7559,6 +7672,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7582,6 +7696,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7607,6 +7722,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7632,6 +7748,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7655,6 +7772,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -7682,6 +7800,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8012,6 +8131,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8050,6 +8170,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8146,6 +8267,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8170,6 +8292,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8193,6 +8316,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8703,6 +8827,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8726,6 +8851,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8751,6 +8877,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8782,6 +8909,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8813,6 +8941,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -8956,6 +9085,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9399,6 +9529,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9427,6 +9558,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9479,6 +9611,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9546,6 +9679,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9582,6 +9716,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9617,6 +9752,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9648,6 +9784,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9680,6 +9817,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9714,6 +9852,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9784,6 +9923,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9841,6 +9981,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9871,6 +10012,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9940,6 +10082,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -9975,6 +10118,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10075,6 +10219,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10115,6 +10260,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10145,6 +10291,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10799,6 +10946,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10822,6 +10970,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10851,6 +11000,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10880,6 +11030,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10907,6 +11058,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10934,6 +11086,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10960,6 +11113,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -10988,6 +11142,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11021,6 +11176,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11049,6 +11205,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11078,6 +11235,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11108,6 +11266,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11139,6 +11298,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11162,6 +11322,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11189,6 +11350,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11220,6 +11382,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11246,6 +11409,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11274,6 +11438,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11300,6 +11465,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11331,6 +11497,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11363,6 +11530,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11391,6 +11559,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11418,6 +11587,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11446,6 +11616,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11471,6 +11642,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11498,6 +11670,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11521,6 +11694,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11549,6 +11723,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -11574,6 +11749,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12496,6 +12672,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12518,6 +12695,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12540,6 +12718,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12581,6 +12760,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12611,6 +12791,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12725,6 +12906,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12753,6 +12935,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12782,6 +12965,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -12811,6 +12995,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13124,6 +13309,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13188,6 +13374,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13484,6 +13671,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13516,6 +13704,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13548,6 +13737,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13587,6 +13777,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13619,6 +13810,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13653,6 +13845,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13685,6 +13878,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13859,6 +14053,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13876,6 +14071,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13893,6 +14089,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13910,6 +14107,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13927,6 +14125,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -13944,6 +14143,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14039,6 +14239,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14080,6 +14281,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14109,6 +14311,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14140,6 +14343,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14174,6 +14378,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14209,6 +14414,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14242,6 +14448,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14462,6 +14669,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14498,6 +14706,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14533,6 +14742,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14561,6 +14771,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14592,6 +14803,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14622,6 +14834,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14650,6 +14863,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14678,6 +14892,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -14706,6 +14921,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15097,6 +15313,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15131,6 +15348,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15161,6 +15379,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15190,6 +15409,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15218,6 +15438,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15244,6 +15465,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15273,6 +15495,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15318,9 +15541,9 @@ pub mod api {
                             compute_hours_deposit,
                         },
                         [
-                            197u8, 204u8, 146u8, 249u8, 117u8, 99u8, 168u8, 179u8, 154u8, 164u8,
-                            233u8, 64u8, 28u8, 211u8, 65u8, 10u8, 18u8, 184u8, 17u8, 102u8, 132u8,
-                            142u8, 251u8, 70u8, 245u8, 160u8, 76u8, 159u8, 59u8, 59u8, 30u8, 26u8,
+                            157u8, 52u8, 161u8, 208u8, 69u8, 56u8, 159u8, 17u8, 26u8, 246u8, 62u8,
+                            165u8, 48u8, 46u8, 216u8, 37u8, 233u8, 110u8, 36u8, 29u8, 143u8, 243u8,
+                            94u8, 223u8, 187u8, 116u8, 135u8, 167u8, 237u8, 232u8, 232u8, 16u8,
                         ],
                     )
                 }
@@ -15447,6 +15670,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15480,6 +15704,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15505,6 +15730,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15528,6 +15754,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15551,6 +15778,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15575,6 +15803,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -15836,9 +16065,10 @@ pub mod api {
                         "Tasks",
                         (),
                         [
-                            206u8, 207u8, 122u8, 62u8, 33u8, 59u8, 131u8, 49u8, 57u8, 123u8, 77u8,
-                            131u8, 182u8, 206u8, 254u8, 108u8, 85u8, 116u8, 228u8, 126u8, 172u8,
-                            62u8, 205u8, 164u8, 31u8, 48u8, 150u8, 75u8, 174u8, 139u8, 43u8, 127u8,
+                            131u8, 26u8, 91u8, 20u8, 93u8, 127u8, 12u8, 81u8, 241u8, 74u8, 95u8,
+                            6u8, 143u8, 222u8, 209u8, 203u8, 245u8, 130u8, 26u8, 115u8, 121u8,
+                            184u8, 167u8, 52u8, 43u8, 203u8, 236u8, 188u8, 157u8, 167u8, 172u8,
+                            243u8,
                         ],
                     )
                 }
@@ -15862,9 +16092,10 @@ pub mod api {
                             _0.borrow(),
                         ),
                         [
-                            206u8, 207u8, 122u8, 62u8, 33u8, 59u8, 131u8, 49u8, 57u8, 123u8, 77u8,
-                            131u8, 182u8, 206u8, 254u8, 108u8, 85u8, 116u8, 228u8, 126u8, 172u8,
-                            62u8, 205u8, 164u8, 31u8, 48u8, 150u8, 75u8, 174u8, 139u8, 43u8, 127u8,
+                            131u8, 26u8, 91u8, 20u8, 93u8, 127u8, 12u8, 81u8, 241u8, 74u8, 95u8,
+                            6u8, 143u8, 222u8, 209u8, 203u8, 245u8, 130u8, 26u8, 115u8, 121u8,
+                            184u8, 167u8, 52u8, 43u8, 203u8, 236u8, 188u8, 157u8, 167u8, 172u8,
+                            243u8,
                         ],
                     )
                 }
@@ -16043,6 +16274,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16081,6 +16313,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16522,6 +16755,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16550,6 +16784,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16577,6 +16812,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16613,6 +16849,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16644,6 +16881,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16675,6 +16913,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16696,6 +16935,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16723,6 +16963,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16750,6 +16991,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16777,6 +17019,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16808,6 +17051,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16837,6 +17081,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16866,6 +17111,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16898,6 +17144,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -16925,6 +17172,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17249,6 +17497,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17270,6 +17519,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17290,6 +17540,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17318,6 +17569,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17339,6 +17591,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17359,6 +17612,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17385,6 +17639,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17409,6 +17664,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17437,6 +17693,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17468,6 +17725,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17497,6 +17755,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17524,6 +17783,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17548,6 +17808,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17572,6 +17833,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -17596,6 +17858,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18217,6 +18480,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18250,6 +18514,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18330,6 +18595,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18346,6 +18612,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18362,6 +18629,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18384,6 +18652,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18645,6 +18914,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18672,6 +18942,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18749,6 +19020,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18774,6 +19046,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18799,6 +19072,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18824,6 +19098,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -18849,6 +19124,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19154,6 +19430,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19173,6 +19450,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19192,6 +19470,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19214,6 +19493,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19232,6 +19512,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19269,6 +19550,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19315,6 +19597,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19331,6 +19614,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19353,6 +19637,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19369,6 +19654,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19388,6 +19674,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19404,6 +19691,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19424,6 +19712,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19441,6 +19730,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19458,6 +19748,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19497,6 +19788,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19548,6 +19840,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19581,6 +19874,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19605,6 +19899,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19623,6 +19918,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19640,6 +19936,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19659,6 +19956,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19678,6 +19976,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19708,6 +20007,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19720,6 +20020,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19757,6 +20058,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19778,6 +20080,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19799,6 +20102,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19818,6 +20122,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19840,6 +20145,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19863,6 +20169,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19884,6 +20191,48 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
+                    Debug,
+                )]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[codec(dumb_trait_bound)]
+                #[decode_as_type(
+                    crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode"
+                )]
+                #[encode_as_type(
+                    crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode"
+                )]
+                pub enum FlashInferTask {
+                    #[codec(index = 0)]
+                    Huggingface(runtime_types::cyborg_primitives::task::HuggingfaceTask),
+                }
+                #[derive(
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
+                    Debug,
+                )]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[codec(dumb_trait_bound)]
+                #[decode_as_type(
+                    crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode"
+                )]
+                #[encode_as_type(
+                    crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode"
+                )]
+                pub struct HuggingfaceTask {
+                    pub hf_identifier: runtime_types::bounded_collections::bounded_vec::BoundedVec<
+                        ::core::primitive::u8,
+                    >,
+                }
+                #[derive(
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19912,6 +20261,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19946,6 +20296,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19972,6 +20323,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -19991,6 +20343,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20021,6 +20374,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20036,12 +20390,15 @@ pub mod api {
                     NeuroZK(runtime_types::cyborg_primitives::task::NzkData<_0>),
                     #[codec(index = 1)]
                     OpenInference(runtime_types::cyborg_primitives::task::OpenInferenceTask),
+                    #[codec(index = 2)]
+                    FlashInferInfer(runtime_types::cyborg_primitives::task::FlashInferTask),
                 }
                 #[derive(
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20067,6 +20424,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20082,6 +20440,8 @@ pub mod api {
                     NeuroZK(runtime_types::cyborg_primitives::task::NeuroZkTaskSubmissionDetails),
                     #[codec(index = 1)]
                     OpenInference(runtime_types::cyborg_primitives::task::OpenInferenceTask),
+                    #[codec(index = 2)]
+                    FlashInfer(runtime_types::cyborg_primitives::task::FlashInferTask),
                 }
             }
             pub mod worker {
@@ -20091,6 +20451,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20110,6 +20471,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20137,6 +20499,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20164,6 +20527,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20184,6 +20548,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20207,6 +20572,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20227,6 +20593,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20252,6 +20619,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20276,6 +20644,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20303,6 +20672,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20315,6 +20685,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20366,6 +20737,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20411,6 +20783,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20462,6 +20835,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20474,6 +20848,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20489,6 +20864,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20506,6 +20882,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20520,6 +20897,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20542,6 +20920,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20565,6 +20944,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20586,6 +20966,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20611,6 +20992,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20643,6 +21025,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20664,6 +21047,7 @@ pub mod api {
                             :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                             :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                             :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                            Clone,
                             Debug,
                         )]
                         # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20685,6 +21069,7 @@ pub mod api {
                             :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                             :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                             :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                            Clone,
                             Debug,
                         )]
                         # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20707,6 +21092,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20726,6 +21112,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20745,6 +21132,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20764,6 +21152,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20783,6 +21172,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20802,6 +21192,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20821,6 +21212,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20840,6 +21232,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20860,6 +21253,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20880,6 +21274,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20902,6 +21297,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -20929,6 +21325,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21032,6 +21429,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21081,6 +21479,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21142,6 +21541,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21160,6 +21560,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21175,6 +21576,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21191,6 +21593,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21207,6 +21610,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21223,6 +21627,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21247,6 +21652,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21277,6 +21683,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21301,6 +21708,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21330,6 +21738,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21355,6 +21764,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21379,6 +21789,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21527,6 +21938,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21581,6 +21993,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21733,6 +22146,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21754,6 +22168,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21775,6 +22190,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21796,6 +22212,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21812,6 +22229,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21835,6 +22253,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21860,6 +22279,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21965,6 +22385,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -21984,6 +22405,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22053,6 +22475,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22134,6 +22557,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22210,6 +22634,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22244,6 +22669,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22359,6 +22785,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22392,6 +22819,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22483,6 +22911,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22510,6 +22939,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22552,6 +22982,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22598,6 +23029,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22649,6 +23081,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22697,6 +23130,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22717,6 +23151,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22732,6 +23167,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22758,6 +23194,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22787,6 +23224,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22820,6 +23258,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22872,6 +23311,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22892,6 +23332,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -22991,6 +23432,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23049,6 +23491,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23154,6 +23597,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23182,6 +23626,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23211,6 +23656,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23257,6 +23703,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23290,6 +23737,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23330,6 +23778,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23375,6 +23824,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23391,6 +23841,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23412,6 +23863,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23477,6 +23929,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23498,6 +23951,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23543,6 +23997,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23598,6 +24053,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23656,6 +24112,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23716,6 +24173,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23764,6 +24222,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23793,6 +24252,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23814,6 +24274,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23834,6 +24295,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23855,6 +24317,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23867,6 +24330,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23889,6 +24353,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -23907,6 +24372,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24009,6 +24475,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24253,6 +24720,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24272,6 +24740,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24288,6 +24757,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24324,6 +24794,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24348,6 +24819,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24378,6 +24850,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24402,6 +24875,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24433,6 +24907,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24493,6 +24968,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24525,6 +25001,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24540,6 +25017,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24555,6 +25033,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24575,6 +25054,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24594,6 +25074,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24610,6 +25091,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24636,6 +25118,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24656,6 +25139,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24684,6 +25168,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24707,6 +25192,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24729,6 +25215,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24750,6 +25237,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24776,6 +25264,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24796,6 +25285,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24813,6 +25303,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24839,6 +25330,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24861,6 +25353,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24874,6 +25367,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24891,6 +25385,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24908,6 +25403,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24925,6 +25421,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24941,6 +25438,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24965,6 +25463,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -24987,6 +25486,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25007,6 +25507,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25046,6 +25547,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25578,6 +26080,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25605,6 +26108,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25653,6 +26157,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25696,6 +26201,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25719,6 +26225,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25740,6 +26247,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25763,6 +26271,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25790,6 +26299,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25833,6 +26343,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25850,6 +26361,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25865,6 +26377,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25884,6 +26397,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25917,6 +26431,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25939,6 +26454,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25961,6 +26477,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -25985,6 +26502,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26014,6 +26532,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26036,6 +26555,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26056,6 +26576,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26081,6 +26602,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26106,6 +26628,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26125,6 +26648,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26146,6 +26670,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26162,6 +26687,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26191,6 +26717,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26211,6 +26738,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26232,6 +26760,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26265,6 +26794,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26289,6 +26819,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26348,6 +26879,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26396,6 +26928,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26434,6 +26967,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26454,6 +26988,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26679,6 +27214,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26710,6 +27246,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26731,6 +27268,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26769,6 +27307,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26794,6 +27333,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26813,6 +27353,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26834,6 +27375,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26850,6 +27392,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26879,6 +27422,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26902,6 +27446,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26922,6 +27467,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26943,6 +27489,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -26976,6 +27523,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27000,6 +27548,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27059,6 +27608,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27101,6 +27651,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27139,6 +27690,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27161,6 +27713,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27192,6 +27745,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27213,6 +27767,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27468,6 +28023,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27499,6 +28055,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27520,6 +28077,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27558,6 +28116,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27586,6 +28145,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27618,6 +28178,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27641,6 +28202,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27678,6 +28240,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27723,6 +28286,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27779,6 +28343,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27827,6 +28392,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27907,6 +28473,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27928,6 +28495,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27957,6 +28525,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27978,6 +28547,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -27997,6 +28567,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28018,6 +28589,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28038,6 +28610,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28059,6 +28632,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28095,6 +28669,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28192,6 +28767,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28224,6 +28800,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28451,6 +29028,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28482,6 +29060,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28507,6 +29086,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28538,6 +29118,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28559,6 +29140,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28597,6 +29179,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28618,6 +29201,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28643,6 +29227,7 @@ pub mod api {
                         :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                         :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                         :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Clone,
                         Debug,
                     )]
                     # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28744,6 +29329,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28763,6 +29349,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28782,6 +29369,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28801,6 +29389,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28820,6 +29409,7 @@ pub mod api {
                 :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                 :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                 :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Clone,
                 Debug,
             )]
             # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
@@ -28844,6 +29434,7 @@ pub mod api {
                     :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
                     :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
                     :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Clone,
                     Debug,
                 )]
                 # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]

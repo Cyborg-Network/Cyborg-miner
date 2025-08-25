@@ -2,9 +2,8 @@ use crate::config::{self, get_paths};
 use crate::parachain_interactor::identity::update_identity_file;
 use crate::parent_runtime::inference::CURRENT_SERVER;
 use crate::substrate_interface;
-use crate::substrate_interface::api::runtime_types::cyborg_primitives::task::TaskKind;
 use crate::traits::{InferenceServer, ParachainInteractor};
-use crate::types::{CurrentTask, TaskType};
+use crate::types::CurrentTask;
 use crate::utils::tx_builder::{confirm_miner_vacation, confirm_task_reception};
 use crate::utils::tx_queue::TxOutput;
 use crate::{
@@ -102,21 +101,10 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                     &task_owner_string,
                 )?;
 
-                let task_data = task_scheduled.task_kind;
-                match task_data {
-                    TaskKind::OpenInference(_) => {
-                        miner.current_task = Some(CurrentTask {
-                            id: task_scheduled.task_id,
-                            task_type: TaskType::OpenInference,
-                        });
-                    }
-                    TaskKind::NeuroZK(_) => {
-                        miner.current_task = Some(CurrentTask {
-                            id: task_scheduled.task_id,
-                            task_type: TaskType::NeuroZk,
-                        });
-                    }
-                }
+                miner.current_task = Some(CurrentTask {
+                    id: task_scheduled.task_id,
+                    task_type: task_scheduled.task_kind,
+                });
 
                 let parent_runtime_clone = Arc::clone(&miner.parent_runtime);
                 let current_task_clone = miner.current_task.clone();
@@ -126,7 +114,7 @@ pub async fn process_event(miner: &mut Miner, event: &EventDetails<PolkadotConfi
                         if let Err(e) = parent_runtime_clone
                             .read()
                             .await
-                            .process_task(task_data)
+                            .process_task(current_task.clone().task_type)
                             .await
                         {
                             println!("Error downloading model archive: {}", e);

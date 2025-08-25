@@ -1,18 +1,12 @@
 use crate::{
-    config, error::{Error, Result}, substrate_interface::{
-        self,
-        api::{
-            runtime_types::{
-                bounded_collections::bounded_vec::BoundedVec, 
-                cyborg_primitives::task::OpenInferenceTask
-            }, 
-            task_management::events::task_scheduled::TaskKind},
-    }, types::{Miner, TaskType}
+    config, 
+    error::{Error, Result}, 
+    substrate_interface::{self, api::runtime_types::bounded_collections::bounded_vec::BoundedVec}, 
+    types::Miner
 };
 
 pub async fn confirm_task_reception(miner: &Miner) -> Result<()> {
     let client = config::get_parachain_client()?;
-    let config_path = &config::get_paths()?.identity_path;
     let keypair = &miner.keypair;
     let current_task = miner
         .current_task

@@ -4,7 +4,9 @@ services:
   gatekeeper:
     build: ./gatekeeper-docker
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - zk-artifacts:/shared
+    user: "${UID}:${GID}"
     network_mode: "host"
     environment:
       - CESS_GATEWAY=https://deoss-sgp.cess.network
@@ -14,6 +16,7 @@ services:
       - CYBORG_TEST_KEY=bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice
       - RPC_URL=wss://testnet-rpc.cess.network/ws/
       - PARACHAIN_URL=${PARACHAIN_URL}
+      - DOCKER_HOST=unix:///var/run/docker.sock
 
   miner:
     build: 
@@ -32,6 +35,7 @@ services:
       - UPDATE_STAGER_PATH=/var/lib/cyborg/miner/update
       - TAILSCALE_NET=tail78ea2b.ts.net
       - CYBORG_MINER_TEST_IP=127.0.0.1
+      - FLASH_INFER_PORT=3005
 
 volumes:
   zk-artifacts:

@@ -5,6 +5,8 @@ use subxt::utils::AccountId32;
 use subxt_signer::sr25519::Keypair;
 use tokio::sync::RwLock;
 
+use crate::substrate_interface::api::runtime_types::cyborg_primitives::task::TaskKind;
+
 // Datastructure for worker registration persistence
 #[derive(Debug, Clone, PartialEq, Eq, Decode, Encode, Serialize, Deserialize)]
 pub struct MinerData {
@@ -12,16 +14,10 @@ pub struct MinerData {
     pub miner_identity: (AccountId32, u64),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 pub struct CurrentTask {
     pub id: u64,
-    pub task_type: TaskType,
-}
-
-#[derive(Clone, Debug)]
-pub enum TaskType {
-    OpenInference,
-    NeuroZk,
+    pub task_type: TaskKind<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

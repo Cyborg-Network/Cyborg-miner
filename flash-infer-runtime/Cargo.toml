@@ -1,0 +1,15 @@
+[package]
+name = "flash-infer-runtime"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-stream = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+bollard = { version = "0.19.2" }
+tokio = "1.41.0"
+serde = { version = "1.0.197", default-features = false }
+serde_json = { version = "1.0.114", default-features = false }
+zstd = "0.13.3"
+sha2 = "0.10.9"

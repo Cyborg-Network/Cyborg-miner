@@ -34,9 +34,6 @@ pub enum Error {
     
     #[from]
     ReqwestParseInt(std::num::ParseIntError), 
-
-    #[from]
-    Bollard(bollard::errors::Error),
 }
 
 impl Error {
