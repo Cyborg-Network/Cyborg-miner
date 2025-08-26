@@ -3,7 +3,7 @@ use serde_json::Value;
 use std::process::{Command, Stdio};
 use std::{env, str};
 use sysinfo::{MemoryRefreshKind, RefreshKind, System};
-use dotenv::dotenv;
+
 use reqwest::Client;
 
 use crate::{
@@ -118,16 +118,16 @@ impl Location {
         }
 
         // Try Google Wi-Fi Geolocation
-        if let Ok((lat, lon)) = get_geo_location().await {
-            println!("Falling back to Google Wi-Fi Geolocation.");
-            return Location {
-                coordinates: f64_to_i32_coordinates(lat, lon),
-            };
-        }
+        // if let Ok((lat, lon)) = get_geo_location().await {
+        //     println!("Falling back to Google Wi-Fi Geolocation.");
+        //     return Location {
+        //         coordinates: f64_to_i32_coordinates(lat, lon),
+        //     };
+        // }
 
-        match get_ip_location().await {
+        match get_geo_location().await {
             Ok((lat, lon)) => {
-                println!("Failed to get GPS location. Falling back to IP-based geolocation.");
+                println!("Failed to get GPS location. Falling back to Wifi based geolocation.");
                 return Location {
                     coordinates: f64_to_i32_coordinates(lat, lon),
                 };
@@ -175,7 +175,7 @@ fn get_gps_location() -> Result<(f64, f64)> {
 }
 use crate::error::Error;
 async fn get_geo_location() -> Result<(f64, f64)> {
-    dotenv().ok();
+ 
     let geo_api = "AIzaSyCi7pFDU9lgBfBri13kp1MmyW9eWdeaFRk";
 
     let output = Command::new("nmcli")
