@@ -3,12 +3,40 @@ use serde_json::Value;
 use std::process::{Command, Stdio};
 use std::{env, str};
 use sysinfo::{MemoryRefreshKind, RefreshKind, System};
+use dotenv::dotenv;
+use reqwest::Client;
 
 use crate::{
     config,
     error::Result,
     types::MinerConfig,
 };
+
+
+#[derive(Debug, Deserialize)]
+struct GoogleGeoResponse {
+    location: GoogleLocation,
+    accuracy: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct GoogleLocation {
+    lat: f64,
+    lng: f64,
+}
+
+#[derive(Debug, Serialize)]
+struct WifiAccessPoint {
+    macAddress: String,
+    signalStrength: i32,
+}
+
+#[derive(Debug, Serialize)]
+struct GeoRequest {
+    considerIp: bool,
+    wifiAccessPoints: Vec<WifiAccessPoint>,
+}
+
 
 #[derive(Deserialize, Debug)]
 struct IpLocation {
@@ -89,6 +117,14 @@ impl Location {
             };
         }
 
+        // Try Google Wi-Fi Geolocation
+        if let Ok((lat, lon)) = get_geo_location().await {
+            println!("Falling back to Google Wi-Fi Geolocation.");
+            return Location {
+                coordinates: f64_to_i32_coordinates(lat, lon),
+            };
+        }
+
         match get_ip_location().await {
             Ok((lat, lon)) => {
                 println!("Failed to get GPS location. Falling back to IP-based geolocation.");
@@ -136,6 +172,59 @@ fn get_gps_location() -> Result<(f64, f64)> {
     }
 
     Err("Failed to extract latitude and longitude from GPS data".into())
+}
+use crate::error::Error;
+async fn get_geo_location() -> Result<(f64, f64)> {
+    dotenv().ok();
+    let geo_api = "AIzaSyCi7pFDU9lgBfBri13kp1MmyW9eWdeaFRk";
+
+    let output = Command::new("nmcli")
+        .args(&["-t", "-f", "SSID,BSSID,SIGNAL", "dev", "wifi"])
+        .output()?;
+    let stdout = String::from_utf8_lossy(&output.stdout);
+
+    let mut wifi_list = Vec::new();
+
+    for line in stdout.lines() {
+        let parts: Vec<&str> = line.split(':').collect();
+        if parts.len() >= 3 {
+            let bssid_parts = &parts[1..parts.len() - 1];
+            let bssid = bssid_parts.join(":").replace("\\:", ":");
+
+            let signal_str = parts.last().unwrap_or(&"0");
+            let signal = signal_str.parse::<i32>().unwrap_or(0);
+
+            wifi_list.push(WifiAccessPoint {
+                macAddress: bssid.to_uppercase(),
+                signalStrength: -signal,
+            });
+        }
+    }
+
+    if wifi_list.is_empty() {
+        return Err("No Wi-Fi networks found".into());
+    }
+
+    let geo_request = GeoRequest {
+        considerIp: true,
+        wifiAccessPoints: wifi_list,
+    };
+
+    let url = format!(
+        "https://www.googleapis.com/geolocation/v1/geolocate?key={}",
+        geo_api
+    );
+
+    let client = Client::new();
+    let resp: GoogleGeoResponse = client
+        .post(&url)
+        .json(&geo_request)
+        .send()
+        .await?
+        .json()
+        .await?;
+
+    Ok((resp.location.lat, resp.location.lng))
 }
 
 async fn get_ip_location() -> Result<(f64, f64)> {
