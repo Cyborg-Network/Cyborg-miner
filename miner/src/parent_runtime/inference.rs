@@ -70,9 +70,10 @@ struct AppState {
     task: CurrentTask,
     engine: InferenceEngine,
     status: Arc<watch::Receiver<EngineStatus>>,
+    shutdown: watch::Receiver<bool>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 enum EngineStatus {
     Idle,
     Initializing,
@@ -90,10 +91,11 @@ pub struct RunningInferenceServer {
 
 impl RunningInferenceServer {
     pub async fn shutdown(self, task_dir: &str) -> Result<()> {
+        self.engine.kill_engine(task_dir).await?;
         let _ = self.shutdown_sender.send(true);
         let _ = self.shutdown_done_rx.await;
         let _ = self.handle.await;
-        self.engine.kill_engine(task_dir).await?;
+
 
         Ok(())
     }
@@ -180,6 +182,7 @@ pub async fn spawn_inference_server(
         task: task.clone(),
         engine: engine.clone(),
         status: Arc::new(status_rx),
+        shutdown: shutdown_rx.clone()
     };
 
     let mut default_port: u16 = 3000;
@@ -281,8 +284,23 @@ async fn ws_handler(
 }
 
 async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
-    let (sender, mut receiver) = socket.split();
+    let (mut sender, mut receiver) = socket.split();
+    let mut shutdown_rx = state.shutdown.clone();
     let current_status = state.status.borrow().clone();
+
+    if current_status != EngineStatus::Ready {
+        let msg = match current_status {
+            EngineStatus::Initializing => "Inference engine is initializing.".to_string(),
+            EngineStatus::Failed(ref err) => format!("Inference engine failed to run: {}.", err),
+            EngineStatus::Idle => "Inference engine is idle.".to_string(),
+            EngineStatus::Ready => unreachable!(),
+        };
+        let _ = sender.send(Message::Text(msg.into())).await;
+        return Ok(());
+    }
+
+    let sender = Arc::new(Mutex::new(sender));
+
     let request_stream = Box::pin(async_stream::stream! {
         while let Some(Ok(msg)) = receiver.next().await {
             if let Message::Text(text) = msg {
@@ -291,70 +309,42 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
         }
     });
 
-    let sender = Arc::new(Mutex::new(sender));
     let response_stream = {
         let sender = Arc::clone(&sender);
         move |response: String| {
             let sender = Arc::clone(&sender);
             println!("Sending response: {}", response);
             async move {
-                let _ = sender
-                    .lock()
-                    .await
-                    .send(Message::Text(response.into()))
-                    .await;
+                let _ = sender.lock().await.send(Message::Text(response.into())).await;
             }
         }
     };
 
-    match current_status {
-        EngineStatus::Ready => {
+    tokio::select! {
+        _ = async {
             match &state.engine {
-                InferenceEngine::OpenInference(client) => {
-                    let client = client.lock().await;
-                    if let Err(e)=client.run(request_stream,response_stream).await{
-                        tracing::error!("Error running inference ingine: {}",e);
+                InferenceEngine::OpenInference(ref client) => {
+                    if let Err(e) = client.lock().await.run(request_stream, response_stream).await {
+                        tracing::error!("Error running OpenInference engine: {}", e);
                     }
                 }
-                InferenceEngine::NeuroZk(engine) => {
-                    let engine = engine.lock().await;
-                    if let Err(e) = engine.run(request_stream, response_stream).await {
+                InferenceEngine::NeuroZk(ref engine) => {
+                    if let Err(e) = engine.lock().await.run(request_stream, response_stream).await {
                         tracing::error!("Error running NeuroZK inference engine: {}", e);
                     }
                 }
-                InferenceEngine::FlashInference(engine) => {
-                    let engine = engine.lock().await;
-                    if let Err(e) = engine.run(request_stream, response_stream).await {
-                        tracing::error!("Error running Flash inference engine: {}", e);
+                InferenceEngine::FlashInference(ref engine) => {
+                    if let Err(e) = engine.lock().await.run(request_stream, response_stream).await {
+                        tracing::error!("Error running FlashInfer engine: {}", e);
                     }
                 }
             }
-        }
-        EngineStatus::Initializing => {
-            sender
-                .lock()
-                .await
-                .send(Message::Text("Engine is initializing...".into()))
-                .await
-                .ok();
-        }
-        EngineStatus::Failed(ref err) => {
-            sender
-                .lock()
-                .await
-                .send(Message::Text(
-                    format!("Engine failed to initialize: {}", err).into(),
-                ))
-                .await
-                .ok();
-        }
-        EngineStatus::Idle => {
-            sender
-                .lock()
-                .await
-                .send(Message::Text("Engine has not started.".into()))
-                .await
-                .ok();
+        } => {}
+        _ = shutdown_rx.changed() => {
+            if *shutdown_rx.borrow() {
+                tracing::info!("Shutdown signal received, closing websocket");
+                let _ = sender.lock().await.send(Message::Close(None)).await;
+            }
         }
     }
 
