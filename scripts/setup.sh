@@ -28,6 +28,7 @@ SETUP_SCRIPT_PATH="$SCRIPT_DIR/$SETUP_SCRIPT_FILE_NAME"
 MINER_INFERENCE_PORT=3000
 AGENT_HTTP_PORT=8080
 AGENT_WS_PORT=8081
+FLASH_INFER_PORT=3005
 
 # Service files
 MINER_SERVICE_FILE="/etc/systemd/system/$MINER_FILE_NAME.service"
@@ -99,6 +100,42 @@ prepare_environment() {
     sudo chmod -R 700 /var/lib/cyborg /var/log/cyborg /etc/cyborg "$STAGE_DIR"
 }
 
+setup_docker() {
+    if ! command -v docker &> /dev/null; then
+        echo "[!] Docker not found. Installing Docker..."
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+        echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+        https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+        echo "Docker installed successfully."
+    else
+        echo "Docker is already installed."
+    fi
+
+    if ! getent group docker > /dev/null; then
+        echo "[*] Creating docker group..."
+        sudo groupadd docker
+    fi
+
+    if id -nG "$CYBORG_USER" | grep -qw docker; then
+        echo "$CYBORG_USER is already in the docker group."
+    else
+        echo "Adding $CYBORG_USER to docker group..."
+        sudo usermod -aG docker "$CYBORG_USER"
+        echo "$CYBORG_USER added to docker group."
+    fi
+
+    echo "Docker setup complete. $CYBORG_USER may need to log out/in for group changes to take effect - supplementary docker group as workaround until restart."
+}
+
 prepare_triton() {
     echo "[*] Triton model repository directory: $MINER_TASK_DIR"
 
@@ -155,6 +192,7 @@ install() {
 
     download_and_extract
     prepare_environment
+    setup_docker
     prepare_triton
 
     echo "Moving the miner to $BIN_DIR..."
@@ -186,6 +224,7 @@ install() {
     [Service]
     User=$CYBORG_USER
     Group=$CYBORG_USER
+    SupplementaryGroups=docker
     Environment=PARACHAIN_URL=$PARACHAIN_URL
     Environment="ACCOUNT_SEED=\"$ACCOUNT_SEED\""
     Environment=LOG_FILE_PATH=$MINER_LOG_DIR/miner.log
@@ -195,6 +234,7 @@ install() {
     Environment=TASK_OWNER_FILE_PATH=$MINER_CONFIG_DIR/task_owner.json
     Environment=UPDATE_STAGER_PATH=$MINER_UPDATE_PATH
     Environment=TAILSCALE_NET=$TAILSCALE_NET
+    Environment=FLASH_INFER_PORT=$FLASH_INFER_PORT
     ExecStart=$MINER_BINARY_PATH start-miner --parachain-url \$PARACHAIN_URL --account-seed "\$ACCOUNT_SEED"
     Restart=always
     SuccessExitStatus=75
@@ -215,6 +255,7 @@ EOL
     [Service]
     User=$CYBORG_USER
     Group=$CYBORG_USER
+    SupplementaryGroups=docker
     Environment=LOG_FILE_PATH=$MINER_LOG_DIR/miner.log
     Environment=TASK_OWNER_FILE_PATH=$MINER_CONFIG_DIR/task_owner.json
     Environment=IDENTITY_FILE_PATH=$MINER_CONFIG_DIR/miner_identity.json

@@ -1,5 +1,4 @@
 use bollard::Docker;
-use futures::TryStreamExt;
 use serde_json::json;
 use std::collections::HashMap;
 use bollard::query_parameters::{
@@ -74,6 +73,7 @@ impl FlashInferEngine {
             image: Some(image.to_string()),
             host_config: Some(HostConfig {
                 port_bindings: Some(port_bindings),
+                runtime: Some("nvidia".to_string()),
                 ..Default::default()
             }),
             env: Some(vec![
@@ -92,7 +92,6 @@ impl FlashInferEngine {
                 config
             )
             .await?;
-
         println!("Created container {}", container.id);
 
         docker
@@ -162,6 +161,9 @@ impl FlashInferEngine {
         input_data: String,
     ) -> Result<String, Box<dyn std::error::Error>> {
         let url = format!("http://localhost:{}/chat", self.torch_infer_port);
+
+        println!("Sending inference request to {}", url);
+        println!("Input data: {}", input_data);
         let res = self.client.post(url)
             .json(&json!({
                 "session_id": "test1",
