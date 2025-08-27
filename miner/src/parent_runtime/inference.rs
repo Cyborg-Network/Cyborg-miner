@@ -302,9 +302,19 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
     let sender = Arc::new(Mutex::new(sender));
 
     let request_stream = Box::pin(async_stream::stream! {
-        while let Some(Ok(msg)) = receiver.next().await {
-            if let Message::Text(text) = msg {
-                yield text.to_string();
+        loop {
+            tokio::select! {
+                msg = receiver.next() => {
+                    if let Some(Ok(Message::Text(text))) = msg {
+                        yield text.to_string();
+                    }
+                }
+                _ = shutdown_rx.changed() => {
+                    if *shutdown_rx.borrow() {
+                        tracing::info!("Shutdown signal received, closing websocket");
+                        break;
+                    }
+                }
             }
         }
     });
@@ -320,30 +330,20 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
         }
     };
 
-    tokio::select! {
-        _ = async {
-            match &state.engine {
-                InferenceEngine::OpenInference(ref client) => {
-                    if let Err(e) = client.lock().await.run(request_stream, response_stream).await {
-                        tracing::error!("Error running OpenInference engine: {}", e);
-                    }
-                }
-                InferenceEngine::NeuroZk(ref engine) => {
-                    if let Err(e) = engine.lock().await.run(request_stream, response_stream).await {
-                        tracing::error!("Error running NeuroZK inference engine: {}", e);
-                    }
-                }
-                InferenceEngine::FlashInference(ref engine) => {
-                    if let Err(e) = engine.lock().await.run(request_stream, response_stream).await {
-                        tracing::error!("Error running FlashInfer engine: {}", e);
-                    }
-                }
+    match &state.engine {
+        InferenceEngine::OpenInference(ref client) => {
+            if let Err(e) = client.lock().await.run(request_stream, response_stream).await {
+                tracing::error!("Error running OpenInference engine: {}", e);
             }
-        } => {}
-        _ = shutdown_rx.changed() => {
-            if *shutdown_rx.borrow() {
-                tracing::info!("Shutdown signal received, closing websocket");
-                let _ = sender.lock().await.send(Message::Close(None)).await;
+        }
+        InferenceEngine::NeuroZk(ref engine) => {
+            if let Err(e) = engine.lock().await.run(request_stream, response_stream).await {
+                tracing::error!("Error running NeuroZK inference engine: {}", e);
+            }
+        }
+        InferenceEngine::FlashInference(ref engine) => {
+            if let Err(e) = engine.lock().await.run(request_stream, response_stream).await {
+                tracing::error!("Error running FlashInfer engine: {}", e);
             }
         }
     }
