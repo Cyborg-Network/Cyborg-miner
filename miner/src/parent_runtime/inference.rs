@@ -17,9 +17,14 @@ use neuro_zk_runtime::NeuroZKEngine;
 use flash_infer_runtime::FlashInferEngine;
 use once_cell::sync::Lazy;
 use tokio::sync::oneshot;
-use std::path::Path;
-use std::{net::SocketAddr, path::PathBuf, sync::Arc};
+use std::{
+    net::SocketAddr, 
+    path::{PathBuf, Path}, 
+    sync::Arc,
+    time::Duration,
+};
 use tokio::{
+    time::timeout,
     net::TcpListener,
     sync::{watch, Mutex},
 };
@@ -93,9 +98,19 @@ impl RunningInferenceServer {
     pub async fn shutdown(self, task_dir: &str) -> Result<()> {
         self.engine.kill_engine(task_dir).await?;
         let _ = self.shutdown_sender.send(true);
-        let _ = self.shutdown_done_rx.await;
-        let _ = self.handle.await;
 
+        match timeout(Duration::from_secs(3), self.shutdown_done_rx).await {
+            Ok(Ok(())) => {
+                tracing::info!("Server shut down gracefully");
+            }
+            Ok(Err(_)) => {
+                println!("Server shutdown channel closed unexpectedly");
+            }
+            Err(_) => {
+                tracing::warn!("Server did not shut down in time, aborting task!");
+                self.handle.abort(); // Force kill the axum server task
+            }
+        }
 
         Ok(())
     }
@@ -300,6 +315,7 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
     }
 
     let sender = Arc::new(Mutex::new(sender));
+    let shutdown_sender = Arc::clone(&sender);
 
     let request_stream = Box::pin(async_stream::stream! {
         loop {
@@ -312,6 +328,7 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
                 _ = shutdown_rx.changed() => {
                     if *shutdown_rx.borrow() {
                         tracing::info!("Shutdown signal received, closing websocket");
+                        let _ = shutdown_sender.lock().await.send(Message::Close(None)).await;
                         break;
                     }
                 }
