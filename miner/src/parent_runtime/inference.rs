@@ -300,7 +300,7 @@ async fn ws_handler(
 
 async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
     let (mut sender, mut receiver) = socket.split();
-    let mut shutdown_rx = state.shutdown.clone();
+    let shutdown_rx = state.shutdown.clone();
     let current_status = state.status.borrow().clone();
 
     if current_status != EngineStatus::Ready {
@@ -316,6 +316,7 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
 
     let sender = Arc::new(Mutex::new(sender));
     let shutdown_sender = Arc::clone(&sender);
+    let mut shutdown_rx_loop = shutdown_rx.clone();
 
     let request_stream = Box::pin(async_stream::stream! {
         loop {
@@ -325,8 +326,8 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
                         yield text.to_string();
                     }
                 }
-                _ = shutdown_rx.changed() => {
-                    if *shutdown_rx.borrow() {
+                _ = shutdown_rx_loop.changed() => {
+                    if *shutdown_rx_loop.borrow() {
                         tracing::info!("Shutdown signal received, closing websocket");
                         let _ = shutdown_sender.lock().await.send(Message::Close(None)).await;
                         break;
@@ -359,7 +360,7 @@ async fn handle_socket(socket: WebSocket, state: AppState) -> Result<()> {
             }
         }
         InferenceEngine::FlashInference(ref engine) => {
-            if let Err(e) = engine.lock().await.run(request_stream, response_stream).await {
+            if let Err(e) = engine.lock().await.run(request_stream, response_stream, shutdown_rx).await {
                 tracing::error!("Error running FlashInfer engine: {}", e);
             }
         }

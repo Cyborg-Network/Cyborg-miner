@@ -1,5 +1,6 @@
 use bollard::Docker;
 use serde_json::json;
+use tokio::sync::watch;
 use std::collections::HashMap;
 use bollard::query_parameters::{
     CreateContainerOptionsBuilder, RemoveContainerOptions, StartContainerOptions
@@ -117,32 +118,47 @@ impl FlashInferEngine {
         &self,
         mut request_stream: S,
         mut response_closure: C,
+        mut shutdown: watch::Receiver<bool>,
     ) -> Result<(), Box<dyn std::error::Error>>
     where
         S: Stream<Item = String> + Unpin + Send + 'static,
         C: FnMut(String) -> CFut + Send + 'static,
         CFut: Future<Output = ()> + Send + 'static,
     {
-        while let Some(request) = request_stream.next().await {
-            println!("Processing inference for request: {}", request);
+        loop {
+            tokio::select! {
+                maybe_req = request_stream.next() => {
+                    if let Some(request) = maybe_req {
+                        println!("Processing inference for request: {}", request);
 
-            let response: String;
+                        let response: String;
 
-            match self.generate_inference_result(request.clone()).await {
-                Ok(result) => {
-                    response = result;
+                        match self.generate_inference_result(request.clone()).await {
+                            Ok(result) => {
+                                response = result;
+                            }
+                            Err(e) => {
+                                println!("Failed to generate inference result, likely incorrect request format! Error: {}", e);
+                                response =
+                                    "Failed to generate inference result, likely incorrect request format!"
+                                    .to_string();
+                            }
+                        }
+
+                        println!("Generated inference result: {}", response);
+
+                        response_closure(response).await;
+                    } else {
+                        break;
+                    }
                 }
-                Err(e) => {
-                    println!("Failed to generate inference result, likely incorrect request format! Error: {}", e);
-                    response =
-                        "Failed to generate inference result, likely incorrect request format!"
-                            .to_string();
+                _ = shutdown.changed() => {
+                    if *shutdown.borrow() {
+                        println!("Shutdown received in run, exiting");
+                        break;
+                    }
                 }
             }
-
-            println!("Generated inference result: {}", response);
-
-            response_closure(response).await;
         }
 
         Ok(())
