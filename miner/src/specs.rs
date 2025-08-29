@@ -128,6 +128,7 @@ impl Location {
         match get_geo_location().await {
             Ok((lat, lon)) => {
                 println!("Failed to get GPS location. Falling back to Wifi based geolocation.");
+                println!("Longitude and Latitude are {} {}",lat,lon);
                 return Location {
                     coordinates: f64_to_i32_coordinates(lat, lon),
                 };
@@ -176,8 +177,6 @@ fn get_gps_location() -> Result<(f64, f64)> {
 use crate::error::Error;
 async fn get_geo_location() -> Result<(f64, f64)> {
  
-    let geo_api = "AIzaSyCi7pFDU9lgBfBri13kp1MmyW9eWdeaFRk";
-
     let output = Command::new("nmcli")
         .args(&["-t", "-f", "SSID,BSSID,SIGNAL", "dev", "wifi"])
         .output()?;
@@ -210,21 +209,39 @@ async fn get_geo_location() -> Result<(f64, f64)> {
         wifiAccessPoints: wifi_list,
     };
 
-    let url = format!(
-        "https://www.googleapis.com/geolocation/v1/geolocate?key={}",
-        geo_api
-    );
+    // let url = format!(
+    //     "https://www.googleapis.com/geolocation/v1/geolocate?key={}",
+    //     geo_api
+    // );
 
+    // let client = Client::new();
+    // let resp: GoogleGeoResponse = client
+    //     .post(&url)
+    //     .json(&geo_request)
+    //     .send()
+    //     .await?
+    //     .json()
+    //     .await?;
+
+    let url = "https://gpsproxy.taila87663.ts.net/geo"; 
     let client = Client::new();
-    let resp: GoogleGeoResponse = client
-        .post(&url)
-        .json(&geo_request)
+
+    #[derive(serde::Deserialize)]
+    struct LocationResponse {
+        lat: f64,
+        lon: f64,
+    }
+
+    let resp: LocationResponse = client
+        .post(url)
+        .json(&geo_request)  
         .send()
         .await?
         .json()
         .await?;
 
-    Ok((resp.location.lat, resp.location.lng))
+
+    Ok((resp.lat, resp.lon))
 }
 
 async fn get_ip_location() -> Result<(f64, f64)> {
